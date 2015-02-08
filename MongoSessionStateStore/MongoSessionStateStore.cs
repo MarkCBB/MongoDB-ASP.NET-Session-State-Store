@@ -47,6 +47,12 @@ namespace MongoSessionStateStore
     /// The session-state store provider does not provide support for the Session_OnEnd event, it does not automatically clean up expired session-item data. 
     /// You should have a job to periodically delete expired session information from the data store where Expires date is in the past, i.e.:
     ///     db.Sessions.remove({"Expires" : {$lt : new Date() }})
+    ///     
+    /// maxUpsertAttempts: is the max number of attempts that will try to send an upsert to a replicaSet in case of primary elections.    
+    /// msWaitingForAttempt: is the time in milliseconds that will wait between each attempt if an upsert fails due a primary elections.
+    /// The default value of these parameters means that in case of primary elections will try each half second during 60 seconds .
+    /// The primary election process usually takes up to 3 or 4 seconds, but it could take more than 30 seconds depending of
+    /// configuration of replicaset servers, network...
     /// 
     /// Example web.config settings:
     ///  
@@ -64,7 +70,9 @@ namespace MongoSessionStateStore
     ///                     connectionStringName="MongoSessionServices"
     ///                     writeExceptionsToEventLog="false"
     ///                     fsync="false"
-    ///                     replicasToWrite="0" />
+    ///                     replicasToWrite="0"
+    ///                     maxUpsertAttempts = 120
+    ///                     msWaitingForAttempt = 500/>
     ///             </providers>
     ///     </sessionState>
     ///     ...
@@ -82,7 +90,9 @@ namespace MongoSessionStateStore
         private bool _writeExceptionsToEventLog;
         private const string ExceptionMessage = "An exception occurred. Please contact your administrator.";
         private const string EventSource = "MongoSessionStateStore";
-        private const string EventLog = "Application";        
+        private const string EventLog = "Application";
+        private int _maxUpsertAttempts = 180;
+        private int _msWaitingForAttempt = 500;
         private WriteConcern _writeConcern;
 
         /// <summary>
@@ -93,7 +103,7 @@ namespace MongoSessionStateStore
         {
             get { return _applicationName; }
         }
-       
+
         /// <summary>
         /// If false, exceptions are thrown to the caller. If true,
         /// exceptions are written to the event log. 
@@ -102,6 +112,26 @@ namespace MongoSessionStateStore
         {
             get { return _writeExceptionsToEventLog; }
             set { _writeExceptionsToEventLog = value; }
+        }
+
+        /// <summary>
+        /// The max number of attempts that will try to send
+        /// an upsert to a replicaSet in case of primary elections.    
+        /// </summary>
+        public int MaxUpsertAttempts
+        {
+            get { return _maxUpsertAttempts; }
+            set { _maxUpsertAttempts = value; }
+        }
+
+        /// <summary>
+        /// Is the time in milliseconds that will wait between each attempt if
+        /// an upsert fails due a primary elections.
+        /// </summary>
+        public int MsWaitingForAttempt
+        {
+            get { return _msWaitingForAttempt; }
+            set { _msWaitingForAttempt = value; }
         }
 
         /// <summary>
@@ -131,7 +161,7 @@ namespace MongoSessionStateStore
         /// <param name="name">session state store name. Defaults to "MongoSessionStateStore" if not supplied</param>
         /// <param name="config">configuration settings</param>
         public override void Initialize(string name, System.Collections.Specialized.NameValueCollection config)
-        {   
+        {
             // Initialize values from web.config.
             if (config == null)
                 throw new ArgumentNullException("config");
@@ -163,7 +193,7 @@ namespace MongoSessionStateStore
                 throw new ProviderException("Connection string cannot be blank.");
             }
 
-            _connectionString = _connectionStringSettings.ConnectionString;            
+            _connectionString = _connectionStringSettings.ConnectionString;
 
             // Initialize WriteExceptionsToEventLog
             _writeExceptionsToEventLog = false;
@@ -198,12 +228,20 @@ namespace MongoSessionStateStore
                 wValue = (1 + replicasToWrite).ToString(CultureInfo.InvariantCulture);
 
             _writeConcern = new WriteConcern
-                {
-                    FSync = fsync,
-                    W = WriteConcern.WValue.Parse(wValue)
-                };            
+            {
+                FSync = fsync,
+                W = WriteConcern.WValue.Parse(wValue)
+            };
+
+            // Initialize maxUpsertAttempts
+            _maxUpsertAttempts = 120;
+            int.TryParse(config["maxUpsertAttempts"], out _maxUpsertAttempts);
+
+            //initialize msWaitingForAttempt
+            _msWaitingForAttempt = 500;
+            int.TryParse(config["msWaitingForAttempt"], out _msWaitingForAttempt);
         }
-        
+
         public override SessionStateStoreData CreateNewStoreData(HttpContext context, int timeout)
         {
             return new SessionStateStoreData(new SessionStateItemCollection(),
@@ -226,7 +264,7 @@ namespace MongoSessionStateStore
         /// </summary>
         private string Serialize(SessionStateItemCollection items)
         {
-            using(var ms = new MemoryStream())
+            using (var ms = new MemoryStream())
             using (var writer = new BinaryWriter(ms))
             {
                 if (items != null)
@@ -253,11 +291,9 @@ namespace MongoSessionStateStore
             MongoServer conn = GetConnection();
             MongoCollection sessionCollection = GetSessionCollection(conn);
 
-            try
+            if (newItem)
             {
-                if (newItem)
-                {
-                    var insertDoc = new BsonDocument
+                var insertDoc = new BsonDocument
                         {
                             {"_id", id},
                             {"ApplicationName", ApplicationName},
@@ -271,29 +307,17 @@ namespace MongoSessionStateStore
                             {"Flags", 0}
                         };
 
-                    var query = Query.And(Query.EQ("_id", id), Query.EQ("ApplicationName", ApplicationName), Query.LT("Expires", DateTime.Now.ToUniversalTime()));
-                    sessionCollection.Remove(query, _writeConcern);
-                    sessionCollection.Insert(insertDoc, _writeConcern);
-                }
-                else
-                {
-                    var query = Query.And(Query.EQ("_id", id), Query.EQ("ApplicationName", ApplicationName), Query.EQ("LockId", (Int32)lockId));
-                    var update = Update.Set("Expires", DateTime.Now.AddMinutes(item.Timeout).ToUniversalTime());
-                    update.Set("SessionItems", sessItems);
-                    update.Set("Locked", false);
-                    sessionCollection.Update(query, update, _writeConcern);
-                }
+                UpsertDocument(this, sessionCollection, insertDoc);
             }
-            catch (Exception e)
+            else
             {
-                if (WriteExceptionsToEventLog)
-                {
-                    WriteToEventLog(e, "SetAndReleaseItemExclusive");
-                    throw new ProviderException(ExceptionMessage);
-                }                
-                throw;
-            }          
-        }        
+                var query = Query.And(Query.EQ("_id", id), Query.EQ("ApplicationName", ApplicationName), Query.EQ("LockId", (Int32)lockId));
+                var update = Update.Set("Expires", DateTime.Now.AddMinutes(item.Timeout).ToUniversalTime());
+                update.Set("SessionItems", sessItems);
+                update.Set("Locked", false);
+                UpdateSessionCollection(this, sessionCollection, query, update);
+            }
+        }
 
         /// <summary>
         /// SessionStateProviderBase.GetItem
@@ -347,7 +371,7 @@ namespace MongoSessionStateStore
 
             MongoServer conn = GetConnection();
             MongoCollection sessionCollection = GetSessionCollection(conn);
-            
+
             // DateTime to check if current session item is expired.
             // String to hold serialized SessionStateItemCollection.
             string serializedItems = "";
@@ -358,88 +382,76 @@ namespace MongoSessionStateStore
             // Timeout value from the data store.
             int timeout = 0;
 
-            try
-            {                
-                // lockRecord is true when called from GetItemExclusive and
-                // false when called from GetItem.
-                // Obtain a lock if possible. Ignore the record if it is expired.
-                IMongoQuery query;
-                if (lockRecord)
-                {
-                    query = Query.And(Query.EQ("_id", id), Query.EQ("ApplicationName", ApplicationName), Query.EQ("Locked", false), Query.GT("Expires", DateTime.Now.ToUniversalTime()));
-                    var update = Update.Set("Locked", true);
-                    update.Set("LockDate", DateTime.Now.ToUniversalTime());
-                    var result = sessionCollection.Update(query, update, _writeConcern);
 
-                    locked = result.DocumentsAffected == 0; // DocumentsAffected == 0 == No record was updated because the record was locked or not found.
-                }
-
-                // Retrieve the current session item information.
-                query = Query.And(Query.EQ("_id", id), Query.EQ("ApplicationName",ApplicationName));
-                var results = sessionCollection.FindOneAs<BsonDocument>(query);
-                
-                if (results != null)
-                {
-                    DateTime expires = results["Expires"].AsDateTime;
-
-                    if (expires < DateTime.Now.ToUniversalTime())
-                    {
-                        // The record was expired. Mark it as not locked.
-                        locked = false;
-                        // The session was expired. Mark the data for deletion.
-                        deleteData = true;
-                    }
-                    else
-                        foundRecord = true;
-
-                    serializedItems = results["SessionItems"].AsString;
-                    lockId = results["LockId"].AsInt32;
-                    lockAge = DateTime.Now.ToUniversalTime().Subtract(results["LockDate"].AsDateTime);
-                    actionFlags = (SessionStateActions)results["Flags"].AsInt32;
-                    timeout = results["Timeout"].AsInt32;
-                }                
-
-                // If the returned session item is expired, 
-                // delete the record from the data source.
-                if (deleteData)
-                {
-                    query = Query.And(Query.EQ("_id", id), Query.EQ("ApplicationName", ApplicationName));
-                    sessionCollection.Remove(query, _writeConcern);
-                }
-
-                // The record was not found. Ensure that locked is false.
-                if (!foundRecord)
-                    locked = false;
-
-                // If the record was found and you obtained a lock, then set 
-                // the lockId, clear the actionFlags,
-                // and create the SessionStateStoreItem to return.
-                if (foundRecord && !locked)
-                {
-                    lockId = (int)lockId + 1;
-
-                    query = Query.And(Query.EQ("_id", id), Query.EQ("ApplicationName", ApplicationName));
-                    var update = Update.Set("LockId", (int)lockId);
-                    update.Set("Flags", 0);
-                    sessionCollection.Update(query, update, _writeConcern);                    
-
-                    // If the actionFlags parameter is not InitializeItem, 
-                    // deserialize the stored SessionStateItemCollection.
-                    item = actionFlags == SessionStateActions.InitializeItem 
-                        ? CreateNewStoreData(context, (int)_config.Timeout.TotalMinutes) 
-                        : Deserialize(context, serializedItems, timeout);
-                }
-            }
-            catch (Exception e)
+            // lockRecord is true when called from GetItemExclusive and
+            // false when called from GetItem.
+            // Obtain a lock if possible. Ignore the record if it is expired.
+            IMongoQuery query;
+            if (lockRecord)
             {
-                if (WriteExceptionsToEventLog)
+                query = Query.And(Query.EQ("_id", id), Query.EQ("ApplicationName", ApplicationName), Query.EQ("Locked", false), Query.GT("Expires", DateTime.Now.ToUniversalTime()));
+                var update = Update.Set("Locked", true);
+                update.Set("LockDate", DateTime.Now.ToUniversalTime());
+                var result = UpdateSessionCollection(this, sessionCollection, query, update);
+
+                locked = result.DocumentsAffected == 0; // DocumentsAffected == 0 == No record was updated because the record was locked or not found.
+            }
+
+            // Retrieve the current session item information.
+            query = Query.And(Query.EQ("_id", id), Query.EQ("ApplicationName", ApplicationName));
+            var results = sessionCollection.FindOneAs<BsonDocument>(query);
+
+            if (results != null)
+            {
+                DateTime expires = results["Expires"].AsDateTime;
+
+                if (expires < DateTime.Now.ToUniversalTime())
                 {
-                    WriteToEventLog(e, "GetSessionStoreItem");
-                    throw new ProviderException(ExceptionMessage);
+                    // The record was expired. Mark it as not locked.
+                    locked = false;
+                    // The session was expired. Mark the data for deletion.
+                    deleteData = true;
                 }
-             
-                throw;
-            }            
+                else
+                    foundRecord = true;
+
+                serializedItems = results["SessionItems"].AsString;
+                lockId = results["LockId"].AsInt32;
+                lockAge = DateTime.Now.ToUniversalTime().Subtract(results["LockDate"].AsDateTime);
+                actionFlags = (SessionStateActions)results["Flags"].AsInt32;
+                timeout = results["Timeout"].AsInt32;
+            }
+
+            // If the returned session item is expired, 
+            // delete the record from the data source.
+            if (deleteData)
+            {
+                query = Query.And(Query.EQ("_id", id), Query.EQ("ApplicationName", ApplicationName));
+                DeleteSessionDocument(this, sessionCollection, query);
+            }
+
+            // The record was not found. Ensure that locked is false.
+            if (!foundRecord)
+                locked = false;
+
+            // If the record was found and you obtained a lock, then set 
+            // the lockId, clear the actionFlags,
+            // and create the SessionStateStoreItem to return.
+            if (foundRecord && !locked)
+            {
+                lockId = (int)lockId + 1;
+
+                query = Query.And(Query.EQ("_id", id), Query.EQ("ApplicationName", ApplicationName));
+                var update = Update.Set("LockId", (int)lockId);
+                update.Set("Flags", 0);
+                UpdateSessionCollection(this, sessionCollection, query, update);
+
+                // If the actionFlags parameter is not InitializeItem, 
+                // deserialize the stored SessionStateItemCollection.
+                item = actionFlags == SessionStateActions.InitializeItem
+                    ? CreateNewStoreData(context, (int)_config.Timeout.TotalMinutes)
+                    : Deserialize(context, serializedItems, timeout);
+            }
 
             return item;
         }
@@ -486,14 +498,14 @@ namespace MongoSessionStateStore
                     {"Flags", 1}
                 };
 
-            try 
+            try
             {
-                var result = sessionCollection.Insert(doc, _writeConcern); 
+                var result = sessionCollection.Insert(doc, _writeConcern);
                 if (!result.Ok)
                 {
                     throw new Exception(result.ErrorMessage);
                 }
-            }       
+            }
             catch (Exception e)
             {
                 if (WriteExceptionsToEventLog)
@@ -501,9 +513,9 @@ namespace MongoSessionStateStore
                     WriteToEventLog(e, "CreateUninitializedItem");
                     throw new ProviderException(ExceptionMessage);
                 }
-             
+
                 throw;
-            }            
+            }
         }
 
         /// <summary>
@@ -522,25 +534,25 @@ namespace MongoSessionStateStore
                 log.Log = EventLog;
 
                 string message =
-                  String.Format("An exception occurred communicating with the data source.\n\nAction: {0}\n\nException: {1}", 
-                  action, e);                
+                  String.Format("An exception occurred communicating with the data source.\n\nAction: {0}\n\nException: {1}",
+                  action, e);
 
                 log.WriteEntry(message);
             }
         }
 
         public override void Dispose()
-        {            
+        {
         }
 
         public override void EndRequest(HttpContext context)
         {
-            
-        }       
+
+        }
 
         public override void InitializeRequest(HttpContext context)
         {
-            
+
         }
 
         public override void ReleaseItemExclusive(HttpContext context, string id, object lockId)
@@ -550,21 +562,9 @@ namespace MongoSessionStateStore
 
             var query = Query.And(Query.EQ("_id", id), Query.EQ("ApplicationName", ApplicationName), Query.EQ("LockId", (Int32)lockId));
             var update = Update.Set("Locked", false);
-            update.Set("Expires", DateTime.Now.AddMinutes(_config.Timeout.TotalMinutes).ToUniversalTime());            
-            
-            try
-            {
-                sessionCollection.Update(query, update, _writeConcern);
-            }
-            catch (Exception e)
-            {
-                if (WriteExceptionsToEventLog)
-                {
-                    WriteToEventLog(e, "ReleaseItemExclusive");
-                    throw new ProviderException(ExceptionMessage);
-                }
-                throw;
-            }            
+            update.Set("Expires", DateTime.Now.AddMinutes(_config.Timeout.TotalMinutes).ToUniversalTime());
+
+            UpdateSessionCollection(this, sessionCollection, query, update);
         }
 
         public override void RemoveItem(HttpContext context, string id, object lockId, SessionStateStoreData item)
@@ -574,20 +574,7 @@ namespace MongoSessionStateStore
 
             var query = Query.And(Query.EQ("_id", id), Query.EQ("ApplicationName", ApplicationName), Query.EQ("LockId", (Int32)lockId));
 
-            try
-            {
-                sessionCollection.Remove(query, _writeConcern);
-            }
-            catch (Exception e)
-            {
-                if (WriteExceptionsToEventLog)
-                {
-                    WriteToEventLog(e, "RemoveItem");
-                    throw new ProviderException(ExceptionMessage);
-                }
-                
-                throw;
-            }            
+            DeleteSessionDocument(this, sessionCollection, query);
         }
 
         public override void ResetItemTimeout(HttpContext context, string id)
@@ -597,19 +584,119 @@ namespace MongoSessionStateStore
             var query = Query.And(Query.EQ("_id", id), Query.EQ("ApplicationName", ApplicationName));
             var update = Update.Set("Expires", DateTime.Now.AddMinutes(_config.Timeout.TotalMinutes).ToUniversalTime());
 
-            try
+            UpdateSessionCollection(this, sessionCollection, query, update);
+        }
+
+        private static WriteConcernResult UpdateSessionCollection(
+            MongoSessionStateStore obj,
+            MongoCollection sessionCollection,
+            IMongoQuery query,
+            UpdateBuilder update)
+        {
+            int attempts = 0;
+            while (true)
             {
-                sessionCollection.Update(query, update, _writeConcern);
-            }
-            catch (Exception e)
-            {
-                if (WriteExceptionsToEventLog)
+                try
                 {
-                    WriteToEventLog(e, "ResetItemTimeout");
-                    throw new ProviderException(ExceptionMessage);
+                    return sessionCollection.Update(query, update, obj._writeConcern);
                 }
-                throw;
+                catch (MongoConnectionException)
+                {
+                    // Exception thrown means inserted or updated document
+                    if (attempts < obj._maxUpsertAttempts)
+                    {
+                        attempts++;
+                        System.Threading.Thread.CurrentThread.Join(obj._msWaitingForAttempt);
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                catch (Exception e)
+                {
+                    if (obj.WriteExceptionsToEventLog)
+                    {
+                        obj.WriteToEventLog(e, "SetAndReleaseItemExclusive");
+                        throw new ProviderException(ExceptionMessage);
+                    }
+                    throw;
+                }
             }
-        }       
+        }
+
+        private static WriteConcernResult DeleteSessionDocument(
+           MongoSessionStateStore obj,
+           MongoCollection sessionCollection,
+           IMongoQuery query)
+        {
+            int attempts = 0;
+            while (true)
+            {
+                try
+                {
+                    return sessionCollection.Remove(query, obj._writeConcern);
+                }
+                catch (MongoConnectionException)
+                {
+                    // Exception thrown means inserted or updated document
+                    if (attempts < obj._maxUpsertAttempts)
+                    {
+                        attempts++;
+                        System.Threading.Thread.CurrentThread.Join(obj._msWaitingForAttempt);
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                catch (Exception e)
+                {
+                    if (obj.WriteExceptionsToEventLog)
+                    {
+                        obj.WriteToEventLog(e, "SetAndReleaseItemExclusive");
+                        throw new ProviderException(ExceptionMessage);
+                    }
+                    throw;
+                }
+            }
+        }
+
+        private static WriteConcernResult UpsertDocument(
+            MongoSessionStateStore obj,
+            MongoCollection sessionCollection,
+            BsonDocument insertDoc)
+        {
+            int attempts = 0;
+            while (true)
+            {
+                try
+                {
+                    return sessionCollection.Save(insertDoc.BsonType.GetType(), insertDoc, obj._writeConcern);
+                }
+                catch (MongoConnectionException)
+                {
+                    // Exception thrown means inserted or updated document
+                    if (attempts < obj._maxUpsertAttempts)
+                    {
+                        attempts++;
+                        System.Threading.Thread.CurrentThread.Join(obj._msWaitingForAttempt);
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                catch (Exception e)
+                {
+                    if (obj.WriteExceptionsToEventLog)
+                    {
+                        obj.WriteToEventLog(e, "SetAndReleaseItemExclusive");
+                        throw new ProviderException(ExceptionMessage);
+                    }
+                    throw;
+                }
+            }
+        }
     }
 }
