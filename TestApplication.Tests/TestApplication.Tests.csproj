@@ -98,7 +98,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="UnitTest1.cs" />
+    <Compile Include="SimplyGetAndSet.cs" />
+    <Compile Include="ElectionsTest.cs" />
+    <Compile Include="TestHelpers.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App.config" />
@@ -107,6 +109,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\MongoSessionStateStore\MongoSessionStateStore.csproj">
+      <Project>{2f0dd54f-6ef0-4ddd-9737-6d174b9e4e9d}</Project>
+      <Name>MongoSessionStateStore</Name>
+    </ProjectReference>
     <ProjectReference Include="..\TestApplication\TestApplication.csproj">
       <Project>{ADEC304A-40AC-4B27-B63F-ED0F12C68D7D}</Project>
       <Name>TestApplication</Name>

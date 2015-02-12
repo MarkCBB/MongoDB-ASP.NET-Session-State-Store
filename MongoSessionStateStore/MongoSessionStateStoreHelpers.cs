@@ -12,6 +12,49 @@ namespace MongoSessionStateStore
 {
     internal static class MongoSessionStateStoreHelpers
     {
+        /// <summary>
+        /// Creates TTL index if does not exist in collection.
+        /// TTL index will remove the expired session documents.
+        /// </summary>
+        internal static bool CreateTTLIndex(
+            this MongoSessionStateStore obj,
+            MongoCollection sessionCollection)
+        {
+            int nAttempts = 0;
+            while (true)
+            {
+                try
+                {
+                    sessionCollection.CreateIndex(IndexKeys.Ascending("Expires"),
+                                IndexOptions.SetTimeToLive(TimeSpan.Zero));
+                    return true;
+                }
+                catch (Exception e)
+                {
+                    PauseOrThrow(ref nAttempts, obj, sessionCollection, e);
+                }
+            }            
+        }
+
+        internal static BsonDocument FindOneSessionItem(
+            this MongoSessionStateStore obj,
+            MongoCollection sessionCollection,
+            IMongoQuery q)
+        {
+            int nAtempts = 0;
+            while (true)
+            {
+                try
+                {
+                    return sessionCollection.FindOneAs<BsonDocument>(q);
+                }
+                catch (Exception e)
+                {
+                    PauseOrThrow(ref nAtempts, obj, sessionCollection, e);
+                }
+            }
+        }
+
         internal static WriteConcernResult UpdateSessionCollection(
             this MongoSessionStateStore obj,
             MongoCollection sessionCollection,
@@ -25,27 +68,9 @@ namespace MongoSessionStateStore
                 {
                     return sessionCollection.Update(query, update, obj.SessionWriteConcern);
                 }
-                catch (MongoConnectionException)
-                {
-                    // Exception thrown means inserted or updated document
-                    if (attempts < obj.MaxUpsertAttempts)
-                    {
-                        attempts++;
-                        System.Threading.Thread.CurrentThread.Join(obj.MsWaitingForAttempt);
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
                 catch (Exception e)
                 {
-                    if (obj.WriteExceptionsToEventLog)
-                    {
-                        WriteToEventLog(e, "SetAndReleaseItemExclusive");
-                        throw new ProviderException(MongoSessionStateStore.ExceptionMessage);
-                    }
-                    throw;
+                    PauseOrThrow(ref attempts, obj, sessionCollection, e);                    
                 }
             }
         }
@@ -62,32 +87,14 @@ namespace MongoSessionStateStore
                 {
                     return sessionCollection.Remove(query, obj.SessionWriteConcern);
                 }
-                catch (MongoConnectionException)
-                {
-                    // Exception thrown means inserted or updated document
-                    if (attempts < obj.MaxUpsertAttempts)
-                    {
-                        attempts++;
-                        System.Threading.Thread.CurrentThread.Join(obj.MaxUpsertAttempts);
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
                 catch (Exception e)
                 {
-                    if (obj.WriteExceptionsToEventLog)
-                    {
-                        WriteToEventLog(e, "SetAndReleaseItemExclusive");
-                        throw new ProviderException(MongoSessionStateStore.ExceptionMessage);
-                    }
-                    throw;
+                    PauseOrThrow(ref attempts, obj, sessionCollection, e);                    
                 }
             }
         }
 
-        internal static WriteConcernResult UpsertDocument(
+        internal static WriteConcernResult UpsertEntireSessionDocument(
             this MongoSessionStateStore obj,
             MongoCollection sessionCollection,
             BsonDocument insertDoc)
@@ -97,29 +104,11 @@ namespace MongoSessionStateStore
             {
                 try
                 {
-                    return sessionCollection.Save(insertDoc.BsonType.GetType(), insertDoc, obj.SessionWriteConcern);
-                }
-                catch (MongoConnectionException)
-                {
-                    // Exception thrown means inserted or updated document
-                    if (attempts < obj.MaxUpsertAttempts)
-                    {
-                        attempts++;
-                        System.Threading.Thread.CurrentThread.Join(obj.MsWaitingForAttempt);
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    return sessionCollection.Save(insertDoc.GetType(), insertDoc, obj.SessionWriteConcern);
                 }
                 catch (Exception e)
                 {
-                    if (obj.WriteExceptionsToEventLog)
-                    {
-                        WriteToEventLog(e, "SetAndReleaseItemExclusive");
-                        throw new ProviderException(MongoSessionStateStore.ExceptionMessage);
-                    }
-                    throw;
+                    PauseOrThrow(ref attempts, obj, sessionCollection, e);                    
                 }
             }
         }
@@ -132,18 +121,61 @@ namespace MongoSessionStateStore
         /// indicating the action succeeded or failed, the caller also 
         /// throws a generic exception.
         /// </summary>
-        private static void WriteToEventLog(Exception e, string action)
+        private static void WriteToEventLog(
+            this MongoSessionStateStore obj,
+            Exception e,
+            string action,
+            EventLogEntryType eType = EventLogEntryType.Warning)
         {
-            using (var log = new EventLog())
+            if (obj.WriteExceptionsToEventLog)
             {
-                log.Source = MongoSessionStateStore.EventSource;
-                log.Log = MongoSessionStateStore.EventLog;
+                using (var log = new EventLog())
+                {
+                    if (!EventLog.SourceExists(MongoSessionStateStore.EventSource))
+                        EventLog.CreateEventSource(
+                            MongoSessionStateStore.EventSource,
+                            MongoSessionStateStore.EventLog);
 
-                string message =
-                  String.Format("An exception occurred communicating with the data source.\n\nAction: {0}\n\nException: {1}",
-                  action, e);
+                    log.Source = MongoSessionStateStore.EventSource;
+                    log.Log = MongoSessionStateStore.EventLog;
 
-                log.WriteEntry(message);
+                    string message =
+                      String.Format("An exception occurred communicating with the data source.\n\nAction: {0}\n\nException: {1}",
+                      action, e);
+
+                    log.WriteEntry(message, eType);
+                }
+            }
+        }
+
+        private static void PauseOrThrow(
+            ref int attempts,
+            MongoSessionStateStore obj,
+            MongoCollection sessionCollection,
+            Exception e)
+        {
+            if ((attempts < obj.MaxUpsertAttempts) &&
+                (!string.IsNullOrEmpty(sessionCollection.Database.Server.ReplicaSetName)))
+            {
+                attempts++;
+                obj.WriteToEventLog(e,
+                    string.Format("Attempt to reconnect #{0} of {1}",
+                    attempts,
+                    obj.MaxUpsertAttempts), EventLogEntryType.Warning);
+                System.Threading.Thread.CurrentThread.Join(obj.MsWaitingForAttempt);
+            }
+            else
+            {
+                if (obj.WriteExceptionsToEventLog)
+                {
+                    obj.WriteToEventLog(e,
+                        "Not possible to reconnect, not replicaset, " +
+                        "finished all attempts or an exception different of a " +
+                        "communication exception was throw",
+                        EventLogEntryType.Error);
+                    throw new ProviderException(MongoSessionStateStore.ExceptionMessage);
+                }
+                throw e;
             }
         }
     }

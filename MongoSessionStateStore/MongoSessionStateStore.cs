@@ -71,8 +71,9 @@ namespace MongoSessionStateStore
     ///                     writeExceptionsToEventLog="false"
     ///                     fsync="false"
     ///                     replicasToWrite="0"
-    ///                     maxUpsertAttempts = 120
-    ///                     msWaitingForAttempt = 500/>
+    ///                     maxUpsertAttempts = "40"
+    ///                     msWaitingForAttempt = "500"
+    ///                     AutoCreateTTLIndex = "true"/>
     ///             </providers>
     ///     </sessionState>
     ///     ...
@@ -91,8 +92,9 @@ namespace MongoSessionStateStore
         internal const string ExceptionMessage = "An exception occurred. Please contact your administrator.";
         internal const string EventSource = "MongoSessionStateStore";
         internal const string EventLog = "Application";
-        private int _maxUpsertAttempts = 180;
+        private int _maxUpsertAttempts = 60;
         private int _msWaitingForAttempt = 500;
+        private bool _autoCreateTTLIndex = true;
         private WriteConcern _writeConcern;
 
         /// <summary>
@@ -130,6 +132,11 @@ namespace MongoSessionStateStore
         public int MsWaitingForAttempt
         {
             get { return _msWaitingForAttempt; }
+        }
+
+        public bool AutoCreateTTLIndex
+        {
+            get { return _autoCreateTTLIndex; }
         }
 
         public WriteConcern SessionWriteConcern
@@ -238,11 +245,35 @@ namespace MongoSessionStateStore
 
             // Initialize maxUpsertAttempts
             _maxUpsertAttempts = 120;
-            int.TryParse(config["maxUpsertAttempts"], out _maxUpsertAttempts);
+            if (config["maxUpsertAttempts"] != null)
+            {
+                if (!int.TryParse(config["maxUpsertAttempts"], out _maxUpsertAttempts))
+                    throw new Exception("maxUpsertAttempts must be a valid integer");
+            }
 
             //initialize msWaitingForAttempt
             _msWaitingForAttempt = 500;
-            int.TryParse(config["msWaitingForAttempt"], out _msWaitingForAttempt);
+            if (config["msWaitingForAttempt"] != null)
+            {
+                if (!int.TryParse(config["msWaitingForAttempt"], out _msWaitingForAttempt))
+                    throw new Exception("msWaitingForAttempt must be a valid integer");
+            }
+
+            //Initialize AutoCreateTTLIndex
+            _autoCreateTTLIndex = true;
+            if (config["AutoCreateTTLIndex"] != null)
+            {
+                if (!bool.TryParse(config["AutoCreateTTLIndex"], out _autoCreateTTLIndex))
+                    throw new Exception("AutoCreateTTLIndex must be true or false");
+            }
+
+            //Create TTL index if AutoCreateTTLIndex config parameter is true.
+            if(_autoCreateTTLIndex)
+            {
+                var conn = GetConnection();
+                var sessionCollection = GetSessionCollection(conn);
+                this.CreateTTLIndex(sessionCollection);
+            }
         }
 
         public override SessionStateStoreData CreateNewStoreData(HttpContext context, int timeout)
@@ -310,7 +341,7 @@ namespace MongoSessionStateStore
                             {"Flags", 0}
                         };
 
-                this.UpsertDocument(sessionCollection, insertDoc);
+                this.UpsertEntireSessionDocument(sessionCollection, insertDoc);
             }
             else
             {
@@ -402,7 +433,7 @@ namespace MongoSessionStateStore
 
             // Retrieve the current session item information.
             query = Query.And(Query.EQ("_id", id), Query.EQ("ApplicationName", ApplicationName));
-            var results = sessionCollection.FindOneAs<BsonDocument>(query);
+            var results = this.FindOneSessionItem(sessionCollection, query);
 
             if (results != null)
             {
@@ -501,24 +532,7 @@ namespace MongoSessionStateStore
                     {"Flags", 1}
                 };
 
-            try
-            {
-                var result = sessionCollection.Insert(doc, _writeConcern);
-                if (!result.Ok)
-                {
-                    throw new Exception(result.ErrorMessage);
-                }
-            }
-            catch (Exception e)
-            {
-                if (WriteExceptionsToEventLog)
-                {
-                    WriteToEventLog(e, "CreateUninitializedItem");
-                    throw new ProviderException(ExceptionMessage);
-                }
-
-                throw;
-            }
+            this.UpsertEntireSessionDocument(sessionCollection, doc);
         }
 
         /// <summary>
@@ -588,6 +602,6 @@ namespace MongoSessionStateStore
             var update = Update.Set("Expires", DateTime.Now.AddMinutes(_config.Timeout.TotalMinutes).ToUniversalTime());
 
             this.UpdateSessionCollection(sessionCollection, query, update);
-        }
+        }        
     }
 }
