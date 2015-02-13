@@ -12,6 +12,33 @@ namespace MongoSessionStateStore
 {
     internal static class MongoSessionStateStoreHelpers
     {
+        internal static BsonDocument GetNewBsonSessionDocument(
+            this MongoSessionStateStore obj,
+            string id,
+            string applicationName,
+            DateTime created,
+            DateTime lockDate,
+            int lockId,
+            int timeout,
+            bool locked,
+            string sessionItems = "",
+            int flags = 1)
+        {
+            return new BsonDocument
+                {
+                    {"_id", id},
+                    {"ApplicationName", applicationName},
+                    {"Created", created},
+                    {"Expires", DateTime.Now.AddMinutes(timeout).ToUniversalTime()},
+                    {"LockDate", lockDate},
+                    {"LockId", lockId},
+                    {"Timeout", timeout},
+                    {"Locked", locked},
+                    {"SessionItems", sessionItems},
+                    {"Flags", flags}
+                };
+        }
+        
         /// <summary>
         /// Creates TTL index if does not exist in collection.
         /// TTL index will remove the expired session documents.
@@ -131,13 +158,13 @@ namespace MongoSessionStateStore
             {
                 using (var log = new EventLog())
                 {
-                    if (!EventLog.SourceExists(MongoSessionStateStore.EventSource))
+                    if (!EventLog.SourceExists(MongoSessionStateStore.EVENT_SOURCE))
                         EventLog.CreateEventSource(
-                            MongoSessionStateStore.EventSource,
-                            MongoSessionStateStore.EventLog);
+                            MongoSessionStateStore.EVENT_SOURCE,
+                            MongoSessionStateStore.EVENT_LOG);
 
-                    log.Source = MongoSessionStateStore.EventSource;
-                    log.Log = MongoSessionStateStore.EventLog;
+                    log.Source = MongoSessionStateStore.EVENT_SOURCE;
+                    log.Log = MongoSessionStateStore.EVENT_LOG;
 
                     string message =
                       String.Format("An exception occurred communicating with the data source.\n\nAction: {0}\n\nException: {1}",
@@ -173,7 +200,7 @@ namespace MongoSessionStateStore
                         "finished all attempts or an exception different of a " +
                         "communication exception was throw",
                         EventLogEntryType.Error);
-                    throw new ProviderException(MongoSessionStateStore.ExceptionMessage);
+                    throw new ProviderException(MongoSessionStateStore.EXCEPTION_MESSAGE);
                 }
                 throw e;
             }

@@ -89,9 +89,9 @@ namespace MongoSessionStateStore
         private string _applicationName;
         private string _connectionString;
         private bool _writeExceptionsToEventLog;
-        internal const string ExceptionMessage = "An exception occurred. Please contact your administrator.";
-        internal const string EventSource = "MongoSessionStateStore";
-        internal const string EventLog = "Application";
+        internal const string EXCEPTION_MESSAGE = "An exception occurred. Please contact your administrator.";
+        internal const string EVENT_SOURCE = "MongoSessionStateStore";
+        internal const string EVENT_LOG = "Application";
         private int _maxUpsertAttempts = 60;
         private int _msWaitingForAttempt = 500;
         private bool _autoCreateTTLIndex = true;
@@ -177,7 +177,7 @@ namespace MongoSessionStateStore
                 throw new ArgumentNullException("config");
 
             if (name.Length == 0)
-                name = "MongoSessionStateStore";
+                name = MongoSessionStateStore.EVENT_SOURCE;
 
             if (String.IsNullOrEmpty(config["description"]))
             {
@@ -244,7 +244,7 @@ namespace MongoSessionStateStore
             };
 
             // Initialize maxUpsertAttempts
-            _maxUpsertAttempts = 120;
+            _maxUpsertAttempts = 60;
             if (config["maxUpsertAttempts"] != null)
             {
                 if (!int.TryParse(config["maxUpsertAttempts"], out _maxUpsertAttempts))
@@ -327,19 +327,16 @@ namespace MongoSessionStateStore
 
             if (newItem)
             {
-                var insertDoc = new BsonDocument
-                        {
-                            {"_id", id},
-                            {"ApplicationName", ApplicationName},
-                            {"Created", DateTime.Now.ToUniversalTime()},
-                            {"Expires", DateTime.Now.AddMinutes(item.Timeout).ToUniversalTime()},
-                            {"LockDate", DateTime.Now.ToUniversalTime()},
-                            {"LockId", 0},
-                            {"Timeout", item.Timeout},
-                            {"Locked", false},
-                            {"SessionItems", sessItems},
-                            {"Flags", 0}
-                        };
+                var insertDoc = this.GetNewBsonSessionDocument(
+                    id: id,
+                    applicationName: ApplicationName,
+                    created: DateTime.Now.ToUniversalTime(),
+                    lockDate: DateTime.Now.ToUniversalTime(),
+                    lockId: 0,
+                    timeout: item.Timeout,
+                    locked: false,
+                    sessionItems: sessItems,
+                    flags: 0);
 
                 this.UpsertEntireSessionDocument(sessionCollection, insertDoc);
             }
@@ -518,19 +515,16 @@ namespace MongoSessionStateStore
         {
             MongoServer conn = GetConnection();
             MongoCollection sessionCollection = GetSessionCollection(conn);
-            var doc = new BsonDocument
-                {
-                    {"_id", id},
-                    {"ApplicationName", ApplicationName},
-                    {"Created", DateTime.Now.ToUniversalTime()},
-                    {"Expires", DateTime.Now.AddMinutes(timeout).ToUniversalTime()},
-                    {"LockDate", DateTime.Now.ToUniversalTime()},
-                    {"LockId", 0},
-                    {"Timeout", timeout},
-                    {"Locked", false},
-                    {"SessionItems", ""},
-                    {"Flags", 1}
-                };
+            var doc = this.GetNewBsonSessionDocument(
+                id: id,
+                applicationName: ApplicationName,
+                created: DateTime.Now.ToUniversalTime(),
+                lockDate: DateTime.Now.ToUniversalTime(),
+                lockId: 0,
+                timeout: timeout,
+                locked: false,
+                sessionItems: "",
+                flags: 1);
 
             this.UpsertEntireSessionDocument(sessionCollection, doc);
         }
@@ -547,8 +541,8 @@ namespace MongoSessionStateStore
         {
             using (var log = new EventLog())
             {
-                log.Source = EventSource;
-                log.Log = EventLog;
+                log.Source = EVENT_SOURCE;
+                log.Log = EVENT_LOG;
 
                 string message =
                   String.Format("An exception occurred communicating with the data source.\n\nAction: {0}\n\nException: {1}",
