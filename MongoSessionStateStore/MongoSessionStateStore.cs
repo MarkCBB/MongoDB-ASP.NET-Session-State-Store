@@ -437,7 +437,7 @@ namespace MongoSessionStateStore
 
             if (results != null)
             {
-                DateTime expires = results["Expires"].AsDateTime;
+                DateTime expires = results["Expires"].ToUniversalTime();
 
                 if (expires < DateTime.Now.ToUniversalTime())
                 {
@@ -451,7 +451,7 @@ namespace MongoSessionStateStore
 
                 serializedItems = results["SessionItems"].AsString;
                 lockId = results["LockId"].AsInt32;
-                lockAge = DateTime.Now.ToUniversalTime().Subtract(results["LockDate"].AsDateTime);
+                lockAge = DateTime.Now.ToUniversalTime().Subtract(results["LockDate"].ToUniversalTime());
                 actionFlags = (SessionStateActions)results["Flags"].AsInt32;
                 timeout = results["Timeout"].AsInt32;
             }
