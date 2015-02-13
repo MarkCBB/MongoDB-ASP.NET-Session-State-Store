@@ -177,7 +177,7 @@ namespace MongoSessionStateStore
                 throw new ArgumentNullException("config");
 
             if (name.Length == 0)
-                name = MongoSessionStateStore.EVENT_SOURCE;
+                name = "MongoSessionStateStore";
 
             if (String.IsNullOrEmpty(config["description"]))
             {
