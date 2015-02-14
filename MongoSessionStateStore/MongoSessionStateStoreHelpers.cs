@@ -199,10 +199,9 @@ namespace MongoSessionStateStore
                         "Not possible to reconnect, not replicaset, " +
                         "finished all attempts or an exception different of a " +
                         "communication exception was throw",
-                        EventLogEntryType.Error);
-                    throw new ProviderException(MongoSessionStateStore.EXCEPTION_MESSAGE);
+                        EventLogEntryType.Error);                    
                 }
-                throw e;
+                throw new ProviderException(MongoSessionStateStore.EXCEPTION_MESSAGE);
             }
         }
     }
