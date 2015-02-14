@@ -181,8 +181,7 @@ namespace MongoSessionStateStore
             MongoCollection sessionCollection,
             Exception e)
         {
-            if ((attempts < obj.MaxUpsertAttempts) &&
-                (!string.IsNullOrEmpty(sessionCollection.Database.Server.ReplicaSetName)))
+            if (attempts < obj.MaxUpsertAttempts)
             {
                 attempts++;
                 obj.WriteToEventLog(e,
