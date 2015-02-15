@@ -149,11 +149,6 @@ namespace MongoSessionStateStore
                     _writeExceptionsToEventLog = true;
             }
 
-            // Initialise WriteConcern options. 
-            // Defaults to fsynch=false, w=1 (Provides acknowledgment of write operations on a standalone mongod or the primary in a replica set.)
-            // replicasToWrite config item comes into use when > 0. This translates to the WriteConcern wValue, by adding 1 to it.
-            // e.g. replicasToWrite = 1 is taken as meaning "I want to wait for write operations to be acknowledged at the primary + {replicasToWrite} replicas"
-            // MongoDB C# Driver references on WriteConcern : http://docs.mongodb.org/manual/core/write-operations/#write-concern
             bool fsync = false;
             if (config["fsync"] != null)
             {
