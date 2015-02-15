@@ -27,7 +27,7 @@ namespace MongoSessionStateStore
         internal const string EXCEPTION_MESSAGE = "An exception occurred. Please contact your administrator.";
         internal const string EVENT_SOURCE = "MongoSessionStateStore";
         internal const string EVENT_LOG = "Application";
-        private int _maxUpsertAttempts = 60;
+        private int _maxUpsertAttempts = 220;
         private int _msWaitingForAttempt = 500;
         private bool _autoCreateTTLIndex = true;
         private WriteConcern _writeConcern;
@@ -179,7 +179,7 @@ namespace MongoSessionStateStore
             };
 
             // Initialize maxUpsertAttempts
-            _maxUpsertAttempts = 60;
+            _maxUpsertAttempts = 220;
             if (config["maxUpsertAttempts"] != null)
             {
                 if (!int.TryParse(config["maxUpsertAttempts"], out _maxUpsertAttempts))
