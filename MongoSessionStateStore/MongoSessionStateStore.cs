@@ -14,64 +14,8 @@ using System.Web;
 namespace MongoSessionStateStore
 {
     /// <summary>
-    /// Custom ASP.NET Session State Provider using MongoDB as the state store.
-    /// For reference on this implementation see MSDN ref:
-    ///     - http://msdn.microsoft.com/en-us/library/ms178587.aspx
-    ///     - http://msdn.microsoft.com/en-us/library/ms178588.aspx - this sample provider was used as the basis for this
-    ///       provider, with MongoDB-specific implementation swapped in, plus cosmetic changes like naming conventions.
-    /// 
-    /// Session state is stored in a "Sessions" collection within a "SessionState" database. Example session document:
-    /// {
-    ///    "_id" : "bh54lskss4ycwpreet21dr1h",
-    ///    "ApplicationName" : "/",
-    ///    "Created" : ISODate("2011-04-29T21:41:41.953Z"),
-    ///    "Expires" : ISODate("2011-04-29T22:01:41.953Z"),
-    ///    "LockDate" : ISODate("2011-04-29T21:42:02.016Z"),
-    ///    "LockId" : 1,
-    ///    "Timeout" : 20,
-    ///    "Locked" : true,
-    ///    "SessionItems" : "AQAAAP////8EVGVzdAgAAAABBkFkcmlhbg==",
-    ///    "Flags" : 0
-    /// }
-    /// 
-    ///
-    /// The session-state store provider does not provide support for the Session_OnEnd event, it does not automatically clean up expired session-item data. 
-    /// You should have a job to periodically delete expired session information from the data store where Expires date is in the past, i.e.:
-    ///     db.Sessions.remove({"Expires" : {$lt : new Date() }})
-    ///     
-    /// maxUpsertAttempts: is the max number of attempts that will try to send an upsert to a replicaSet in case of primary elections.    
-    /// msWaitingForAttempt: is the time in milliseconds that will wait between each attempt if an upsert fails due a primary elections.
-    /// The default value of these parameters means that in case of primary elections will try each half second during 60 seconds .
-    /// The primary election process usually takes up to 3 or 4 seconds, but it could take more than 30 seconds depending of
-    /// configuration of replicaset servers, network...
-    /// 
-    /// Example web.config settings:
-    ///  
-    ///  <connectionStrings>
-    ///     <add name="MongoSessionServices"
-    ///        connectionString="mongodb://localhost" />
-    ///  </connectionStrings>
-    ///  <system.web>
-    ///     <sessionState
-    ///         mode="Custom"
-    ///         customProvider="MongoSessionStateProvider">
-    ///             <providers>
-    ///                 <add name="MongoSessionStateProvider"
-    ///                     type="MongoSessionStateStore.MongoSessionStateStore"
-    ///                     connectionStringName="MongoSessionServices"
-    ///                     writeExceptionsToEventLog="false"
-    ///                     fsync="false"
-    ///                     replicasToWrite="0"
-    ///                     maxUpsertAttempts = "40"
-    ///                     msWaitingForAttempt = "500"
-    ///                     AutoCreateTTLIndex = "true"/>
-    ///             </providers>
-    ///     </sessionState>
-    ///     ...
-    /// </system.web>
-    /// replicasToWrite setting is interpreted as the number of replicas to write to, in addition to the primary (in a replicaset environment).
-    /// i.e. replicasToWrite = 0, will wait for the response from writing to the primary node. > 0 will wait for the response having written to 
-    /// ({replicasToWrite} + 1) nodes
+    /// For further information about parameters see this page in the project wiki: 
+    /// https://github.com/MarkCBB/MongoDB-ASP.NET-Session-State-Store/wiki/Web.config-parameters
     /// </summary>
     public sealed class MongoSessionStateStore : SessionStateStoreProviderBase
     {
