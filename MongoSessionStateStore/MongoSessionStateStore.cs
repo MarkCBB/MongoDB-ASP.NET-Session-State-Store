@@ -34,15 +34,6 @@ namespace MongoSessionStateStore
     ///    "Flags" : 0
     /// }
     /// 
-    /// Inline with the above MSDN reference:
-    /// If the provider encounters an exception when working with the data source, it writes the details of the exception 
-    /// to the Application Event Log instead of returning the exception to the ASP.NET application. This is done as a security 
-    /// measure to avoid private information about the data source from being exposed in the ASP.NET application.
-    /// The sample provider specifies an event Source property value of "MongoSessionStateStore." Before your ASP.NET 
-    /// application will be able to write to the Application Event Log successfully, you will need to create the following registry key:
-    ///     HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Eventlog\Application\MongoSessionStateStore
-    /// If you do not want the sample provider to write exceptions to the event log, then you can set the custom writeExceptionsToEventLog 
-    /// attribute to false in the Web.config file.
     ///
     /// The session-state store provider does not provide support for the Session_OnEnd event, it does not automatically clean up expired session-item data. 
     /// You should have a job to periodically delete expired session information from the data store where Expires date is in the past, i.e.:

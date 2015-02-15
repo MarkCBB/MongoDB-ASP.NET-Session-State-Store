@@ -140,41 +140,6 @@ namespace MongoSessionStateStore
             }
         }
 
-        /// <summary>
-        /// This is a helper function that writes exception detail to the 
-        /// event log. Exceptions are written to the event log as a security
-        /// measure to ensure private database details are not returned to 
-        /// browser. If a method does not return a status or Boolean
-        /// indicating the action succeeded or failed, the caller also 
-        /// throws a generic exception.
-        /// </summary>
-        private static void WriteToEventLog(
-            this MongoSessionStateStore obj,
-            Exception e,
-            string action,
-            EventLogEntryType eType = EventLogEntryType.Warning)
-        {
-            if (obj.WriteExceptionsToEventLog)
-            {
-                using (var log = new EventLog())
-                {
-                    if (!EventLog.SourceExists(MongoSessionStateStore.EVENT_SOURCE))
-                        EventLog.CreateEventSource(
-                            MongoSessionStateStore.EVENT_SOURCE,
-                            MongoSessionStateStore.EVENT_LOG);
-
-                    log.Source = MongoSessionStateStore.EVENT_SOURCE;
-                    log.Log = MongoSessionStateStore.EVENT_LOG;
-
-                    string message =
-                      String.Format("An exception occurred communicating with the data source.\n\nAction: {0}\n\nException: {1}",
-                      action, e);
-
-                    log.WriteEntry(message, eType);
-                }
-            }
-        }
-
         private static void PauseOrThrow(
             ref int attempts,
             MongoSessionStateStore obj,
@@ -184,22 +149,10 @@ namespace MongoSessionStateStore
             if (attempts < obj.MaxUpsertAttempts)
             {
                 attempts++;
-                obj.WriteToEventLog(e,
-                    string.Format("Attempt to reconnect #{0} of {1}",
-                    attempts,
-                    obj.MaxUpsertAttempts), EventLogEntryType.Warning);
                 System.Threading.Thread.CurrentThread.Join(obj.MsWaitingForAttempt);
             }
             else
             {
-                if (obj.WriteExceptionsToEventLog)
-                {
-                    obj.WriteToEventLog(e,
-                        "Not possible to reconnect, not replicaset, " +
-                        "finished all attempts or an exception different of a " +
-                        "communication exception was throw",
-                        EventLogEntryType.Error);                    
-                }
                 throw new ProviderException(MongoSessionStateStore.EXCEPTION_MESSAGE);
             }
         }
