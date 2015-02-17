@@ -1,10 +1,10 @@
-﻿using MongoDB.Driver;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using TestApplication.Models;
 
 namespace TestApplication.Controllers
 {
@@ -44,6 +44,30 @@ namespace TestApplication.Controllers
             System.Threading.Thread.CurrentThread.Join(10000);
             Session["value"] = newSesVal + "2";
             return View();
+        }
+
+        public ActionResult SerializePerson(
+            string name = "Marc",
+            string surname = "Cortada",
+            string city = "Barcelona")
+        {
+            Person p = new Person()
+            {
+                Name = name,
+                Surname = surname,
+                City = city
+            };
+
+            Session["person"] = p;
+
+            return View();
+        }
+
+        public ActionResult GetSerializedPerson()
+        {
+            Newtonsoft.Json.Linq.JObject jsonObj = Session["person"] as Newtonsoft.Json.Linq.JObject;
+            Person p = jsonObj.ToObject<Person>();
+            return View(p);
         }
     }
 }

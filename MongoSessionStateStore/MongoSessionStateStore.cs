@@ -10,6 +10,7 @@ using System.Diagnostics;
 using System.IO;
 using MongoDB.Driver.Builders;
 using System.Web;
+using System.Linq;
 
 namespace MongoSessionStateStore
 {
@@ -249,8 +250,12 @@ namespace MongoSessionStateStore
           object lockId,
           bool newItem)
         {
-            // Serialize the SessionStateItemCollection as a string.
-            string sessItems = Serialize((SessionStateItemCollection)item.Items);
+            BsonArray arraySession = new BsonArray();
+            for(int i = 0; i < item.Items.Count; i++)
+            {
+                string key = item.Items.Keys[i];
+                arraySession.Add(new BsonDocument(key, Newtonsoft.Json.JsonConvert.SerializeObject(item.Items[key])));
+            }
 
             MongoServer conn = GetConnection();
             MongoCollection sessionCollection = GetSessionCollection(conn);
@@ -265,7 +270,7 @@ namespace MongoSessionStateStore
                     lockId: 0,
                     timeout: item.Timeout,
                     locked: false,
-                    sessionItems: sessItems,
+                    jsonSessionItemsArray: arraySession,
                     flags: 0);
 
                 this.UpsertEntireSessionDocument(sessionCollection, insertDoc);
@@ -274,7 +279,7 @@ namespace MongoSessionStateStore
             {
                 var query = Query.And(Query.EQ("_id", id), Query.EQ("ApplicationName", ApplicationName), Query.EQ("LockId", (Int32)lockId));
                 var update = Update.Set("Expires", DateTime.Now.AddMinutes(item.Timeout).ToUniversalTime());
-                update.Set("SessionItems", sessItems);
+                update.Set("SessionItemJSON", arraySession);
                 update.Set("Locked", false);
                 this.UpdateSessionCollection(sessionCollection, query, update);
             }
@@ -335,7 +340,7 @@ namespace MongoSessionStateStore
 
             // DateTime to check if current session item is expired.
             // String to hold serialized SessionStateItemCollection.
-            string serializedItems = "";
+            BsonArray serializedItems = new BsonArray();
             // True if a record is found in the database.
             bool foundRecord = false;
             // True if the returned session item is expired and needs to be deleted.
@@ -376,7 +381,7 @@ namespace MongoSessionStateStore
                 else
                     foundRecord = true;
 
-                serializedItems = results["SessionItems"].AsString;
+                serializedItems = results["SessionItemJSON"].AsBsonArray;
                 lockId = results["LockId"].AsInt32;
                 lockAge = DateTime.Now.ToUniversalTime().Subtract(results["LockDate"].ToUniversalTime());
                 actionFlags = (SessionStateActions)results["Flags"].AsInt32;
@@ -418,27 +423,20 @@ namespace MongoSessionStateStore
         }
 
         private SessionStateStoreData Deserialize(HttpContext context,
-         string serializedItems, int timeout)
+         BsonArray serializedItems, int timeout)
         {
-            using (var ms =
-              new MemoryStream(Convert.FromBase64String(serializedItems)))
+            var sessionItems = new SessionStateItemCollection();
+            foreach (var value in serializedItems.Values)
             {
-
-                var sessionItems =
-                  new SessionStateItemCollection();
-
-                if (ms.Length > 0)
-                {
-                    using (var reader = new BinaryReader(ms))
-                    {
-                        sessionItems = SessionStateItemCollection.Deserialize(reader);
-                    }
-                }
-
-                return new SessionStateStoreData(sessionItems,
-                  SessionStateUtility.GetSessionStaticObjects(context),
-                  timeout);
+                var document = value as BsonDocument;
+                string name = document.Names.FirstOrDefault();
+                string JSonValues = document.Values.FirstOrDefault().AsString;
+                sessionItems[name] = Newtonsoft.Json.JsonConvert.DeserializeObject(JSonValues);
             }
+
+            return new SessionStateStoreData(sessionItems,
+              SessionStateUtility.GetSessionStaticObjects(context),
+              timeout);
         }
 
         public override void CreateUninitializedItem(HttpContext context, string id, int timeout)
@@ -454,6 +452,7 @@ namespace MongoSessionStateStore
                 timeout: timeout,
                 locked: false,
                 sessionItems: "",
+                jsonSessionItemsArray: new BsonArray(),
                 flags: 1);
 
             this.UpsertEntireSessionDocument(sessionCollection, doc);

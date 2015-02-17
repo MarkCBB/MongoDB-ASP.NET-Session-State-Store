@@ -18,9 +18,6 @@ namespace TestApplication.Tests
     [TestClass]
     public class SimplyGetAndSet
     {
-        private Object _lockObj = new Object();
-        private bool _testOk = true;
-
         /// <summary>
         /// This test case does a request without value assignation, so a blank string is expected
         /// </summary>

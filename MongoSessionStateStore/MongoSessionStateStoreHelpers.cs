@@ -22,6 +22,7 @@ namespace MongoSessionStateStore
             int timeout,
             bool locked,
             string sessionItems = "",
+            BsonArray jsonSessionItemsArray = null,
             int flags = 1)
         {
             return new BsonDocument
@@ -35,6 +36,7 @@ namespace MongoSessionStateStore
                     {"Timeout", timeout},
                     {"Locked", locked},
                     {"SessionItems", sessionItems},
+                    {"SessionItemJSON", jsonSessionItemsArray},
                     {"Flags", flags}
                 };
         }
