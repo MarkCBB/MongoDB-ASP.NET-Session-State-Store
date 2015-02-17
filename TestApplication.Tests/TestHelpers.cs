@@ -14,6 +14,11 @@ namespace TestApplication.Tests
         public static string PRINT_SESION_ACTION = "PrintSessionVal/";
         public static string SET_SESSION_ACTION = "SetSessionVal/";
         public static string SESSION_ABANDON_ACTION = "SessionAbandon/";
+        public static string SET_SESSION_VAL_INT = "SetSessionValInt/";
+        public static string SET_SESSION_VAL_BOOL = "SetSessionValBool/";
+        public static string SET_SESSION_VAL_DECIMAL = "SetSessionValDecimal/";
+        public static string SET_SESSION_VAL_JSON_SERIALIZEPERSON = "SerializePerson/";
+        public static string PRINT_SESSION_VAL_JSON_SERIALIZEPERSON = "GetSerializedPerson/";
 
         public static string DoRequest(
             HttpWebRequest request,

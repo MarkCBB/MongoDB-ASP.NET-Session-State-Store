@@ -250,12 +250,7 @@ namespace MongoSessionStateStore
           object lockId,
           bool newItem)
         {
-            BsonArray arraySession = new BsonArray();
-            for(int i = 0; i < item.Items.Count; i++)
-            {
-                string key = item.Items.Keys[i];
-                arraySession.Add(new BsonDocument(key, Newtonsoft.Json.JsonConvert.SerializeObject(item.Items[key])));
-            }
+            BsonArray arraySession = this.Serialize(item);
 
             MongoServer conn = GetConnection();
             MongoCollection sessionCollection = GetSessionCollection(conn);
@@ -416,27 +411,10 @@ namespace MongoSessionStateStore
                 // deserialize the stored SessionStateItemCollection.
                 item = actionFlags == SessionStateActions.InitializeItem
                     ? CreateNewStoreData(context, (int)_config.Timeout.TotalMinutes)
-                    : Deserialize(context, serializedItems, timeout);
+                    : this.Deserialize(context, serializedItems, timeout);
             }
 
             return item;
-        }
-
-        private SessionStateStoreData Deserialize(HttpContext context,
-         BsonArray serializedItems, int timeout)
-        {
-            var sessionItems = new SessionStateItemCollection();
-            foreach (var value in serializedItems.Values)
-            {
-                var document = value as BsonDocument;
-                string name = document.Names.FirstOrDefault();
-                string JSonValues = document.Values.FirstOrDefault().AsString;
-                sessionItems[name] = Newtonsoft.Json.JsonConvert.DeserializeObject(JSonValues);
-            }
-
-            return new SessionStateStoreData(sessionItems,
-              SessionStateUtility.GetSessionStaticObjects(context),
-              timeout);
         }
 
         public override void CreateUninitializedItem(HttpContext context, string id, int timeout)
@@ -451,7 +429,6 @@ namespace MongoSessionStateStore
                 lockId: 0,
                 timeout: timeout,
                 locked: false,
-                sessionItems: "",
                 jsonSessionItemsArray: new BsonArray(),
                 flags: 1);
 

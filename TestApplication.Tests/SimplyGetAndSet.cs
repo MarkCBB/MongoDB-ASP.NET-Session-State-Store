@@ -36,7 +36,7 @@ namespace TestApplication.Tests
         /// This test case assigns a value to a SessionState 
         /// </summary>
         [TestMethod]
-        public void SingleSetValue()
+        public void SingleSetValueString()
         {
             CookieContainer cookieContainer = new CookieContainer();
             string textToSet = "valueSettedInSession";
@@ -45,6 +45,58 @@ namespace TestApplication.Tests
             TestHelpers.DoRequest(request1, cookieContainer);
             string result = TestHelpers.DoRequest(request2, cookieContainer);
             StringAssert.Contains(result, string.Format("<sessionVal>{0}</sessionVal>", textToSet));
+        }
+
+        /// <summary>
+        /// This test case assigns a value to a SessionState 
+        /// </summary>
+        [TestMethod]
+        public void SingleSetValueInt()
+        {
+            CookieContainer cookieContainer = new CookieContainer();
+            int intToSet = 1;
+            HttpWebRequest request1 = (HttpWebRequest)WebRequest.Create(TestHelpers.BASE_URL + TestHelpers.SET_SESSION_VAL_INT + intToSet),
+                request2 = (HttpWebRequest)WebRequest.Create(TestHelpers.BASE_URL + TestHelpers.PRINT_SESION_ACTION);
+            TestHelpers.DoRequest(request1, cookieContainer);
+            string result = TestHelpers.DoRequest(request2, cookieContainer);
+            StringAssert.Contains(result, string.Format("<sessionVal>{0}</sessionVal>", intToSet));
+        }
+
+        /// <summary>
+        /// This test case assigns a value to a SessionState 
+        /// </summary>
+        [TestMethod]
+        public void SingleSetValueDecimal()
+        {
+            CookieContainer cookieContainer = new CookieContainer();
+            HttpWebRequest request1 = (HttpWebRequest)WebRequest.Create(TestHelpers.BASE_URL + TestHelpers.SET_SESSION_VAL_DECIMAL),
+                request2 = (HttpWebRequest)WebRequest.Create(TestHelpers.BASE_URL + TestHelpers.PRINT_SESION_ACTION);
+            TestHelpers.DoRequest(request1, cookieContainer);
+            string result = TestHelpers.DoRequest(request2, cookieContainer);
+            StringAssert.Contains(result, string.Format("<sessionVal>{0}</sessionVal>", "3,1416"));
+        }
+
+        /// <summary>
+        /// This test case assigns a value to a SessionState 
+        /// </summary>
+        [TestMethod]
+        public void SingleSetValueBool()
+        {
+            CookieContainer cookieContainer = new CookieContainer();
+            HttpWebRequest request1 = (HttpWebRequest)WebRequest.Create(TestHelpers.BASE_URL + TestHelpers.SET_SESSION_VAL_BOOL + true),
+                request2 = (HttpWebRequest)WebRequest.Create(TestHelpers.BASE_URL + TestHelpers.PRINT_SESION_ACTION),
+                request3 = (HttpWebRequest)WebRequest.Create(TestHelpers.BASE_URL + TestHelpers.SET_SESSION_VAL_BOOL + false),
+                request4 = (HttpWebRequest)WebRequest.Create(TestHelpers.BASE_URL + TestHelpers.PRINT_SESION_ACTION);           
+            
+            //Trying setting with true
+            TestHelpers.DoRequest(request1, cookieContainer);
+            string result = TestHelpers.DoRequest(request2, cookieContainer);
+            StringAssert.Contains(result, string.Format("<sessionVal>{0}</sessionVal>", "True"));
+
+            //Trying setting with false
+            TestHelpers.DoRequest(request3, cookieContainer);
+            result = TestHelpers.DoRequest(request4, cookieContainer);
+            StringAssert.Contains(result, string.Format("<sessionVal>{0}</sessionVal>", "False"));
         }
 
         /// <summary>

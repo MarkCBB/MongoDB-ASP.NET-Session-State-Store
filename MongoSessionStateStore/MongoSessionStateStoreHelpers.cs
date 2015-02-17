@@ -7,6 +7,8 @@ using System.Configuration.Provider;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Web;
+using System.Web.SessionState;
 
 namespace MongoSessionStateStore
 {
@@ -21,7 +23,6 @@ namespace MongoSessionStateStore
             int lockId,
             int timeout,
             bool locked,
-            string sessionItems = "",
             BsonArray jsonSessionItemsArray = null,
             int flags = 1)
         {
@@ -35,7 +36,6 @@ namespace MongoSessionStateStore
                     {"LockId", lockId},
                     {"Timeout", timeout},
                     {"Locked", locked},
-                    {"SessionItems", sessionItems},
                     {"SessionItemJSON", jsonSessionItemsArray},
                     {"Flags", flags}
                 };
@@ -157,6 +157,39 @@ namespace MongoSessionStateStore
             {
                 throw new ProviderException(MongoSessionStateStore.EXCEPTION_MESSAGE);
             }
+        }
+
+        internal static BsonArray Serialize(
+            this MongoSessionStateStore obj,
+            SessionStateStoreData item)
+        {
+            BsonArray arraySession = new BsonArray();
+            for (int i = 0; i < item.Items.Count; i++)
+            {
+                string key = item.Items.Keys[i];
+                arraySession.Add(new BsonDocument(key, Newtonsoft.Json.JsonConvert.SerializeObject(item.Items[key])));
+            }
+            return arraySession;
+        }
+
+        internal static SessionStateStoreData Deserialize(
+            this MongoSessionStateStore obj,
+            HttpContext context,
+            BsonArray serializedItems,
+            int timeout)
+        {
+            var jSonSessionItems = new SessionStateItemCollection();
+            foreach (var value in serializedItems.Values)
+            {
+                var document = value as BsonDocument;
+                string name = document.Names.FirstOrDefault();
+                string JSonValues = document.Values.FirstOrDefault().AsString;
+                jSonSessionItems[name] = Newtonsoft.Json.JsonConvert.DeserializeObject(JSonValues);
+            }
+
+            return new SessionStateStoreData(jSonSessionItems,
+              SessionStateUtility.GetSessionStaticObjects(context),
+              timeout);
         }
     }
 }

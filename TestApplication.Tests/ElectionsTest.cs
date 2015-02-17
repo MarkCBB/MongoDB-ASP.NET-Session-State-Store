@@ -11,13 +11,15 @@ namespace TestApplication.Tests
         private Object _lockObj = new Object();
         private bool _testOk = true;
         private string _errorMessage = "";
+        private int nCall = 0;
+        private int nBlock = 0;
 
         public void SingleSetValueThread()
         {
             try
             {
                 CookieContainer cookieContainer = new CookieContainer();
-                string textToSet = "valueSettedInSession";
+                string textToSet = "valueSettedInSession" + (nBlock * nCall);
                 HttpWebRequest request1 = (HttpWebRequest)WebRequest.Create(TestHelpers.BASE_URL + TestHelpers.SET_SESSION_ACTION + textToSet),
                     request2 = (HttpWebRequest)WebRequest.Create(TestHelpers.BASE_URL + TestHelpers.PRINT_SESION_ACTION);
                 TestHelpers.DoRequest(request1, cookieContainer);
@@ -45,14 +47,15 @@ namespace TestApplication.Tests
         public void SendMultipleCallsAsync()
         {
             const int MAX_CALLS = 1000;
+            nBlock++;
             List<System.Threading.Thread> tasks = new List<System.Threading.Thread>();
-            for (int nCall = 0; nCall < MAX_CALLS; nCall++)
+            for (nCall = 0; nCall < MAX_CALLS; nCall++)
             {
                 System.Threading.Thread t = new System.Threading.Thread(SingleSetValueThread);
                 t.Start();
                 tasks.Add(t);
             }
-            for (int nCall = 0; nCall < MAX_CALLS; nCall++)
+            for (nCall = 0; nCall < MAX_CALLS; nCall++)
             {
                 tasks[nCall].Join();
             }

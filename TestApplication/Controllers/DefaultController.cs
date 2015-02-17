@@ -26,6 +26,25 @@ namespace TestApplication.Controllers
             return View();
         }
 
+        public ActionResult SetSessionValInt(int newSesVal = 0)
+        {
+            Session["value"] = newSesVal;
+            return View("~/Views/Default/SetSessionVal.aspx");
+        }
+
+        public ActionResult SetSessionValBool(bool newSesVal = false)
+        {
+            Session["value"] = newSesVal;
+            return View("~/Views/Default/SetSessionVal.aspx");
+        }
+
+        public ActionResult SetSessionValDecimal()
+        {
+            decimal newSesVal = 3.1416m;
+            Session["value"] = newSesVal;
+            return View("~/Views/Default/SetSessionVal.aspx");
+        }
+
         public ActionResult SetSessionVal(string newSesVal = "")
         {
             Session["value"] = newSesVal;
