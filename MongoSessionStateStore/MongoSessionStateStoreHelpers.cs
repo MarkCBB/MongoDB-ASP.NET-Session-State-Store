@@ -59,7 +59,7 @@ namespace MongoSessionStateStore
                 }
                 catch (Exception)
                 {
-                    // if index not created, nor retries. App can continue without index but
+                    // if index is not created, not retries. App can continue without index but
                     // you should create it or clear the documents manually
                     return false;
                 }
@@ -76,7 +76,10 @@ namespace MongoSessionStateStore
             {
                 try
                 {
-                    return sessionCollection.FindOneAs<BsonDocument>(q);
+                    var doc = sessionCollection.FindOneAs<BsonDocument>(q);
+                    // If NOT found (doc==null) throw and retry
+                    if (doc == null)
+                        throw new ProviderException(MongoSessionStateStore.EXCEPTION_MESSAGE);
                 }
                 catch (Exception e)
                 {
