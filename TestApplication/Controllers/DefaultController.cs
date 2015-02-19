@@ -88,5 +88,30 @@ namespace TestApplication.Controllers
             Person p = jsonObj.ToObject<Person>();
             return View(p);
         }
+
+        public ActionResult SerializePersonWithLists(
+            string name = "Marc",
+            string surname = "Cortada",
+            string city = "Barcelona")
+        {
+            PersonPetsList p = new PersonPetsList()
+            {
+                Name = name,
+                Surname = surname,
+                City = city,
+                PetsList = new List<string>() { "Dog", "Cat", "Shark" }
+            };
+
+            Session["personWithPetsList"] = p;
+
+            return View();
+        }
+
+        public ActionResult GetSerializedPersonWithPets()
+        {
+            Newtonsoft.Json.Linq.JObject jsonObj = Session["personWithPetsList"] as Newtonsoft.Json.Linq.JObject;
+            PersonPetsList p = jsonObj.ToObject<PersonPetsList>();
+            return View(p);
+        }
     }
 }

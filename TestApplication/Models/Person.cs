@@ -11,4 +11,9 @@ namespace TestApplication.Models
         public string Surname { get; set; }
         public string City { get; set; }
     }
+
+    public class PersonPetsList : Person
+    {
+        public List<string> PetsList { get; set; }
+    }
 }

@@ -19,6 +19,8 @@ namespace TestApplication.Tests
         public static string SET_SESSION_VAL_DECIMAL = "SetSessionValDecimal/";
         public static string SET_SESSION_VAL_JSON_SERIALIZEPERSON = "SerializePerson/";
         public static string PRINT_SESSION_VAL_JSON_SERIALIZEPERSON = "GetSerializedPerson/";
+        public static string SET_SESSION_VAL_JSON_SERIALIZELIST = "SerializePersonWithLists/";
+        public static string PRINT_SESSION_VAL_JSON_SERIALIZELIST = "GetSerializedPersonWithPets/";
 
         public static string DoRequest(
             HttpWebRequest request,

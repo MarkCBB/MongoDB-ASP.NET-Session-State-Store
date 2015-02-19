@@ -122,9 +122,11 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Content Include="Global.asax" />
     <Content Include="Views\Default\GetSerializedPerson.aspx" />
+    <Content Include="Views\Default\GetSerializedPersonWithPets.aspx" />
     <Content Include="Views\Default\Index.aspx" />
     <Content Include="Views\Default\PrintSessionVal.aspx" />
     <Content Include="Views\Default\SerializePerson.aspx" />
+    <Content Include="Views\Default\SerializePersonWithLists.aspx" />
     <Content Include="Views\Default\SessionAbandon.aspx" />
     <Content Include="Views\Default\SetSessionVal.aspx" />
     <Content Include="Views\Default\SetSessionValWaiting.aspx" />
