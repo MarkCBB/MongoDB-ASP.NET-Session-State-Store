@@ -49,7 +49,6 @@ namespace MongoSessionStateStore
             this MongoSessionStateStore obj,
             MongoCollection sessionCollection)
         {
-            int nAttempts = 0;
             while (true)
             {
                 try
@@ -58,9 +57,11 @@ namespace MongoSessionStateStore
                                 IndexOptions.SetTimeToLive(TimeSpan.Zero));
                     return true;
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
-                    PauseOrThrow(ref nAttempts, obj, sessionCollection, e);
+                    // if index not created, nor retries. App can continue without index but
+                    // you should create it or clear the documents manually
+                    return false;
                 }
             }            
         }
@@ -95,7 +96,12 @@ namespace MongoSessionStateStore
             {
                 try
                 {
-                    return sessionCollection.Update(query, update, obj.SessionWriteConcern);
+                    var result = sessionCollection.Update(query, update, obj.SessionWriteConcern);
+                    // if NOT ok throw and retry
+                    if (!result.Ok)
+                        throw new ProviderException(MongoSessionStateStore.EXCEPTION_MESSAGE);
+
+                    return result;
                 }
                 catch (Exception e)
                 {
@@ -114,7 +120,12 @@ namespace MongoSessionStateStore
             {
                 try
                 {
-                    return sessionCollection.Remove(query, obj.SessionWriteConcern);
+                    var result = sessionCollection.Remove(query, obj.SessionWriteConcern);
+                    // if NOT ok throw and retry
+                    if (!result.Ok)
+                        throw new ProviderException(MongoSessionStateStore.EXCEPTION_MESSAGE);
+                    
+                    return result;
                 }
                 catch (Exception e)
                 {
@@ -133,7 +144,12 @@ namespace MongoSessionStateStore
             {
                 try
                 {
-                    return sessionCollection.Save(insertDoc.GetType(), insertDoc, obj.SessionWriteConcern);
+                    var result = sessionCollection.Save(insertDoc.GetType(), insertDoc, obj.SessionWriteConcern);
+                    // if NOT ok throw and retry
+                    if (!result.Ok)
+                        throw new ProviderException(MongoSessionStateStore.EXCEPTION_MESSAGE);
+                    
+                    return result;
                 }
                 catch (Exception e)
                 {
