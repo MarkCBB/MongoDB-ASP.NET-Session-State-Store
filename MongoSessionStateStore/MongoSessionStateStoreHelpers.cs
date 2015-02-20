@@ -210,5 +210,27 @@ namespace MongoSessionStateStore
               SessionStateUtility.GetSessionStaticObjects(context),
               timeout);
         }
+
+        internal static void WriteToEventLog(
+            this MongoSessionStateStore obj,
+            Exception e,
+            string action,
+            EventLogEntryType eventType = EventLogEntryType.Error)
+        {
+            if (obj.WriteExceptionsToEventLog)
+            {
+                using (var log = new EventLog())
+                {
+                    log.Source = MongoSessionStateStore.EVENT_SOURCE;
+                    log.Log = MongoSessionStateStore.EVENT_LOG;
+
+                    string message =
+                      String.Format("An exception occurred communicating with the data source.\n\nAction: {0}\n\nException: {1}",
+                      action, e);
+
+                    log.WriteEntry(message, eventType);
+                }
+            }
+        }
     }
 }

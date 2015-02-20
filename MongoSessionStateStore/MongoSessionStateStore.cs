@@ -49,7 +49,6 @@ namespace MongoSessionStateStore
         public bool WriteExceptionsToEventLog
         {
             get { return _writeExceptionsToEventLog; }
-            set { _writeExceptionsToEventLog = value; }
         }
 
         /// <summary>
@@ -433,29 +432,6 @@ namespace MongoSessionStateStore
                 flags: 1);
 
             this.UpsertEntireSessionDocument(sessionCollection, doc);
-        }
-
-        /// <summary>
-        /// This is a helper function that writes exception detail to the 
-        /// event log. Exceptions are written to the event log as a security
-        /// measure to ensure private database details are not returned to 
-        /// browser. If a method does not return a status or Boolean
-        /// indicating the action succeeded or failed, the caller also 
-        /// throws a generic exception.
-        /// </summary>
-        private void WriteToEventLog(Exception e, string action)
-        {
-            using (var log = new EventLog())
-            {
-                log.Source = EVENT_SOURCE;
-                log.Log = EVENT_LOG;
-
-                string message =
-                  String.Format("An exception occurred communicating with the data source.\n\nAction: {0}\n\nException: {1}",
-                  action, e);
-
-                log.WriteEntry(message);
-            }
         }
 
         public override void Dispose()
