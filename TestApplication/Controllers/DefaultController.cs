@@ -84,8 +84,13 @@ namespace TestApplication.Controllers
 
         public ActionResult GetSerializedPerson()
         {
-            Newtonsoft.Json.Linq.JObject jsonObj = Session["person"] as Newtonsoft.Json.Linq.JObject;
-            Person p = jsonObj.ToObject<Person>();
+            Person p = new Person();
+            if (Session["person"] != null)
+            {
+                Newtonsoft.Json.Linq.JObject jsonObj = Session["person"] as Newtonsoft.Json.Linq.JObject;
+                if (jsonObj != null)
+                    p = jsonObj.ToObject<Person>();
+            }
             return View(p);
         }
 
@@ -109,8 +114,13 @@ namespace TestApplication.Controllers
 
         public ActionResult GetSerializedPersonWithPets()
         {
-            Newtonsoft.Json.Linq.JObject jsonObj = Session["personWithPetsList"] as Newtonsoft.Json.Linq.JObject;
-            PersonPetsList p = jsonObj.ToObject<PersonPetsList>();
+            PersonPetsList p = new PersonPetsList();
+            if (Session["personWithPetsList"] != null)
+            {
+                Newtonsoft.Json.Linq.JObject jsonObj = Session["personWithPetsList"] as Newtonsoft.Json.Linq.JObject;
+                if (jsonObj != null)
+                    p = jsonObj.ToObject<PersonPetsList>();
+            }
             return View(p);
         }
     }

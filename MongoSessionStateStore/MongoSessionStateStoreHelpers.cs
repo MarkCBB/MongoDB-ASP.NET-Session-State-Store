@@ -76,10 +76,7 @@ namespace MongoSessionStateStore
             {
                 try
                 {
-                    var doc = sessionCollection.FindOneAs<BsonDocument>(q);
-                    // If NOT found (doc==null) throw and retry
-                    if (doc == null)
-                        throw new ProviderException(MongoSessionStateStore.EXCEPTION_MESSAGE);
+                    return sessionCollection.FindOneAs<BsonDocument>(q);                    
                 }
                 catch (Exception e)
                 {
@@ -211,6 +208,14 @@ namespace MongoSessionStateStore
               timeout);
         }
 
+        
+        /// <summary>
+        /// NOT used. It's preserved for future implementations.
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="e"></param>
+        /// <param name="action"></param>
+        /// <param name="eventType"></param>
         internal static void WriteToEventLog(
             this MongoSessionStateStore obj,
             Exception e,
