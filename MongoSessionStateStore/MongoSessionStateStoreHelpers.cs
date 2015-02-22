@@ -22,7 +22,6 @@ namespace MongoSessionStateStore
         }
 
         internal static BsonDocument GetNewBsonSessionDocument(
-            this MongoSessionStateStore obj,
             string id,
             string applicationName,
             DateTime created,
@@ -54,15 +53,15 @@ namespace MongoSessionStateStore
         /// TTL index will remove the expired session documents.
         /// </summary>
         internal static bool CreateTTLIndex(
-            this MongoSessionStateStore obj,
             MongoCollection sessionCollection)
         {
             while (true)
             {
                 try
                 {
-                    sessionCollection.CreateIndex(IndexKeys.Ascending("Expires"),
-                                IndexOptions.SetTimeToLive(TimeSpan.Zero));
+                    sessionCollection.CreateIndex(
+                        IndexKeys.Ascending("Expires"),
+                        IndexOptions.SetTimeToLive(TimeSpan.Zero));
                     return true;
                 }
                 catch (Exception)
@@ -168,9 +167,7 @@ namespace MongoSessionStateStore
             }
         }
 
-        internal static BsonArray Serialize(
-            this MongoSessionStateStore obj,
-            SessionStateStoreData item)
+        internal static BsonArray Serialize(SessionStateStoreData item)
         {
             BsonArray arraySession = new BsonArray();
             for (int i = 0; i < item.Items.Count; i++)
@@ -182,7 +179,6 @@ namespace MongoSessionStateStore
         }
 
         internal static SessionStateStoreData Deserialize(
-            this MongoSessionStateStore obj,
             HttpContext context,
             BsonArray serializedItems,
             int timeout)

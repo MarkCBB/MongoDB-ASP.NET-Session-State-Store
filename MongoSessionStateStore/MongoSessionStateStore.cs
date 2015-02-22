@@ -224,7 +224,7 @@ namespace MongoSessionStateStore
             {
                 var conn = GetConnection();
                 var sessionCollection = GetSessionCollection(conn);
-                this.CreateTTLIndex(sessionCollection);
+                MongoSessionStateStoreHelpers.CreateTTLIndex(sessionCollection);
             }
         }
 
@@ -252,14 +252,14 @@ namespace MongoSessionStateStore
           object lockId,
           bool newItem)
         {
-            BsonArray arraySession = this.Serialize(item);
+            BsonArray arraySession = MongoSessionStateStoreHelpers.Serialize(item);
 
             MongoServer conn = GetConnection();
             MongoCollection sessionCollection = GetSessionCollection(conn);
 
             if (newItem)
             {
-                var insertDoc = this.GetNewBsonSessionDocument(
+                var insertDoc = MongoSessionStateStoreHelpers.GetNewBsonSessionDocument(
                     id: id,
                     applicationName: ApplicationName,
                     created: DateTime.Now.ToUniversalTime(),
@@ -418,7 +418,7 @@ namespace MongoSessionStateStore
                 // deserialize the stored SessionStateItemCollection.
                 item = actionFlags == SessionStateActions.InitializeItem
                     ? CreateNewStoreData(context, (int)_config.Timeout.TotalMinutes)
-                    : this.Deserialize(context, serializedItems, timeout);
+                    : MongoSessionStateStoreHelpers.Deserialize(context, serializedItems, timeout);
             }
 
             return item;
@@ -428,7 +428,7 @@ namespace MongoSessionStateStore
         {
             MongoServer conn = GetConnection();
             MongoCollection sessionCollection = GetSessionCollection(conn);
-            var doc = this.GetNewBsonSessionDocument(
+            var doc = MongoSessionStateStoreHelpers.GetNewBsonSessionDocument(
                 id: id,
                 applicationName: ApplicationName,
                 created: DateTime.Now.ToUniversalTime(),
