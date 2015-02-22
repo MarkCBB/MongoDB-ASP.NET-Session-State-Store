@@ -244,25 +244,6 @@ namespace MongoSessionStateStore
         }
 
         /// <summary>
-        /// Serialize is called by the SetAndReleaseItemExclusive method to 
-        /// convert the SessionStateItemCollection into a Base64 string to    
-        /// be stored in MongoDB.
-        /// </summary>
-        private string Serialize(SessionStateItemCollection items)
-        {
-            using (var ms = new MemoryStream())
-            using (var writer = new BinaryWriter(ms))
-            {
-                if (items != null)
-                    items.Serialize(writer);
-
-                writer.Close();
-
-                return Convert.ToBase64String(ms.ToArray());
-            }
-        }
-
-        /// <summary>
         /// SessionStateProviderBase.SetAndReleaseItemExclusive
         /// </summary>
         public override void SetAndReleaseItemExclusive(HttpContext context,
