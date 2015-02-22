@@ -149,29 +149,51 @@ namespace MongoSessionStateStore
                     _writeExceptionsToEventLog = true;
             }
 
-            bool fsync = false;
-            if (config["fsync"] != null)
+
+            // Write concern options j (journal) and w (write ack #)
+            
+            bool journal = false;
+            if (config["Journal"] != null)
             {
-                if (config["fsync"].ToUpper() == "TRUE")
-                    fsync = true;
+                if(!bool.TryParse(config["Journal"], out journal))
+                    throw new Exception("Journal must be a valid value (true or false)");
+
+                if (journal)
+                    _writeConcern = new WriteConcern() { Journal = true };
             }
 
-            int replicasToWrite = 1;
-            if (config["replicasToWrite"] != null)
+            // If journal (j) is true, write ack # param (w) not applies.
+            // Only the primary node will confirm the journal writing
+
+            if (!journal)
             {
-                if (!int.TryParse(config["replicasToWrite"], out replicasToWrite))
-                    throw new ProviderException("Replicas To Write must be a valid integer");
+                _writeConcern = WriteConcern.W1;
+                if (config["WriteConcern"] != null)
+                {
+                    string WCStr = config["WriteConcern"];
+                    WCStr = WCStr.ToUpper();
+                    switch (WCStr)
+                    {
+                        case "W1":
+                            _writeConcern = WriteConcern.W1;
+                            break;
+                        case "W2":
+                            _writeConcern = WriteConcern.W2;
+                            break;
+                        case "W3":
+                            _writeConcern = WriteConcern.W3;
+                            break;
+                        case "W4":
+                            _writeConcern = WriteConcern.W4;
+                            break;
+                        case "WMAJORITY":
+                            _writeConcern = WriteConcern.WMajority;
+                            break;
+                        default:
+                            throw new Exception("WriteConcern must be a valid value W1, W2, W3, W4 or WMAJORITY");
+                    }
+                }
             }
-
-            string wValue = "1";
-            if (replicasToWrite > 0)
-                wValue = (1 + replicasToWrite).ToString(CultureInfo.InvariantCulture);
-
-            _writeConcern = new WriteConcern
-            {
-                FSync = fsync,
-                W = WriteConcern.WValue.Parse(wValue)
-            };
 
             // Initialize maxUpsertAttempts
             _maxUpsertAttempts = 220;
@@ -271,7 +293,10 @@ namespace MongoSessionStateStore
             }
             else
             {
-                var query = Query.And(Query.EQ("_id", id), Query.EQ("ApplicationName", ApplicationName), Query.EQ("LockId", (Int32)lockId));
+                var query = Query.And(
+                    Query.EQ("_id", MongoSessionStateStoreHelpers.GetDocumentSessionId(id, ApplicationName)),
+                    Query.EQ("LockId",
+                    (Int32)lockId));
                 var update = Update.Set("Expires", DateTime.Now.AddMinutes(item.Timeout).ToUniversalTime());
                 update.Set("SessionItemJSON", arraySession);
                 update.Set("Locked", false);
@@ -349,7 +374,9 @@ namespace MongoSessionStateStore
             IMongoQuery query;
             if (lockRecord)
             {
-                query = Query.And(Query.EQ("_id", id), Query.EQ("ApplicationName", ApplicationName), Query.EQ("Locked", false), Query.GT("Expires", DateTime.Now.ToUniversalTime()));
+                query = Query.And(Query.EQ("_id", MongoSessionStateStoreHelpers.GetDocumentSessionId(id, ApplicationName)),
+                    Query.EQ("Locked", false),
+                    Query.GT("Expires", DateTime.Now.ToUniversalTime()));
                 var update = Update.Set("Locked", true);
                 update.Set("LockDate", DateTime.Now.ToUniversalTime());
                 var result = this.UpdateSessionCollection(sessionCollection, query, update);
@@ -358,7 +385,7 @@ namespace MongoSessionStateStore
             }
 
             // Retrieve the current session item information.
-            query = Query.And(Query.EQ("_id", id), Query.EQ("ApplicationName", ApplicationName));
+            query = Query.And(Query.EQ("_id", MongoSessionStateStoreHelpers.GetDocumentSessionId(id, ApplicationName)));
             var results = this.FindOneSessionItem(sessionCollection, query);
 
             if (results != null)
@@ -386,7 +413,7 @@ namespace MongoSessionStateStore
             // delete the record from the data source.
             if (deleteData)
             {
-                query = Query.And(Query.EQ("_id", id), Query.EQ("ApplicationName", ApplicationName));
+                query = Query.And(Query.EQ("_id", MongoSessionStateStoreHelpers.GetDocumentSessionId(id, ApplicationName)));
                 this.DeleteSessionDocument(sessionCollection, query);
             }
 
@@ -401,7 +428,7 @@ namespace MongoSessionStateStore
             {
                 lockId = (int)lockId + 1;
 
-                query = Query.And(Query.EQ("_id", id), Query.EQ("ApplicationName", ApplicationName));
+                query = Query.And(Query.EQ("_id", MongoSessionStateStoreHelpers.GetDocumentSessionId(id, ApplicationName)));
                 var update = Update.Set("LockId", (int)lockId);
                 update.Set("Flags", 0);
                 this.UpdateSessionCollection(sessionCollection, query, update);
@@ -453,7 +480,9 @@ namespace MongoSessionStateStore
             MongoServer conn = GetConnection();
             MongoCollection sessionCollection = GetSessionCollection(conn);
 
-            var query = Query.And(Query.EQ("_id", id), Query.EQ("ApplicationName", ApplicationName), Query.EQ("LockId", (Int32)lockId));
+            var query = Query.And(
+                Query.EQ("_id", MongoSessionStateStoreHelpers.GetDocumentSessionId(id, ApplicationName)),
+                Query.EQ("LockId", (Int32)lockId));
             var update = Update.Set("Locked", false);
             update.Set("Expires", DateTime.Now.AddMinutes(_config.Timeout.TotalMinutes).ToUniversalTime());
 
@@ -465,7 +494,9 @@ namespace MongoSessionStateStore
             MongoServer conn = GetConnection();
             MongoCollection sessionCollection = GetSessionCollection(conn);
 
-            var query = Query.And(Query.EQ("_id", id), Query.EQ("ApplicationName", ApplicationName), Query.EQ("LockId", (Int32)lockId));
+            var query = Query.And(
+                Query.EQ("_id", MongoSessionStateStoreHelpers.GetDocumentSessionId(id, ApplicationName)),
+                Query.EQ("LockId", (Int32)lockId));
 
             this.DeleteSessionDocument(sessionCollection, query);
         }
@@ -474,7 +505,7 @@ namespace MongoSessionStateStore
         {
             MongoServer conn = GetConnection();
             MongoCollection sessionCollection = GetSessionCollection(conn);
-            var query = Query.And(Query.EQ("_id", id), Query.EQ("ApplicationName", ApplicationName));
+            var query = Query.And(Query.EQ("_id", MongoSessionStateStoreHelpers.GetDocumentSessionId(id, ApplicationName)));
             var update = Update.Set("Expires", DateTime.Now.AddMinutes(_config.Timeout.TotalMinutes).ToUniversalTime());
 
             this.UpdateSessionCollection(sessionCollection, query, update);

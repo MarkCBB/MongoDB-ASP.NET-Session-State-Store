@@ -14,6 +14,13 @@ namespace MongoSessionStateStore
 {
     internal static class MongoSessionStateStoreHelpers
     {
+        internal static string GetDocumentSessionId(
+            string sessionId,
+            string applicationName)
+        {
+            return string.Format("{0}-{1}", sessionId, applicationName);
+        }
+
         internal static BsonDocument GetNewBsonSessionDocument(
             this MongoSessionStateStore obj,
             string id,
@@ -28,7 +35,8 @@ namespace MongoSessionStateStore
         {
             return new BsonDocument
                 {
-                    {"_id", id},
+                    {"_id", GetDocumentSessionId(id, applicationName)},
+                    {"SessionID", id},
                     {"ApplicationName", applicationName},
                     {"Created", created},
                     {"Expires", DateTime.Now.AddMinutes(timeout).ToUniversalTime()},
@@ -96,12 +104,7 @@ namespace MongoSessionStateStore
             {
                 try
                 {
-                    var result = sessionCollection.Update(query, update, obj.SessionWriteConcern);
-                    // if NOT ok throw and retry
-                    if (!result.Ok)
-                        throw new ProviderException(MongoSessionStateStore.EXCEPTION_MESSAGE);
-
-                    return result;
+                    return sessionCollection.Update(query, update, obj.SessionWriteConcern);                    
                 }
                 catch (Exception e)
                 {
@@ -120,12 +123,7 @@ namespace MongoSessionStateStore
             {
                 try
                 {
-                    var result = sessionCollection.Remove(query, obj.SessionWriteConcern);
-                    // if NOT ok throw and retry
-                    if (!result.Ok)
-                        throw new ProviderException(MongoSessionStateStore.EXCEPTION_MESSAGE);
-                    
-                    return result;
+                    return sessionCollection.Remove(query, obj.SessionWriteConcern);
                 }
                 catch (Exception e)
                 {
@@ -144,12 +142,7 @@ namespace MongoSessionStateStore
             {
                 try
                 {
-                    var result = sessionCollection.Save(insertDoc.GetType(), insertDoc, obj.SessionWriteConcern);
-                    // if NOT ok throw and retry
-                    if (!result.Ok)
-                        throw new ProviderException(MongoSessionStateStore.EXCEPTION_MESSAGE);
-                    
-                    return result;
+                    return sessionCollection.Save(insertDoc.GetType(), insertDoc, obj.SessionWriteConcern);                    
                 }
                 catch (Exception e)
                 {
