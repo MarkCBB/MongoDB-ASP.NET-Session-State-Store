@@ -1,6 +1,5 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using TestApplication.Controllers;
 using System.Web.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting.Web;
 using System.IO;

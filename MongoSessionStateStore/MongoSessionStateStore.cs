@@ -246,11 +246,12 @@ namespace MongoSessionStateStore
         /// <summary>
         /// SessionStateProviderBase.SetAndReleaseItemExclusive
         /// </summary>
-        public override void SetAndReleaseItemExclusive(HttpContext context,
-          string id,
-          SessionStateStoreData item,
-          object lockId,
-          bool newItem)
+        public override void SetAndReleaseItemExclusive(
+            HttpContext context,
+            string id,
+            SessionStateStoreData item,
+            object lockId,
+            bool newItem)
         {
             BsonArray arraySession = MongoSessionStateStoreHelpers.Serialize(item);
 
@@ -288,12 +289,13 @@ namespace MongoSessionStateStore
         /// <summary>
         /// SessionStateProviderBase.GetItem
         /// </summary>
-        public override SessionStateStoreData GetItem(HttpContext context,
-          string id,
-          out bool locked,
-          out TimeSpan lockAge,
-          out object lockId,
-          out SessionStateActions actionFlags)
+        public override SessionStateStoreData GetItem(
+            HttpContext context,
+            string id,
+            out bool locked,
+            out TimeSpan lockAge,
+            out object lockId,
+            out SessionStateActions actionFlags)
         {
             return GetSessionStoreItem(false, context, id, out locked,
               out lockAge, out lockId, out actionFlags);
@@ -302,12 +304,13 @@ namespace MongoSessionStateStore
         /// <summary>
         /// SessionStateProviderBase.GetItemExclusive
         /// </summary>
-        public override SessionStateStoreData GetItemExclusive(HttpContext context,
-          string id,
-          out bool locked,
-          out TimeSpan lockAge,
-          out object lockId,
-          out SessionStateActions actionFlags)
+        public override SessionStateStoreData GetItemExclusive(
+            HttpContext context,
+            string id,
+            out bool locked,
+            out TimeSpan lockAge,
+            out object lockId,
+            out SessionStateActions actionFlags)
         {
             return GetSessionStoreItem(true, context, id, out locked,
               out lockAge, out lockId, out actionFlags);
@@ -320,13 +323,14 @@ namespace MongoSessionStateStore
         /// is true (in the case of GetItemExclusive), then GetSessionStoreItem
         /// locks the record and sets a new LockId and LockDate.
         /// </summary>
-        private SessionStateStoreData GetSessionStoreItem(bool lockRecord,
-          HttpContext context,
-          string id,
-          out bool locked,
-          out TimeSpan lockAge,
-          out object lockId,
-          out SessionStateActions actionFlags)
+        private SessionStateStoreData GetSessionStoreItem(
+            bool lockRecord,
+            HttpContext context,
+            string id,
+            out bool locked,
+            out TimeSpan lockAge,
+            out object lockId,
+            out SessionStateActions actionFlags)
         {
             // Initial values for return value and out parameters.
             SessionStateStoreData item = null;

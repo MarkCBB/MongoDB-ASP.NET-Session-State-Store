@@ -120,10 +120,6 @@
       <Project>{2f0dd54f-6ef0-4ddd-9737-6d174b9e4e9d}</Project>
       <Name>MongoSessionStateStore</Name>
     </ProjectReference>
-    <ProjectReference Include="..\TestApplication\TestApplication.csproj">
-      <Project>{ADEC304A-40AC-4B27-B63F-ED0F12C68D7D}</Project>
-      <Name>TestApplication</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
