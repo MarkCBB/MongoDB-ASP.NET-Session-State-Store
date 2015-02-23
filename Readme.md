@@ -2,6 +2,7 @@ Usage
 =====
 
 Install the [nuGet package](https://www.nuget.org/packages/MongoSessionStateStore/) into your solution.
+
 Add these two sections into your web.config setting connection parameters properly.
 
 1.
@@ -26,9 +27,9 @@ Add these two sections into your web.config setting connection parameters proper
     </system.web>
 ```
 
-Now you can get stated using Session State Store.
+Now you can get started using Session State Store.
 
-For primitive types you can use a direct way:
+For primitive types you can use a direct way. **For objects in different requests JSON parse is required. Parse is not required in the same request code block**:
 
 ```C#
 //Set primitive value
