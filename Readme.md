@@ -5,18 +5,17 @@ Install the [nuGet package](https://www.nuget.org/packages/MongoSessionStateStor
 Add these two sections into your web.config setting connection parameters properly.
 
 1.
+```xml
     <configuration>
-    ...
       <connectionStrings>
         <add name="MongoSessionServices"
              connectionString="mongodb://mongo1:27018,mongo1:27019,mongo1:27020/?connect=replicaset"/>
       </connectionStrings>
-    ...
     </configuration>
-
+```
 2.
+```xml
     <system.web>
-    ...
     <sessionState mode="Custom" customProvider="MongoSessionStateProvider">
       <providers>
         <add name="MongoSessionStateProvider"
@@ -24,10 +23,10 @@ Add these two sections into your web.config setting connection parameters proper
              connectionStringName="MongoSessionServices" />
       </providers>
     </sessionState>
-    ...
     </system.web>
-Now you can get stated using Session State Store.
+```
 
+Now you can get stated using Session State Store.
 
 For primitive types you can use a direct way:
 
