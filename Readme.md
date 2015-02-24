@@ -44,3 +44,5 @@ Session[“person”] = new Person() { Name = “Marc” };
 var pJSON = Session["person"] as Newtonsoft.Json.Linq.JObject;
 Person p = pJSON.ToObject<Person>();
 ```
+
+For further information read about [parameters config](https://github.com/MarkCBB/MongoDB-ASP.NET-Session-State-Store/wiki/Web.config-parameters#parameters-detail)
