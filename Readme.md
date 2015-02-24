@@ -3,7 +3,7 @@ Usage
 
 Install the [nuGet package](https://www.nuget.org/packages/MongoSessionStateStore/) into your solution.
 
-Add these two sections into your web.config setting connection parameters properly.
+Add these two sections into your web.config. **Set connection parameters properly.**
 
 1.
 ```xml
