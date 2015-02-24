@@ -32,14 +32,17 @@ Now you can get started using Session State Store.
 For primitive types you can use a direct way. **For objects in different requests JSON parse is required. Parse is not required in the same request code block**:
 
 ```C#
-//Set primitive value
-Session[“counter”] = 1;
+// Set primitive value
+Session["counter"] = 1;
+
 //Get value from another request
-int n = Session[“counter”];
-To serialize objects 
-// Set
-Session[“person”] = new Person() { Name = “Marc” };
-// Getting from another request (if is the same request cast is not needed)
+int n = Session["counter"];
+
+// To serialize objects 
+// Setting
+Session["person"] = new Person() { Name = "Marc" };
+
+// Getting from another request (if is the same request cast is not needed!!!)
 // Consider additional null value checks.
 var pJSON = Session["person"] as Newtonsoft.Json.Linq.JObject;
 Person p = pJSON.ToObject<Person>();
