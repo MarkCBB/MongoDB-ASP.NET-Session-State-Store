@@ -29,7 +29,11 @@ Add these two sections into your web.config. **Set connection parameters properl
 
 Now you can get started using Session State Store.
 
-For primitive types you can use a direct way. **For objects in different requests JSON parse is required. Parse is not required in the same request code block**:
+For primitive types you can use a direct way.
+
+**For objects in different requests JSON parse is required.**
+
+Parse is not required in the same request code block:
 
 ```C#
 // Set primitive value
@@ -39,10 +43,10 @@ Session["counter"] = 1;
 int n = Session["counter"];
 
 // To serialize objects 
-// Setting
+// Setting an obect Person
 Session["person"] = new Person() { Name = "Marc" };
 
-// Getting from another request (if is the same request cast is not needed!!!)
+// Getting an object Person from another request (if is the same request cast is not needed!!!)
 // Consider additional null value checks.
 var pJSON = Session["person"] as Newtonsoft.Json.Linq.JObject;
 Person p = pJSON.ToObject<Person>();
