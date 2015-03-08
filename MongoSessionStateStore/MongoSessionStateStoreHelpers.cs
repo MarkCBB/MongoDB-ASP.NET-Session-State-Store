@@ -29,7 +29,8 @@ namespace MongoSessionStateStore
             int lockId,
             int timeout,
             bool locked,
-            BsonArray jsonSessionItemsArray = null,
+            BsonArray jsonSessionItemsArray,
+            BsonArray bsonSessioNItemsArray,
             int flags = 1)
         {
             return new BsonDocument
@@ -44,6 +45,7 @@ namespace MongoSessionStateStore
                     {"Timeout", timeout},
                     {"Locked", locked},
                     {"SessionItemJSON", jsonSessionItemsArray},
+                    {"SessionItemBSON", bsonSessioNItemsArray},
                     {"Flags", flags}
                 };
         }
@@ -167,24 +169,32 @@ namespace MongoSessionStateStore
             }
         }
 
-        internal static BsonArray Serialize(SessionStateStoreData item)
+        internal static void Serialize(
+            SessionStateStoreData item,
+            out BsonArray jsonarraySession,
+            out BsonArray bsonArraySession)
         {
-            BsonArray arraySession = new BsonArray();
+            jsonarraySession = new BsonArray();
+            bsonArraySession = new BsonArray();
             for (int i = 0; i < item.Items.Count; i++)
             {
                 string key = item.Items.Keys[i];
-                arraySession.Add(new BsonDocument(key, Newtonsoft.Json.JsonConvert.SerializeObject(item.Items[key])));
-            }
-            return arraySession;
+                object obj = item.Items[key];
+                if (obj is BsonValue)
+                    bsonArraySession.Add(new BsonDocument(key, obj as BsonValue));
+                else
+                    jsonarraySession.Add(new BsonDocument(key, Newtonsoft.Json.JsonConvert.SerializeObject(item.Items[key])));
+            }            
         }
 
         internal static SessionStateStoreData Deserialize(
             HttpContext context,
-            BsonArray serializedItems,
+            BsonArray jsonSerializedItems,
+            BsonArray bsonSerializedItems,
             int timeout)
         {
             var jSonSessionItems = new SessionStateItemCollection();
-            foreach (var value in serializedItems.Values)
+            foreach (var value in jsonSerializedItems.Values)
             {
                 var document = value as BsonDocument;
                 string name = document.Names.FirstOrDefault();

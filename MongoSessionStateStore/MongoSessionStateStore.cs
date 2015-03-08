@@ -253,7 +253,8 @@ namespace MongoSessionStateStore
             object lockId,
             bool newItem)
         {
-            BsonArray arraySession = MongoSessionStateStoreHelpers.Serialize(item);
+            BsonArray jsonArraySession, bsonArraySession;
+            MongoSessionStateStoreHelpers.Serialize(item, out jsonArraySession, out bsonArraySession);
 
             MongoServer conn = GetConnection();
             MongoCollection sessionCollection = GetSessionCollection(conn);
@@ -268,7 +269,8 @@ namespace MongoSessionStateStore
                     lockId: 0,
                     timeout: item.Timeout,
                     locked: false,
-                    jsonSessionItemsArray: arraySession,
+                    jsonSessionItemsArray: jsonArraySession,
+                    bsonSessioNItemsArray: bsonArraySession,
                     flags: 0);
 
                 this.UpsertEntireSessionDocument(sessionCollection, insertDoc);
@@ -280,7 +282,8 @@ namespace MongoSessionStateStore
                     Query.EQ("LockId",
                     (Int32)lockId));
                 var update = Update.Set("Expires", DateTime.Now.AddMinutes(item.Timeout).ToUniversalTime());
-                update.Set("SessionItemJSON", arraySession);
+                update.Set("SessionItemJSON", jsonArraySession);
+                update.Set("SessionItemBSON", bsonArraySession);
                 update.Set("Locked", false);
                 this.UpdateSessionCollection(sessionCollection, query, update);
             }
@@ -344,7 +347,8 @@ namespace MongoSessionStateStore
 
             // DateTime to check if current session item is expired.
             // String to hold serialized SessionStateItemCollection.
-            BsonArray serializedItems = new BsonArray();
+            BsonArray jsonSerializedItems = new BsonArray();
+            BsonArray bsonSerializedItems = new BsonArray();
             // True if a record is found in the database.
             bool foundRecord = false;
             // True if the returned session item is expired and needs to be deleted.
@@ -387,7 +391,8 @@ namespace MongoSessionStateStore
                 else
                     foundRecord = true;
 
-                serializedItems = results["SessionItemJSON"].AsBsonArray;
+                jsonSerializedItems = results["SessionItemJSON"].AsBsonArray;
+                bsonSerializedItems = results["SessionItemBSON"].AsBsonArray;
                 lockId = results["LockId"].AsInt32;
                 lockAge = DateTime.Now.ToUniversalTime().Subtract(results["LockDate"].ToUniversalTime());
                 actionFlags = (SessionStateActions)results["Flags"].AsInt32;
@@ -422,7 +427,7 @@ namespace MongoSessionStateStore
                 // deserialize the stored SessionStateItemCollection.
                 item = actionFlags == SessionStateActions.InitializeItem
                     ? CreateNewStoreData(context, (int)_config.Timeout.TotalMinutes)
-                    : MongoSessionStateStoreHelpers.Deserialize(context, serializedItems, timeout);
+                    : MongoSessionStateStoreHelpers.Deserialize(context, jsonSerializedItems, bsonSerializedItems, timeout);
             }
 
             return item;
@@ -441,6 +446,7 @@ namespace MongoSessionStateStore
                 timeout: timeout,
                 locked: false,
                 jsonSessionItemsArray: new BsonArray(),
+                bsonSessioNItemsArray: new BsonArray(),
                 flags: 1);
 
             this.UpsertEntireSessionDocument(sessionCollection, doc);
