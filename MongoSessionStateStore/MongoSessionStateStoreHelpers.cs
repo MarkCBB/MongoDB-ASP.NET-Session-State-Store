@@ -1,6 +1,7 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Driver;
 using MongoDB.Driver.Builders;
+using MongoDB.Bson.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Configuration.Provider;
@@ -14,6 +15,18 @@ namespace MongoSessionStateStore
 {
     internal static class MongoSessionStateStoreHelpers
     {
+        internal static string GetConfigVal(
+            this MongoSessionStateStore obj,
+            System.Collections.Specialized.NameValueCollection config,
+            string parameterName)
+        {
+            var key = config.AllKeys.FirstOrDefault(x => string.Compare(x, parameterName, true) == 0);
+            if ((!string.IsNullOrEmpty(key) && (!string.IsNullOrEmpty(config[key]))))
+                return config[key];
+            else
+                return "";
+        }
+
         internal static string GetDocumentSessionId(
             string sessionId,
             string applicationName)
@@ -170,6 +183,7 @@ namespace MongoSessionStateStore
         }
 
         internal static void Serialize(
+            this MongoSessionStateStore obj,
             SessionStateStoreData item,
             out BsonArray jsonarraySession,
             out BsonArray bsonArraySession)
@@ -179,11 +193,27 @@ namespace MongoSessionStateStore
             for (int i = 0; i < item.Items.Count; i++)
             {
                 string key = item.Items.Keys[i];
-                object obj = item.Items[key];
-                if (obj is BsonValue)
-                    bsonArraySession.Add(new BsonDocument(key, obj as BsonValue));
+                var sessionObj = item.Items[key];
+                if (sessionObj is BsonValue)
+                {
+                    bsonArraySession.Add(new BsonDocument(key, sessionObj as BsonValue));
+                }
                 else
-                    jsonarraySession.Add(new BsonDocument(key, Newtonsoft.Json.JsonConvert.SerializeObject(item.Items[key])));
+                {
+                    if (obj._BSONDefaultSerialize)
+                    {
+                        BsonValue singleValue;
+                        if (BsonTypeMapper.TryMapToBsonValue(sessionObj, out singleValue))
+                            bsonArraySession.Add(new BsonDocument(key, singleValue));
+                        else
+                            bsonArraySession.Add(new BsonDocument(key, sessionObj.ToBsonDocument()));
+                    }
+                    else
+                    {
+                        var serialized = Newtonsoft.Json.JsonConvert.SerializeObject(sessionObj);
+                        jsonarraySession.Add(new BsonDocument(key, serialized));
+                    }
+                }
             }            
         }
 
@@ -193,16 +223,23 @@ namespace MongoSessionStateStore
             BsonArray bsonSerializedItems,
             int timeout)
         {
-            var jSonSessionItems = new SessionStateItemCollection();
+            var sessionItems = new SessionStateItemCollection();
             foreach (var value in jsonSerializedItems.Values)
             {
                 var document = value as BsonDocument;
-                string name = document.Names.FirstOrDefault();
+                string name = document.Names.FirstOrDefault();                
                 string JSonValues = document.Values.FirstOrDefault().AsString;
-                jSonSessionItems[name] = Newtonsoft.Json.JsonConvert.DeserializeObject(JSonValues);
+                sessionItems[name] = Newtonsoft.Json.JsonConvert.DeserializeObject(JSonValues);                
             }
 
-            return new SessionStateStoreData(jSonSessionItems,
+            foreach(var value in bsonSerializedItems.Values)
+            {
+                var document = value as BsonDocument;
+                string name = document.Names.FirstOrDefault();
+                sessionItems[name] = document.Values.FirstOrDefault();
+            }
+
+            return new SessionStateStoreData(sessionItems,
               SessionStateUtility.GetSessionStaticObjects(context),
               timeout);
         }

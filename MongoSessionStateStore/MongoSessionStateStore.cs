@@ -32,6 +32,7 @@ namespace MongoSessionStateStore
         private int _msWaitingForAttempt = 500;
         private bool _autoCreateTTLIndex = true;
         private WriteConcern _writeConcern;
+        public bool _BSONDefaultSerialize = true;
 
         /// <summary>
         /// The ApplicationName property is used to differentiate sessions
@@ -226,6 +227,14 @@ namespace MongoSessionStateStore
                 var sessionCollection = GetSessionCollection(conn);
                 MongoSessionStateStoreHelpers.CreateTTLIndex(sessionCollection);
             }
+
+            //Initializes if BSON is the default format for serialize
+            _BSONDefaultSerialize = true;
+            var BSONDefaultSerializeStr = this.GetConfigVal(config, "BSONDefaultSerialize");
+            if(!string.IsNullOrEmpty(BSONDefaultSerializeStr))
+            {
+                bool.TryParse(BSONDefaultSerializeStr, out _BSONDefaultSerialize);
+            }
         }
 
         public override SessionStateStoreData CreateNewStoreData(HttpContext context, int timeout)
@@ -254,7 +263,7 @@ namespace MongoSessionStateStore
             bool newItem)
         {
             BsonArray jsonArraySession, bsonArraySession;
-            MongoSessionStateStoreHelpers.Serialize(item, out jsonArraySession, out bsonArraySession);
+            this.Serialize(item, out jsonArraySession, out bsonArraySession);
 
             MongoServer conn = GetConnection();
             MongoCollection sessionCollection = GetSessionCollection(conn);
