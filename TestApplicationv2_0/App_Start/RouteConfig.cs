@@ -15,8 +15,8 @@ namespace TestApplicationv2_0
 
             routes.MapRoute(
                 name: "Default",
-                url: "{controller}/{action}/{id}",
-                defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional }
+                url: "{controller}/{action}/{newSesVal}",
+                defaults: new { controller = "Home", action = "Index", newSesVal = UrlParameter.Optional }
             );
         }
     }

@@ -203,6 +203,7 @@ namespace MongoSessionStateStore
                     if (obj._BSONDefaultSerialize)
                     {
                         BsonValue singleValue;
+
                         if (BsonTypeMapper.TryMapToBsonValue(sessionObj, out singleValue))
                             bsonArraySession.Add(new BsonDocument(key, singleValue));
                         else
@@ -210,8 +211,7 @@ namespace MongoSessionStateStore
                     }
                     else
                     {
-                        var serialized = Newtonsoft.Json.JsonConvert.SerializeObject(sessionObj);
-                        jsonarraySession.Add(new BsonDocument(key, serialized));
+                        jsonarraySession.Add(new BsonDocument(key, Newtonsoft.Json.JsonConvert.SerializeObject(sessionObj)));
                     }
                 }
             }            

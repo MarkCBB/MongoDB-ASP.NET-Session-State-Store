@@ -82,14 +82,15 @@ namespace TestApplication2_0.Tests
         /// This test case assigns a value to a SessionState 
         /// </summary>
         [TestMethod]
-        public void SingleSetValueDecimal()
+        public void SingleSetValueFloat()
         {
+            double sesVal = 3.1416F;
             CookieContainer cookieContainer = new CookieContainer();
-            HttpWebRequest request1 = (HttpWebRequest)WebRequest.Create(TestHelpers.BASE_URL + TestHelpers.SET_SESSION_VAL_DECIMAL),
-                request2 = (HttpWebRequest)WebRequest.Create(TestHelpers.BASE_URL + TestHelpers.PRINT_SESION_ACTION);
+            HttpWebRequest request1 = (HttpWebRequest)WebRequest.Create(TestHelpers.BASE_URL + TestHelpers.SET_SESSION_VAL_DOUBLE),
+                request2 = (HttpWebRequest)WebRequest.Create(TestHelpers.BASE_URL + TestHelpers.PRINT_SESION_DOUBLE);
             TestHelpers.DoRequest(request1, cookieContainer);
             string result = TestHelpers.DoRequest(request2, cookieContainer);
-            StringAssert.Contains(result, string.Format("<sessionVal>{0}</sessionVal>", "3,1416"));
+            StringAssert.Contains(result, string.Format("<sessionVal>{0}</sessionVal>", sesVal.ToString("G")));
         }
 
         /// <summary>
@@ -107,12 +108,12 @@ namespace TestApplication2_0.Tests
             //Trying setting with true
             TestHelpers.DoRequest(request1, cookieContainer);
             string result = TestHelpers.DoRequest(request2, cookieContainer);
-            StringAssert.Contains(result, string.Format("<sessionVal>{0}</sessionVal>", "True"));
+            StringAssert.Contains(result.ToUpper(), string.Format("<sessionVal>{0}</sessionVal>", "True").ToUpper());
 
             //Trying setting with false
             TestHelpers.DoRequest(request3, cookieContainer);
             result = TestHelpers.DoRequest(request4, cookieContainer);
-            StringAssert.Contains(result, string.Format("<sessionVal>{0}</sessionVal>", "False"));
+            StringAssert.Contains(result.ToUpper(), string.Format("<sessionVal>{0}</sessionVal>", "False").ToUpper());
         }
 
         /// <summary>

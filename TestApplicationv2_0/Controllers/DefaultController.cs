@@ -27,6 +27,14 @@ namespace TestApplicationv2_0.Controllers
             return View();
         }
 
+        public ActionResult PrintSessionValDouble()
+        {
+            var val = Session["value"] as BsonValue;
+            double dobVal = (double)BsonTypeMapper.MapToDotNetValue(val);            
+            ViewData["sessionVal"] = dobVal.ToString("G");
+            return View("~/Views/Default/PrintSessionVal.aspx");
+        }
+
         public ActionResult SetSessionValInt(int newSesVal = 0)
         {
             Session["value"] = newSesVal;
@@ -39,9 +47,9 @@ namespace TestApplicationv2_0.Controllers
             return View("~/Views/Default/SetSessionVal.aspx");
         }
 
-        public ActionResult SetSessionValDecimal()
+        public ActionResult SetSessionValDouble()
         {
-            decimal newSesVal = 3.1416m;
+            double newSesVal = 3.1416F;
             Session["value"] = newSesVal;
             return View("~/Views/Default/SetSessionVal.aspx");
         }
@@ -118,9 +126,9 @@ namespace TestApplicationv2_0.Controllers
             PersonPetsList p = new PersonPetsList();
             if (Session["personWithPetsList"] != null)
             {
-                Newtonsoft.Json.Linq.JObject jsonObj = Session["personWithPetsList"] as Newtonsoft.Json.Linq.JObject;
-                if (jsonObj != null)
-                    p = jsonObj.ToObject<PersonPetsList>();
+                var obj = Session["personWithPetsList"] as BsonDocument;
+                if (obj != null)
+                    p = BsonSerializer.Deserialize<PersonPetsList>(obj);
             }
             return View(p);
         }
