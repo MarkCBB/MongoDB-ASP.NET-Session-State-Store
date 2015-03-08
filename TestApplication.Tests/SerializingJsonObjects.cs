@@ -60,7 +60,8 @@ namespace TestApplication.Tests
             Shark
         </div>
         
-    </fieldset>";
+    </fieldset>
+";
             StringAssert.Contains(result, expectedResultPart);
         }
 
