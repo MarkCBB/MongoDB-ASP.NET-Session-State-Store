@@ -47,6 +47,23 @@ namespace TestApplication.Tests
         }
 
         /// <summary>
+        /// This test case assigns a value twice with two requests.
+        /// </summary>
+        [TestMethod]
+        public void SetValueStringTwice()
+        {
+            CookieContainer cookieContainer = new CookieContainer();
+            string textToSet1 = "valueSettedInSession", textToSet2 = "valueSettedInSession2";
+            HttpWebRequest request1 = (HttpWebRequest)WebRequest.Create(TestHelpers.BASE_URL + TestHelpers.SET_SESSION_ACTION + textToSet1),
+                request2 = (HttpWebRequest)WebRequest.Create(TestHelpers.BASE_URL + TestHelpers.SET_SESSION_ACTION + textToSet2),
+                request3 = (HttpWebRequest)WebRequest.Create(TestHelpers.BASE_URL + TestHelpers.PRINT_SESION_ACTION);
+            TestHelpers.DoRequest(request1, cookieContainer);
+            TestHelpers.DoRequest(request2, cookieContainer);
+            string result = TestHelpers.DoRequest(request3, cookieContainer);
+            StringAssert.Contains(result, string.Format("<sessionVal>{0}</sessionVal>", textToSet2));
+        }
+
+        /// <summary>
         /// This test case assigns a value to a SessionState 
         /// </summary>
         [TestMethod]
