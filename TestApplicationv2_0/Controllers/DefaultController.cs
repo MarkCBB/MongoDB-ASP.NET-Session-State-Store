@@ -23,15 +23,15 @@ namespace TestApplicationv2_0.Controllers
         public ActionResult PrintSessionVal()
         {
             string val = (Session["value"] == null) ? "" : Session["value"].ToString();
-            ViewData["sessionVal"] = val;
+            ViewBag.sessionVal = val;
             return View();
         }
 
         public ActionResult PrintSessionValDouble()
         {
             var val = Session["value"] as BsonValue;
-            double dobVal = (double)BsonTypeMapper.MapToDotNetValue(val);            
-            ViewData["sessionVal"] = dobVal.ToString("G");
+            double dobVal = (double)BsonTypeMapper.MapToDotNetValue(val);
+            ViewBag.sessionVal = dobVal.ToString("G");
             return View("~/Views/Default/PrintSessionVal.aspx");
         }
 

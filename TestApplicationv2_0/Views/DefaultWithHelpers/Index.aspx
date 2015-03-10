@@ -5,11 +5,11 @@
 <html>
 <head runat="server">
     <meta name="viewport" content="width=device-width" />
-    <title>PrintSessionVal</title>
+    <title>Index</title>
 </head>
 <body>
     <div>
-        <sessionVal><%=ViewBag.sessionVal %></sessionVal>
+        
     </div>
 </body>
 </html>

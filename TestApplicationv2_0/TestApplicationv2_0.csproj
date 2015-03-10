@@ -117,17 +117,20 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controllers\DefaultController.cs" />
+    <Compile Include="Controllers\DefaultWithHelpersController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\Person.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="src\MongoSessionHelpers.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Content Include="Global.asax" />
+    <Content Include="Views\DefaultWithHelpers\Index.aspx" />
     <Content Include="Views\Default\GetSerializedPerson.aspx" />
     <Content Include="Views\Default\GetSerializedPersonWithPets.aspx" />
     <Content Include="Views\Default\Index.aspx" />
