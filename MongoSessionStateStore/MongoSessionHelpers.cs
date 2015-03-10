@@ -6,9 +6,9 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 
-namespace MongoSessionHelpers
+namespace MongoSessionStateStore.Helpers
 {
-    public static class MongoSession
+    public static class MongoSessionUserHelpers
     {
         public static T GetMongoSession<T>(
             this Controller obj,

@@ -52,6 +52,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="MongoSessionHelpers.cs" />
     <Compile Include="MongoSessionStateStore.cs" />
     <Compile Include="MongoSessionStateStoreHelpers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
