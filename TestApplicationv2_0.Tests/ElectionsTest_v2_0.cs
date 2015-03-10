@@ -3,10 +3,10 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System.Net;
 
-namespace TestApplication.Tests
+namespace TestApplication2_0.Tests
 {
     [TestClass]
-    public class ElectionsTest
+    public class ElectionsTest_v2_0
     {
         private Object _lockObj = new Object();
         private bool _testOk = true;
@@ -20,10 +20,10 @@ namespace TestApplication.Tests
             {
                 CookieContainer cookieContainer = new CookieContainer();
                 string textToSet = "valueSettedInSession" + (nBlock * nCall);
-                HttpWebRequest request1 = (HttpWebRequest)WebRequest.Create(TestHelpers.BASE_URL + TestHelpers.SET_SESSION_ACTION + textToSet),
-                    request2 = (HttpWebRequest)WebRequest.Create(TestHelpers.BASE_URL + TestHelpers.PRINT_SESION_ACTION);
-                TestHelpers.DoRequest(request1, cookieContainer);
-                string result = TestHelpers.DoRequest(request2, cookieContainer);
+                HttpWebRequest request1 = (HttpWebRequest)WebRequest.Create(TestHelpers_v2_0.BASE_URL + TestHelpers_v2_0.SET_SESSION_ACTION + textToSet),
+                    request2 = (HttpWebRequest)WebRequest.Create(TestHelpers_v2_0.BASE_URL + TestHelpers_v2_0.PRINT_SESION_ACTION);
+                TestHelpers_v2_0.DoRequest(request1, cookieContainer);
+                string result = TestHelpers_v2_0.DoRequest(request2, cookieContainer);
                 lock (_lockObj)
                 {
                     if ((_testOk) &&

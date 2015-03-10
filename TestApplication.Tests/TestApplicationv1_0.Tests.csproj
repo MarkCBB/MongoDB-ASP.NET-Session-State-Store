@@ -104,10 +104,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SimplyGetAndSet.cs" />
-    <Compile Include="ElectionsTest.cs" />
-    <Compile Include="TestHelpers.cs" />
-    <Compile Include="SerializingJsonObjects.cs" />
+    <Compile Include="SimplyGetAndSet_v1_0.cs" />
+    <Compile Include="ElectionsTest_v1_0.cs" />
+    <Compile Include="TestHelpers_v1_0.cs" />
+    <Compile Include="SerializingJsonObjects_v1_0.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App.config" />

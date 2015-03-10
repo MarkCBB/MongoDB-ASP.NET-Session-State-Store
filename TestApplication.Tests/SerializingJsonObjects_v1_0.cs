@@ -2,10 +2,10 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Net;
 
-namespace TestApplication2_0.Tests
+namespace TestApplication.Tests
 {
     [TestClass]
-    public class SerializingJsonObjects
+    public class SerializingJsonObjects_v1_0
     {
         [TestMethod]
         public void JSonObectWithList()
@@ -13,14 +13,14 @@ namespace TestApplication2_0.Tests
             CookieContainer cookieContainer = new CookieContainer();
             HttpWebRequest request1 =
                 (HttpWebRequest)WebRequest.Create(
-                TestHelpers.BASE_URL +
-                TestHelpers.SET_SESSION_VAL_JSON_SERIALIZELIST),
+                TestHelpers_v1_0.BASE_URL +
+                TestHelpers_v1_0.SET_SESSION_VAL_JSON_SERIALIZELIST),
                 request2 = (HttpWebRequest)WebRequest.Create(
-                TestHelpers.BASE_URL +
-                TestHelpers.PRINT_SESSION_VAL_JSON_SERIALIZELIST);
+                TestHelpers_v1_0.BASE_URL +
+                TestHelpers_v1_0.PRINT_SESSION_VAL_JSON_SERIALIZELIST);
 
-            TestHelpers.DoRequest(request1, cookieContainer);
-            string result = TestHelpers.DoRequest(request2, cookieContainer);
+            TestHelpers_v1_0.DoRequest(request1, cookieContainer);
+            string result = TestHelpers_v1_0.DoRequest(request2, cookieContainer);
             string expectedResultPart = @"<fieldset>
         <legend>PersonPetsList</legend>
 
@@ -71,14 +71,14 @@ namespace TestApplication2_0.Tests
             CookieContainer cookieContainer = new CookieContainer();
             HttpWebRequest request1 =
                 (HttpWebRequest)WebRequest.Create(
-                TestHelpers.BASE_URL +
-                TestHelpers.SET_SESSION_VAL_JSON_SERIALIZEPERSON),
+                TestHelpers_v1_0.BASE_URL +
+                TestHelpers_v1_0.SET_SESSION_VAL_JSON_SERIALIZEPERSON),
                 request2 = (HttpWebRequest)WebRequest.Create(
-                TestHelpers.BASE_URL +
-                TestHelpers.PRINT_SESSION_VAL_JSON_SERIALIZEPERSON);
+                TestHelpers_v1_0.BASE_URL +
+                TestHelpers_v1_0.PRINT_SESSION_VAL_JSON_SERIALIZEPERSON);
 
-            TestHelpers.DoRequest(request1, cookieContainer);
-            string result = TestHelpers.DoRequest(request2, cookieContainer);
+            TestHelpers_v1_0.DoRequest(request1, cookieContainer);
+            string result = TestHelpers_v1_0.DoRequest(request2, cookieContainer);
             string expectedResultPart = @"<legend>Person</legend>
     
         <div class=""display-label"">

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace TestApplication.Tests
 {
-    public static class TestHelpers
+    public static class TestHelpers_v1_0
     {
         public static string BASE_URL = "http://localhost/TestApplication/Default/";
         public static string PRINT_SESION_ACTION = "PrintSessionVal/";
