@@ -1,9 +1,5 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 
 namespace MongoSessionStateStore.Helpers
@@ -14,13 +10,18 @@ namespace MongoSessionStateStore.Helpers
             this Controller obj,
             string key)
         {
-            var bsonVal = obj.Session[key] as BsonValue;
-            if (bsonVal != null)
-                return (T)BsonTypeMapper.MapToDotNetValue(bsonVal);
+            var sessionObj = obj.Session[key];
+            if (sessionObj == null)
+                return default(T);
 
-            var bsonDocument = obj.Session[key] as BsonDocument;
-            if (bsonDocument != null)
-                return (T)BsonSerializer.Deserialize<T>(bsonDocument);            
+            if (sessionObj is T)
+                return (T)sessionObj;
+
+            if (sessionObj is BsonValue)
+                return (T)BsonTypeMapper.MapToDotNetValue(sessionObj as BsonValue);
+
+            if (sessionObj is BsonDocument)
+                return (T)BsonSerializer.Deserialize<T>(sessionObj as BsonDocument);
 
             return default(T);
         }
