@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using MongoSessionStateStore.Helpers;
+using TestApplicationv2_0.Models;
 
 namespace TestApplicationv2_0.Controllers
 {
@@ -13,11 +14,30 @@ namespace TestApplicationv2_0.Controllers
         // GET: /DefaultWithHelpers/
 
         private const string KEY_NAME = "value";
+        private const string KEY_NAME2 = "value";
         public const string VIEW_DATA_VAL = "sessionVal";
 
         public ActionResult Index()
         {
             this.SetMongoSession<string>(KEY_NAME, "Hi");
+            return View();
+        }
+
+        public ActionResult GetAnsSetSameRequest()
+        {
+            Person personSetted = new Person() { Name = "Marc", Surname = "Cortada", City = "Barcelona" };
+            this.SetMongoSession<Person>(KEY_NAME, personSetted);
+            Person personGetted = this.GetMongoSession<Person>(KEY_NAME);
+
+            int settedValInt = 3;
+            this.SetMongoSession<int>(KEY_NAME2, settedValInt);
+            int gettedValInt = this.GetMongoSession<int>(KEY_NAME2);
+
+            if ((settedValInt == gettedValInt) && (personSetted == personGetted))
+                ViewBag.allOk = "True";
+            else
+                ViewBag.allOk = "False";
+
             return View();
         }
 
