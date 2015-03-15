@@ -132,7 +132,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Content Include="Global.asax" />
-    <Content Include="Views\DefaultWithHelpers\GetAnsSetSameRequest.aspx" />
+    <Content Include="Views\DefaultWithHelpers\GetAndSetSameRequest.aspx" />
     <Content Include="Views\DefaultWithHelpers\Index.aspx" />
     <Content Include="Views\Default\GetSerializedPerson.aspx" />
     <Content Include="Views\Default\GetSerializedPersonWithPets.aspx" />
