@@ -126,6 +126,20 @@
     </Compile>
     <Compile Include="Models\Person.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="WebFormTests\GetValues.aspx.cs">
+      <DependentUpon>GetValues.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="WebFormTests\GetValues.aspx.designer.cs">
+      <DependentUpon>GetValues.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="WebFormTests\SetValues.aspx.cs">
+      <DependentUpon>SetValues.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="WebFormTests\SetValues.aspx.designer.cs">
+      <DependentUpon>SetValues.aspx</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\FilterConfig.cs" />
@@ -153,6 +167,8 @@
       <DependentUpon>Web.config</DependentUpon>
     </Content>
     <Content Include="Views\Web.config" />
+    <Content Include="WebFormTests\GetValues.aspx" />
+    <Content Include="WebFormTests\SetValues.aspx" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

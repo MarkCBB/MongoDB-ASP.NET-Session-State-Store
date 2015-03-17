@@ -102,6 +102,7 @@
     <Compile Include="SerializingJsonObjects_v2_0.cs" />
     <Compile Include="SimplyGetAndSet_v2_0.cs" />
     <Compile Include="TestHelpers_v2_0.cs" />
+    <Compile Include="WebFormTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App.config" />
