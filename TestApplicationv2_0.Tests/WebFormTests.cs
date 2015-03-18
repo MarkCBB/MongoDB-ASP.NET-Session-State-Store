@@ -26,6 +26,7 @@ namespace TestApplicationv2_0.Tests
             StringAssert.Contains(result2, @"<result1>314</result1>
         <br />
         <result2>3,14</result2>");
+            StringAssert.Contains(result2, @"<result3>Name: Marc, surname: Cortada</result3>");
         }
     }
 }

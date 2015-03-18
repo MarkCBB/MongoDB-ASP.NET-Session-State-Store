@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using MongoSessionStateStore.Helpers;
 using TestApplicationv2_0.Models;
 
 namespace TestApplicationv2_0.Controllers

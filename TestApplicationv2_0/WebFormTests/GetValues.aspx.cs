@@ -4,7 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using MongoSessionStateStore.Helpers;
+using TestApplicationv2_0.Models;
 
 namespace TestApplicationv2_0.WebFormTests
 {
@@ -14,6 +14,8 @@ namespace TestApplicationv2_0.WebFormTests
         {
             Result1Literal.Text = Session.Mongo<int>(SetTwoValues.KEY_NAME).ToString();
             Result2Literal.Text = Session.Mongo<double>(SetTwoValues.KEY_NAME2).ToString();
+            Person p = Session.Mongo<Person>(SetTwoValues.KEY_NAME3);
+            Result3Literal.Text = string.Format("Name: {0}, surname: {1}", p.Name, p.Surname);
         }
     }
 }

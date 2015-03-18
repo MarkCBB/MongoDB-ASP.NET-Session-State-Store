@@ -13,6 +13,8 @@
         <result1><asp:Literal ID="Result1Literal" runat="server"></asp:Literal></result1>
         <br />
         <result2><asp:Literal ID="Result2Literal" runat="server"></asp:Literal></result2>
+        <br />
+        <result3><asp:Literal ID="Result3Literal" runat="server"></asp:Literal></result3>
     </div>
     </form>
 </body>
