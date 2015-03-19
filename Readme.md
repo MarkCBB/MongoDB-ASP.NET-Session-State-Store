@@ -1,8 +1,9 @@
 Compatibility with 1.0.0 version (in v2.0.0)
 ============================================
 
-The compatibility with the first version only is guaranteed if you set the parameter BSONDefaultSerialize to false **explicitly**
-and is not used any kind of BsonValue including subclasses (i.e. BsonDocument).
+The compatibility with the first version only is guaranteed if:
+- The parameter BSONDefaultSerialize is setted to false **explicitly**.
+- And the application is not using any kind of BsonValue including their subclasses (i.e. BsonDocument).
 
 If one or both of these premises are not accomplished the old session data stored could not work properly.
 
