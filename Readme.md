@@ -40,7 +40,7 @@ Usage
 Now you can get started using MongoDB Session State Store. 
 
 A helper file is provided with the nuget package and this file will be available in the target project when package has been installed 
-**It's strongly recommended to use these helpers** as shown in the examples(also you can extend it).
+**It's strongly recommended to use these helpers** as shown in the examples (also you can extend it).
 
 ```C#
 // Sets 1314 in key named sessoinKey
