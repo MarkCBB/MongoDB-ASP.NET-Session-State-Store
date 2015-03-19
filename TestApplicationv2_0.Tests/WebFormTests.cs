@@ -23,10 +23,10 @@ namespace TestApplicationv2_0.Tests
             StringAssert.Contains(result, "<result>OK</result>");
 
             string result2 = TestHelpers_v2_0.DoRequest(request2, cookieContainer);
-            StringAssert.Contains(result2, @"<result1>314</result1>
-        <br />
-        <result2>3,14</result2>");
+            StringAssert.Contains(result2, @"<result1>314</result1>");
+            StringAssert.Contains(result2, @"<result2>3,14</result2>");        
             StringAssert.Contains(result2, @"<result3>Name: Marc, surname: Cortada</result3>");
+            StringAssert.Contains(result2, @"<result4>Name: Marc2, surname: Cortada2, pet 1 cat, pet 2 dog</result4>");
         }
     }
 }

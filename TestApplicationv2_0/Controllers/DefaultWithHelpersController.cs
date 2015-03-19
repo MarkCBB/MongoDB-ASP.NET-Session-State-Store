@@ -14,6 +14,7 @@ namespace TestApplicationv2_0.Controllers
 
         private const string KEY_NAME = "value";
         private const string KEY_NAME2 = "value2";
+        private const string KEY_NAME3 = "value3";
         public const string VIEW_DATA_VAL = "sessionVal";
 
         public ActionResult Index()
@@ -26,14 +27,30 @@ namespace TestApplicationv2_0.Controllers
         {
             Person personSetted = new Person() { Name = "Marc", Surname = "Cortada", City = "Barcelona" };
             Session.Mongo<Person>(KEY_NAME, personSetted);
+
+            PersonPetsList personPetsSetted = new PersonPetsList()
+            {
+                Name = "Marc2",
+                Surname = "Cortada2",
+                PetsList = new List<string>() { "cat", "dog" }
+            };
+            Session.Mongo<PersonPetsList>(KEY_NAME3, personPetsSetted);
             
             int settedValInt = 3;
             Session.Mongo<int>(KEY_NAME2, settedValInt);
 
             Person personGetted = Session.Mongo<Person>(KEY_NAME);
+            PersonPetsList personPetsListGetted = Session.Mongo<PersonPetsList>(KEY_NAME3);
             int gettedValInt = Session.Mongo<int>(KEY_NAME2);
 
-            if ((settedValInt == gettedValInt) && (personSetted == personGetted))
+            if ((settedValInt == gettedValInt) &&
+                (personSetted.Name == personGetted.Name) &&
+                (personSetted.Surname == personGetted.Surname) &&
+                (personSetted.City == personGetted.City) &&
+                (personPetsListGetted.Name == personPetsSetted.Name) &&
+                (personPetsListGetted.Surname == personPetsSetted.Surname) &&
+                (personPetsListGetted.PetsList[0] == personPetsSetted.PetsList[0]) &&
+                (personPetsListGetted.PetsList[1] == personPetsSetted.PetsList[1]))
                 ViewBag.allOk = "True";
             else
                 ViewBag.allOk = "False";
