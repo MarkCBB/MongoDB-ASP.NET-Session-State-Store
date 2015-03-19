@@ -66,14 +66,6 @@ namespace TestApplicationv2_0.Controllers
             return View();
         }
 
-        public ActionResult SetSessionValWaiting(string newSesVal = "")
-        {
-            Session["value"] = newSesVal;
-            System.Threading.Thread.CurrentThread.Join(10000);
-            Session["value"] = newSesVal + "2";
-            return View();
-        }
-
         public ActionResult SerializePerson(
             string name = "Marc",
             string surname = "Cortada",
