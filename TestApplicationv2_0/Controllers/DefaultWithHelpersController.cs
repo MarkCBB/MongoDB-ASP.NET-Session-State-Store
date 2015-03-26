@@ -58,12 +58,39 @@ namespace TestApplicationv2_0.Controllers
             return View();
         }
 
+        public ActionResult PrintSessionSerializedPeson()
+        {
+            Person p = Session.Mongo<Person>(KEY_NAME);
+            return View("~/Default/GetSerializedPerson.aspx", p);
+        }
+
+        public ActionResult PrintSessionSerializedPesonWithlists()
+        {
+            PersonPetsList p = Session.Mongo<PersonPetsList>(KEY_NAME3);
+            return View("~/Default/GetSerializedPersonWithPets.aspx", p);
+        }
+
+        public ActionResult SetSessionValString(string newSesVal = "")
+        {
+            Session.Mongo<string>(KEY_NAME, newSesVal);
+
+            return View();
+        }
+
         public ActionResult PrintSessionValString()
         {
             string val = Session.Mongo<string>(KEY_NAME);
 
             ViewBag.sessionVal = val;
             return View("~/Views/Default/PrintSessionVal.aspx");
+        }
+
+        public ActionResult SetSessionValDouble()
+        {
+            double newSesVal = 3.1416F;
+            Session.Mongo<double>(KEY_NAME, newSesVal);
+
+            return View("~/Views/Default/SetSessionVal.aspx");
         }
 
         public ActionResult PrintSessionValDouble()
@@ -81,6 +108,14 @@ namespace TestApplicationv2_0.Controllers
             return View("~/Views/Default/SetSessionVal.aspx");
         }
 
+        public ActionResult PrintSessionValInt()
+        {
+            int intVal = Session.Mongo<int>(KEY_NAME);
+
+            ViewBag.sessionVal = intVal;
+            return View("~/Views/Default/PrintSessionVal.aspx");
+        }
+
         public ActionResult SetSessionValBool(bool newSesVal = false)
         {
             Session.Mongo<bool>(KEY_NAME, newSesVal);
@@ -88,19 +123,12 @@ namespace TestApplicationv2_0.Controllers
             return View("~/Views/Default/SetSessionVal.aspx");
         }
 
-        public ActionResult SetSessionValDouble()
+        public ActionResult PrintSessionValBool()
         {
-            double newSesVal = 3.1416F;
-            Session.Mongo<double>(KEY_NAME, newSesVal);
+            bool boolVal = Session.Mongo<bool>(KEY_NAME);
 
-            return View("~/Views/Default/SetSessionVal.aspx");
-        }
-
-        public ActionResult SetSessionVal(string newSesVal = "")
-        {
-            Session.Mongo<string>(KEY_NAME, newSesVal);
-
-            return View();
+            ViewBag.sessionVal = boolVal;
+            return View("~/Views/Default/PrintSessionVal.aspx");
         }
     }
 }
