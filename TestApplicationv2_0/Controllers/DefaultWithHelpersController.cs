@@ -58,23 +58,23 @@ namespace TestApplicationv2_0.Controllers
             return View();
         }
 
-        public ActionResult PrintSessionSerializedPeson()
+        public ActionResult PrintSessionSerializedPerson()
         {
             Person p = Session.Mongo<Person>(KEY_NAME);
-            return View("~/Default/GetSerializedPerson.aspx", p);
+            return View("~/Views/Default/GetSerializedPerson.aspx", p);
         }
 
-        public ActionResult PrintSessionSerializedPesonWithlists()
+        public ActionResult PrintSessionSerializedPersonWithlist()
         {
             PersonPetsList p = Session.Mongo<PersonPetsList>(KEY_NAME3);
-            return View("~/Default/GetSerializedPersonWithPets.aspx", p);
+            return View("~/Views/Default/GetSerializedPersonWithPets.aspx", p);
         }
 
         public ActionResult SetSessionValString(string newSesVal = "")
         {
             Session.Mongo<string>(KEY_NAME, newSesVal);
 
-            return View();
+            return View("~/Views/Default/SetSessionVal.aspx");
         }
 
         public ActionResult PrintSessionValString()
@@ -97,7 +97,7 @@ namespace TestApplicationv2_0.Controllers
         {
             double dobVal = Session.Mongo<double>(KEY_NAME);
 
-            ViewBag.sessionVal = dobVal.ToString("G");
+            ViewBag.sessionVal = string.Format("{0:0.0000}", dobVal);
             return View("~/Views/Default/PrintSessionVal.aspx");
         }
 

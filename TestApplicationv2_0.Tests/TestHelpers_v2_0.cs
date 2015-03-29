@@ -27,8 +27,10 @@ namespace TestApplication2_0.Tests
         public static string SET_VALUE_WEB_FORM = "WebFormTests/SetValues.aspx";
         public static string GET_VALUE_WEB_FORM = "WebFormTests/GetValues.aspx";
 
-        public static string DEFAULT_WITH_HELPERS = "http://localhost/TestApplicationv2_0/Default/DefaultWithHelpers";
+        public static string DEFAULT_WITH_HELPERS = "http://localhost/TestApplicationv2_0/DefaultWithHelpers/";
         public static string GET_AND_SET_SAME_REQUEST = "GetAndSetSameRequest/";
+        public static string PRINT_SERIALIZED_PERSON = "PrintSessionSerializedPerson/";
+        public static string PRINT_SERIALIZED_PERSON_WITH_LIST = "PrintSessionSerializedPersonWithlist/";
         public static string SET_SESSION_VAL_STRING = "SetSessionValString/";
         public static string PRINT_SESSION_VAL_STRING = "PrintSessionValString/";
         public static string SET_SESSION_VAL_DOUBLE_WITH_HELPERS = "SetSessionValDouble/";
