@@ -119,6 +119,7 @@
     <Compile Include="..\MongoSessionStateStore\MongoSessionHelpers.cs">
       <Link>src\MongoSessionHelpers.cs</Link>
     </Compile>
+    <Compile Include="Controllers\BsonDocumentController.cs" />
     <Compile Include="Controllers\DefaultController.cs" />
     <Compile Include="Controllers\DefaultWithHelpersController.cs" />
     <Compile Include="Global.asax.cs">
@@ -146,6 +147,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Content Include="Global.asax" />
+    <Content Include="Views\BsonDocument\GetPerson.aspx" />
     <Content Include="Views\DefaultWithHelpers\GetAndSetSameRequest.aspx" />
     <Content Include="Views\DefaultWithHelpers\Index.aspx" />
     <Content Include="Views\Default\GetSerializedPerson.aspx" />

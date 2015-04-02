@@ -40,6 +40,10 @@ namespace TestApplication2_0.Tests
         public static string SET_SESSION_VAL_BOOL_WITH_HELPERS = "SetSessionValBool/";
         public static string PRINT_SESSION_VAL_BOOL = "PrintSessionValBool/";
 
+        public static string DEFAULT_WITH_BSON = "http://localhost/TestApplicationv2_0/BsonDocument/";
+        public static string SET_BSON_VAL = "SetPerson/";
+        public static string GET_BSON_VAL = "GetPerson/";
+
         public static string DoRequest(
             HttpWebRequest request,
             CookieContainer cookieContainer)
