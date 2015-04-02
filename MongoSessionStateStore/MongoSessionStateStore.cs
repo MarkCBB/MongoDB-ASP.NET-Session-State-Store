@@ -132,7 +132,7 @@ namespace MongoSessionStateStore
             _config = (SessionStateSection)cfg.GetSection("system.web/sessionState");
 
             // Initialize connection string.
-            _connectionStringSettings = ConfigurationManager.ConnectionStrings[config["connectionStringName"]];
+            _connectionStringSettings = ConfigurationManager.ConnectionStrings[this.GetConfigVal(config, "connectionStringName")];
 
             if (_connectionStringSettings == null || _connectionStringSettings.ConnectionString.Trim() == "")
             {
@@ -143,10 +143,11 @@ namespace MongoSessionStateStore
 
             // Initialize WriteExceptionsToEventLog
             _writeExceptionsToEventLog = false;
+            var writeExceptionsToEventLogStr = this.GetConfigVal(config, "writeExceptionsToEventLog");
 
-            if (config["writeExceptionsToEventLog"] != null)
+            if (!string.IsNullOrEmpty(writeExceptionsToEventLogStr))
             {
-                if (config["writeExceptionsToEventLog"].ToUpper() == "TRUE")
+                if (writeExceptionsToEventLogStr.ToUpper() == "TRUE")
                     _writeExceptionsToEventLog = true;
             }
 
@@ -154,9 +155,10 @@ namespace MongoSessionStateStore
             // Write concern options j (journal) and w (write ack #)
             
             bool journal = false;
-            if (config["Journal"] != null)
+            var journalStr = this.GetConfigVal(config, "Journal");
+            if (!string.IsNullOrEmpty(journalStr))
             {
-                if(!bool.TryParse(config["Journal"], out journal))
+                if (!bool.TryParse(journalStr, out journal))
                     throw new Exception("Journal must be a valid value (true or false)");
 
                 if (journal)
@@ -169,11 +171,11 @@ namespace MongoSessionStateStore
             if (!journal)
             {
                 _writeConcern = WriteConcern.W1;
-                if (config["WriteConcern"] != null)
+                var writeConcernStr = this.GetConfigVal(config, "WriteConcern");
+                if (!string.IsNullOrEmpty(writeConcernStr))
                 {
-                    string WCStr = config["WriteConcern"];
-                    WCStr = WCStr.ToUpper();
-                    switch (WCStr)
+                    writeConcernStr = writeConcernStr.ToUpper();
+                    switch (writeConcernStr)
                     {
                         case "W1":
                             _writeConcern = WriteConcern.W1;
@@ -198,25 +200,28 @@ namespace MongoSessionStateStore
 
             // Initialize maxUpsertAttempts
             _maxUpsertAttempts = 220;
-            if (config["maxUpsertAttempts"] != null)
+            var maxUpsertAttemptsStr = this.GetConfigVal(config, "maxUpsertAttempts");
+            if (!string.IsNullOrEmpty(maxUpsertAttemptsStr))
             {
-                if (!int.TryParse(config["maxUpsertAttempts"], out _maxUpsertAttempts))
+                if (!int.TryParse(maxUpsertAttemptsStr, out _maxUpsertAttempts))
                     throw new Exception("maxUpsertAttempts must be a valid integer");
             }
 
             //initialize msWaitingForAttempt
             _msWaitingForAttempt = 500;
-            if (config["msWaitingForAttempt"] != null)
+            var msWaitingForAttemptStr = this.GetConfigVal(config, "msWaitingForAttempt");
+            if (!string.IsNullOrEmpty(msWaitingForAttemptStr))
             {
-                if (!int.TryParse(config["msWaitingForAttempt"], out _msWaitingForAttempt))
+                if (!int.TryParse(msWaitingForAttemptStr, out _msWaitingForAttempt))
                     throw new Exception("msWaitingForAttempt must be a valid integer");
             }
 
             //Initialize AutoCreateTTLIndex
             _autoCreateTTLIndex = true;
-            if (config["AutoCreateTTLIndex"] != null)
+            var autoCreateTTLIndexStr = this.GetConfigVal(config, "AutoCreateTTLIndex");
+            if (!string.IsNullOrEmpty(autoCreateTTLIndexStr))
             {
-                if (!bool.TryParse(config["AutoCreateTTLIndex"], out _autoCreateTTLIndex))
+                if (!bool.TryParse(autoCreateTTLIndexStr, out _autoCreateTTLIndex))
                     throw new Exception("AutoCreateTTLIndex must be true or false");
             }
 
