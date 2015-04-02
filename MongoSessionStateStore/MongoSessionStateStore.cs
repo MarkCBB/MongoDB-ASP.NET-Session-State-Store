@@ -24,6 +24,8 @@ namespace MongoSessionStateStore
         private ConnectionStringSettings _connectionStringSettings;
         private string _applicationName;
         private string _connectionString;
+        private string _databaseName;
+        private string _collectionName;
         private bool _writeExceptionsToEventLog;
         internal const string EXCEPTION_MESSAGE = "An exception occurred. Please contact your administrator.";
         internal const string EVENT_SOURCE = "MongoSessionStateStore";
@@ -88,7 +90,7 @@ namespace MongoSessionStateStore
         /// <returns>MongoCollection</returns>
         private MongoCollection<BsonDocument> GetSessionCollection(MongoServer conn)
         {
-            return conn.GetDatabase("SessionState").GetCollection("Sessions");
+            return conn.GetDatabase(_databaseName).GetCollection(_collectionName);
         }
 
         /// <summary>
@@ -120,6 +122,17 @@ namespace MongoSessionStateStore
                 config.Remove("description");
                 config.Add("description", "MongoDB Session State Store provider");
             }
+
+            _databaseName = "SessionState";
+            var databaseNameStr = this.GetConfigVal(config, "databaseName");
+            if(!string.IsNullOrEmpty(databaseNameStr))            
+                _databaseName = databaseNameStr;
+
+            _collectionName = "Sessions";
+            var collectionNameStr = this.GetConfigVal(config, "collectionName");
+            if (!string.IsNullOrEmpty(collectionNameStr))
+                _collectionName = collectionNameStr;
+            
 
             // Initialize the abstract base class.
             base.Initialize(name, config);
