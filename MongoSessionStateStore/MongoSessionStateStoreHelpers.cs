@@ -1,6 +1,5 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Driver;
-using MongoDB.Driver.Builders;
 using MongoDB.Bson.Serialization;
 using System;
 using System.Collections.Generic;
@@ -10,11 +9,21 @@ using System.Linq;
 using System.Text;
 using System.Web;
 using System.Web.SessionState;
+using System.Threading.Tasks;
 
 namespace MongoSessionStateStore
 {
     internal static class MongoSessionStateStoreHelpers
     {
+        static private FindOneAndUpdateOptions<BsonDocument> __defaultUpdateOptions =
+            new FindOneAndUpdateOptions<BsonDocument>();
+
+        static MongoSessionStateStoreHelpers()
+        {
+            __defaultUpdateOptions.ReturnDocument = ReturnDocument.Before;
+            __defaultUpdateOptions.IsUpsert = false;            
+        }
+
         internal static string GetConfigVal(
             this MongoSessionStateStore obj,
             System.Collections.Specialized.NameValueCollection config,
@@ -68,15 +77,16 @@ namespace MongoSessionStateStore
         /// TTL index will remove the expired session documents.
         /// </summary>
         internal static bool CreateTTLIndex(
-            MongoCollection sessionCollection)
+            IMongoCollection<BsonDocument> sessionCollection)
         {
             while (true)
             {
                 try
                 {
-                    sessionCollection.CreateIndex(
-                        IndexKeys.Ascending("Expires"),
-                        IndexOptions.SetTimeToLive(TimeSpan.Zero));
+                    CreateIndexOptions c = new CreateIndexOptions();
+                    c.ExpireAfter = TimeSpan.Zero;
+                    sessionCollection.Indexes.CreateOneAsync(
+                        Builders<BsonDocument>.IndexKeys.Ascending("Expires"), c);
                     return true;
                 }
                 catch (Exception)
@@ -90,15 +100,15 @@ namespace MongoSessionStateStore
 
         internal static BsonDocument FindOneSessionItem(
             this MongoSessionStateStore obj,
-            MongoCollection sessionCollection,
-            IMongoQuery q)
+            IMongoCollection<BsonDocument> sessionCollection,
+            FilterDefinition<BsonDocument> q)
         {
             int nAtempts = 0;
             while (true)
             {
                 try
                 {
-                    return sessionCollection.FindOneAs<BsonDocument>(q);                    
+                    return sessionCollection.Find(q).ToBsonDocument();
                 }
                 catch (Exception e)
                 {
@@ -107,18 +117,22 @@ namespace MongoSessionStateStore
             }
         }
 
-        internal static WriteConcernResult UpdateSessionCollection(
+        internal static bool UpdateSessionCollection(
             this MongoSessionStateStore obj,
-            MongoCollection sessionCollection,
-            IMongoQuery query,
-            UpdateBuilder update)
+            IMongoCollection<BsonDocument> sessionCollection,
+            FilterDefinition<BsonDocument> filter,
+            UpdateDefinition<BsonDocument> update)
         {
             int attempts = 0;
             while (true)
             {
                 try
                 {
-                    return sessionCollection.Update(query, update, obj.SessionWriteConcern);                    
+                    BsonDocument doc = sessionCollection.FindOneAndUpdateAsync(
+                        filter,
+                        update, 
+                        __defaultUpdateOptions).Result;
+                    return (doc != null);
                 }
                 catch (Exception e)
                 {
@@ -127,17 +141,17 @@ namespace MongoSessionStateStore
             }
         }
 
-        internal static WriteConcernResult DeleteSessionDocument(
+        internal static bool DeleteSessionDocument(
            this MongoSessionStateStore obj,
-           MongoCollection sessionCollection,
-           IMongoQuery query)
+           IMongoCollection<BsonDocument> sessionCollection,
+           FilterDefinition<BsonDocument> query)
         {
             int attempts = 0;
             while (true)
             {
                 try
                 {
-                    return sessionCollection.Remove(query, obj.SessionWriteConcern);
+                    return (sessionCollection.DeleteOneAsync(query).Result.DeletedCount == 1);
                 }
                 catch (Exception e)
                 {
@@ -146,9 +160,9 @@ namespace MongoSessionStateStore
             }
         }
 
-        internal static WriteConcernResult UpsertEntireSessionDocument(
+        internal static void UpsertEntireSessionDocument(
             this MongoSessionStateStore obj,
-            MongoCollection sessionCollection,
+            IMongoCollection<BsonDocument> sessionCollection,
             BsonDocument insertDoc)
         {
             int attempts = 0;
@@ -156,7 +170,7 @@ namespace MongoSessionStateStore
             {
                 try
                 {
-                    return sessionCollection.Save(insertDoc.GetType(), insertDoc, obj.SessionWriteConcern);                    
+                    sessionCollection.InsertOneAsync(insertDoc);
                 }
                 catch (Exception e)
                 {
@@ -168,7 +182,7 @@ namespace MongoSessionStateStore
         private static void PauseOrThrow(
             ref int attempts,
             MongoSessionStateStore obj,
-            MongoCollection sessionCollection,
+            IMongoCollection<BsonDocument> sessionCollection,
             Exception e)
         {
             if (attempts < obj.MaxUpsertAttempts)

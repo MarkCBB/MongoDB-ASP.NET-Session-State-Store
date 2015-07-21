@@ -8,7 +8,6 @@ using MongoDB.Driver;
 using MongoDB.Bson;
 using System.Diagnostics;
 using System.IO;
-using MongoDB.Driver.Builders;
 using System.Web;
 using System.Linq;
 
@@ -33,7 +32,7 @@ namespace MongoSessionStateStore
         private int _maxUpsertAttempts = 220;
         private int _msWaitingForAttempt = 500;
         private bool _autoCreateTTLIndex = true;
-        private WriteConcern _writeConcern;
+        private MongoDatabaseSettings _databaseSettings;        
         public bool _BSONDefaultSerialize = true;
 
         /// <summary>
@@ -77,30 +76,25 @@ namespace MongoSessionStateStore
             get { return _autoCreateTTLIndex; }
         }
 
-        public WriteConcern SessionWriteConcern
-        {
-            get { return _writeConcern; }
-        }
-
         /// <summary>
         /// Returns a reference to the collection in MongoDB that holds the Session state
         /// data.
         /// </summary>
-        /// <param name="conn">MongoDB server connection</param>
+        /// <param name="cli">MongoDB server connection</param>
         /// <returns>MongoCollection</returns>
-        private MongoCollection<BsonDocument> GetSessionCollection(MongoServer conn)
+        private IMongoCollection<BsonDocument> GetSessionCollection(MongoClient cli)
         {
-            return conn.GetDatabase(_databaseName).GetCollection(_collectionName);
+            return cli.GetDatabase(_databaseName, _databaseSettings).GetCollection<BsonDocument>(_collectionName);
         }
 
         /// <summary>
         /// Returns a connection to the MongoDB server holding the session state data.
         /// </summary>
         /// <returns>MongoServer</returns>
-        private MongoServer GetConnection()
+        private MongoClient GetConnection()
         {
             var client = new MongoClient(_connectionString);
-            return client.GetServer();
+            return client;
         }
 
         /// <summary>
@@ -166,7 +160,8 @@ namespace MongoSessionStateStore
 
 
             // Write concern options j (journal) and w (write ack #)
-            
+
+            WriteConcern wc = WriteConcern.W1;
             bool journal = false;
             var journalStr = this.GetConfigVal(config, "Journal");
             if (!string.IsNullOrEmpty(journalStr))
@@ -175,7 +170,7 @@ namespace MongoSessionStateStore
                     throw new Exception("Journal must be a valid value (true or false)");
 
                 if (journal)
-                    _writeConcern = new WriteConcern() { Journal = true };
+                    wc = new WriteConcern(journal: true);
             }
 
             // If journal (j) is true, write ack # param (w) not applies.
@@ -183,7 +178,6 @@ namespace MongoSessionStateStore
 
             if (!journal)
             {
-                _writeConcern = WriteConcern.W1;
                 var writeConcernStr = this.GetConfigVal(config, "WriteConcern");
                 if (!string.IsNullOrEmpty(writeConcernStr))
                 {
@@ -191,25 +185,27 @@ namespace MongoSessionStateStore
                     switch (writeConcernStr)
                     {
                         case "W1":
-                            _writeConcern = WriteConcern.W1;
+                            wc = WriteConcern.W1;
                             break;
                         case "W2":
-                            _writeConcern = WriteConcern.W2;
+                            wc = WriteConcern.W2;
                             break;
                         case "W3":
-                            _writeConcern = WriteConcern.W3;
-                            break;
-                        case "W4":
-                            _writeConcern = WriteConcern.W4;
+                            wc = WriteConcern.W3;
                             break;
                         case "WMAJORITY":
-                            _writeConcern = WriteConcern.WMajority;
+                            wc = WriteConcern.WMajority;
                             break;
                         default:
-                            throw new Exception("WriteConcern must be a valid value W1, W2, W3, W4 or WMAJORITY");
+                            throw new Exception("WriteConcern must be a valid value W1, W2, W3, or WMAJORITY");
                     }
                 }
             }
+
+            _databaseSettings = new MongoDatabaseSettings()
+            {
+                WriteConcern = wc
+            };            
 
             // Initialize maxUpsertAttempts
             _maxUpsertAttempts = 220;
@@ -283,8 +279,8 @@ namespace MongoSessionStateStore
             BsonArray jsonArraySession, bsonArraySession;
             this.Serialize(item, out jsonArraySession, out bsonArraySession);
 
-            MongoServer conn = GetConnection();
-            MongoCollection sessionCollection = GetSessionCollection(conn);
+            MongoClient conn = GetConnection();
+            IMongoCollection<BsonDocument> sessionCollection = GetSessionCollection(conn);
 
             if (newItem)
             {
@@ -304,15 +300,15 @@ namespace MongoSessionStateStore
             }
             else
             {
-                var query = Query.And(
-                    Query.EQ("_id", MongoSessionStateStoreHelpers.GetDocumentSessionId(id, ApplicationName)),
-                    Query.EQ("LockId",
-                    (Int32)lockId));
-                var update = Update.Set("Expires", DateTime.Now.AddMinutes(item.Timeout).ToUniversalTime());
-                update.Set("SessionItemJSON", jsonArraySession);
-                update.Set("SessionItemBSON", bsonArraySession);
-                update.Set("Locked", false);
-                this.UpdateSessionCollection(sessionCollection, query, update);
+                var filterBuilder = Builders<BsonDocument>.Filter;
+                var filter = filterBuilder.And(
+                    filterBuilder.Eq("_id", MongoSessionStateStoreHelpers.GetDocumentSessionId(id, ApplicationName)),
+                    filterBuilder.Eq("LockId", (Int32)lockId));
+                var update = Builders<BsonDocument>.Update.Set(
+                    "Expires", DateTime.Now.AddMinutes(item.Timeout).ToUniversalTime()).Set(
+                    "SessionItemJSON", jsonArraySession).Set(
+                    "SessionItemBSON", bsonArraySession).Set("Locked", false);
+                this.UpdateSessionCollection(sessionCollection, filter, update);
             }
         }
 
@@ -369,8 +365,8 @@ namespace MongoSessionStateStore
             locked = false;
             actionFlags = 0;
 
-            MongoServer conn = GetConnection();
-            MongoCollection sessionCollection = GetSessionCollection(conn);
+            MongoClient conn = GetConnection();
+            IMongoCollection<BsonDocument> sessionCollection = GetSessionCollection(conn);
 
             // DateTime to check if current session item is expired.
             // String to hold serialized SessionStateItemCollection.
@@ -387,22 +383,25 @@ namespace MongoSessionStateStore
             // lockRecord is true when called from GetItemExclusive and
             // false when called from GetItem.
             // Obtain a lock if possible. Ignore the record if it is expired.
-            IMongoQuery query;
+            var filterBuilder = Builders<BsonDocument>.Filter;
             if (lockRecord)
             {
-                query = Query.And(Query.EQ("_id", MongoSessionStateStoreHelpers.GetDocumentSessionId(id, ApplicationName)),
-                    Query.EQ("Locked", false),
-                    Query.GT("Expires", DateTime.Now.ToUniversalTime()));
-                var update = Update.Set("Locked", true);
-                update.Set("LockDate", DateTime.Now.ToUniversalTime());
-                var result = this.UpdateSessionCollection(sessionCollection, query, update);
+                var filter = filterBuilder.And(
+                filterBuilder.Eq("_id", MongoSessionStateStoreHelpers.GetDocumentSessionId(id, ApplicationName)),
+                filterBuilder.Eq("Locked", false),
+                filterBuilder.Gt("Expires", DateTime.Now.ToUniversalTime()));
+                var update = Builders<BsonDocument>.Update.Set(
+                    "Locked", true).Set(
+                    "LockDate", DateTime.Now.ToUniversalTime());
+                bool result = this.UpdateSessionCollection(sessionCollection, filter, update);
 
-                locked = result.DocumentsAffected == 0; // DocumentsAffected == 0 == No record was updated because the record was locked or not found.
+                locked = !result; // result is false when no record was updated because the record was locked or not found.
             }
 
             // Retrieve the current session item information.
-            query = Query.And(Query.EQ("_id", MongoSessionStateStoreHelpers.GetDocumentSessionId(id, ApplicationName)));
-            var results = this.FindOneSessionItem(sessionCollection, query);
+            var filter2 = filterBuilder.And(
+                filterBuilder.Eq("_id", MongoSessionStateStoreHelpers.GetDocumentSessionId(id, ApplicationName)));
+            var results = this.FindOneSessionItem(sessionCollection, filter2);
 
             if (results != null)
             {
@@ -430,8 +429,8 @@ namespace MongoSessionStateStore
             // delete the record from the data source.
             if (deleteData)
             {
-                query = Query.And(Query.EQ("_id", MongoSessionStateStoreHelpers.GetDocumentSessionId(id, ApplicationName)));
-                this.DeleteSessionDocument(sessionCollection, query);
+                filter2 = filterBuilder.And(filterBuilder.Eq("_id", MongoSessionStateStoreHelpers.GetDocumentSessionId(id, ApplicationName)));
+                this.DeleteSessionDocument(sessionCollection, filter2);
             }
 
             // The record was not found. Ensure that locked is false.
@@ -445,10 +444,11 @@ namespace MongoSessionStateStore
             {
                 lockId = (int)lockId + 1;
 
-                query = Query.And(Query.EQ("_id", MongoSessionStateStoreHelpers.GetDocumentSessionId(id, ApplicationName)));
-                var update = Update.Set("LockId", (int)lockId);
-                update.Set("Flags", 0);
-                this.UpdateSessionCollection(sessionCollection, query, update);
+                filter2 = filterBuilder.And(filterBuilder.Eq("_id", MongoSessionStateStoreHelpers.GetDocumentSessionId(id, ApplicationName)));
+                var update = Builders<BsonDocument>.Update.Set(
+                    "LockId", (int)lockId).Set(
+                    "Flags", 0);
+                this.UpdateSessionCollection(sessionCollection, filter2, update);
 
                 // If the actionFlags parameter is not InitializeItem, 
                 // deserialize the stored SessionStateItemCollection.
@@ -462,8 +462,8 @@ namespace MongoSessionStateStore
 
         public override void CreateUninitializedItem(HttpContext context, string id, int timeout)
         {
-            MongoServer conn = GetConnection();
-            MongoCollection sessionCollection = GetSessionCollection(conn);
+            var conn = GetConnection();
+            var sessionCollection = GetSessionCollection(conn);
             var doc = MongoSessionStateStoreHelpers.GetNewBsonSessionDocument(
                 id: id,
                 applicationName: ApplicationName,
@@ -495,36 +495,41 @@ namespace MongoSessionStateStore
 
         public override void ReleaseItemExclusive(HttpContext context, string id, object lockId)
         {
-            MongoServer conn = GetConnection();
-            MongoCollection sessionCollection = GetSessionCollection(conn);
+            var conn = GetConnection();
+            var sessionCollection = GetSessionCollection(conn);
 
-            var query = Query.And(
-                Query.EQ("_id", MongoSessionStateStoreHelpers.GetDocumentSessionId(id, ApplicationName)),
-                Query.EQ("LockId", (Int32)lockId));
-            var update = Update.Set("Locked", false);
-            update.Set("Expires", DateTime.Now.AddMinutes(_config.Timeout.TotalMinutes).ToUniversalTime());
+            var filterBuilder = Builders<BsonDocument>.Filter;
+            var filter = filterBuilder.And(
+                filterBuilder.Eq("_id", MongoSessionStateStoreHelpers.GetDocumentSessionId(id, ApplicationName)),
+                filterBuilder.Eq("LockId", (Int32)lockId));
+            
+            var update = Builders<BsonDocument>.Update.Set(
+                "Locked", false).Set(
+                "Expires", DateTime.Now.AddMinutes(_config.Timeout.TotalMinutes).ToUniversalTime());
 
-            this.UpdateSessionCollection(sessionCollection, query, update);
+            this.UpdateSessionCollection(sessionCollection, filter, update);
         }
 
         public override void RemoveItem(HttpContext context, string id, object lockId, SessionStateStoreData item)
         {
-            MongoServer conn = GetConnection();
-            MongoCollection sessionCollection = GetSessionCollection(conn);
+            var conn = GetConnection();
+            var sessionCollection = GetSessionCollection(conn);
 
-            var query = Query.And(
-                Query.EQ("_id", MongoSessionStateStoreHelpers.GetDocumentSessionId(id, ApplicationName)),
-                Query.EQ("LockId", (Int32)lockId));
+            var filterBuilder = Builders<BsonDocument>.Filter;
+            var query = filterBuilder.And(
+                filterBuilder.Eq("_id", MongoSessionStateStoreHelpers.GetDocumentSessionId(id, ApplicationName)),
+                filterBuilder.Eq("LockId", (Int32)lockId));
 
             this.DeleteSessionDocument(sessionCollection, query);
         }
 
         public override void ResetItemTimeout(HttpContext context, string id)
         {
-            MongoServer conn = GetConnection();
-            MongoCollection sessionCollection = GetSessionCollection(conn);
-            var query = Query.And(Query.EQ("_id", MongoSessionStateStoreHelpers.GetDocumentSessionId(id, ApplicationName)));
-            var update = Update.Set("Expires", DateTime.Now.AddMinutes(_config.Timeout.TotalMinutes).ToUniversalTime());
+            var conn = GetConnection();
+            var sessionCollection = GetSessionCollection(conn);
+            var filterBuilder = Builders<BsonDocument>.Filter;
+            var query = filterBuilder.And(filterBuilder.Eq("_id", MongoSessionStateStoreHelpers.GetDocumentSessionId(id, ApplicationName)));
+            var update = Builders<BsonDocument>.Update.Set("Expires", DateTime.Now.AddMinutes(_config.Timeout.TotalMinutes).ToUniversalTime());
 
             this.UpdateSessionCollection(sessionCollection, query, update);
         }        
