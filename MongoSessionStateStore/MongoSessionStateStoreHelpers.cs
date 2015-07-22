@@ -171,7 +171,7 @@ namespace MongoSessionStateStore
             {
                 try
                 {
-                    sessionCollection.InsertOneAsync(insertDoc);
+                    Task.WaitAll(sessionCollection.InsertOneAsync(insertDoc));
                     return;
                 }
                 catch (Exception e)
