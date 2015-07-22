@@ -85,8 +85,9 @@ namespace MongoSessionStateStore
                 {
                     CreateIndexOptions c = new CreateIndexOptions();
                     c.ExpireAfter = TimeSpan.Zero;
-                    sessionCollection.Indexes.CreateOneAsync(
-                        Builders<BsonDocument>.IndexKeys.Ascending("Expires"), c);
+                    c.Background = true;
+                    string res = sessionCollection.Indexes.CreateOneAsync(
+                        Builders<BsonDocument>.IndexKeys.Ascending("Expires"), c).Result;
                     return true;
                 }
                 catch (Exception)
@@ -108,7 +109,7 @@ namespace MongoSessionStateStore
             {
                 try
                 {
-                    return sessionCollection.Find(q).ToBsonDocument();
+                    return sessionCollection.Find(q).FirstOrDefaultAsync().Result;
                 }
                 catch (Exception e)
                 {
@@ -171,6 +172,7 @@ namespace MongoSessionStateStore
                 try
                 {
                     sessionCollection.InsertOneAsync(insertDoc);
+                    return;
                 }
                 catch (Exception e)
                 {
