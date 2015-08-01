@@ -15,15 +15,6 @@ namespace MongoSessionStateStore
 {
     internal static class MongoSessionStateStoreHelpers
     {
-        static private FindOneAndUpdateOptions<BsonDocument> __defaultUpdateOptions =
-            new FindOneAndUpdateOptions<BsonDocument>();
-
-        static MongoSessionStateStoreHelpers()
-        {
-            __defaultUpdateOptions.ReturnDocument = ReturnDocument.Before;
-            __defaultUpdateOptions.IsUpsert = false;            
-        }
-
         internal static string GetConfigVal(
             this MongoSessionStateStore obj,
             System.Collections.Specialized.NameValueCollection config,
@@ -129,11 +120,10 @@ namespace MongoSessionStateStore
             {
                 try
                 {
-                    BsonDocument doc = sessionCollection.FindOneAndUpdateAsync(
+                    var result = sessionCollection.UpdateOneAsync(
                         filter,
-                        update, 
-                        __defaultUpdateOptions).Result;
-                    return (doc != null);
+                        update).Result;
+                    return (result.ModifiedCount == 1);
                 }
                 catch (Exception e)
                 {
