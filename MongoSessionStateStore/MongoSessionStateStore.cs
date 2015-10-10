@@ -32,7 +32,7 @@ namespace MongoSessionStateStore
         private int _maxUpsertAttempts = 220;
         private int _msWaitingForAttempt = 500;
         private bool _autoCreateTTLIndex = true;
-        private MongoDatabaseSettings _databaseSettings;        
+        private MongoDatabaseSettings _databaseSettings;
         public bool _BSONDefaultSerialize = true;
 
         /// <summary>
@@ -119,14 +119,14 @@ namespace MongoSessionStateStore
 
             _databaseName = "SessionState";
             var databaseNameStr = this.GetConfigVal(config, "databaseName");
-            if(!string.IsNullOrEmpty(databaseNameStr))            
+            if (!string.IsNullOrEmpty(databaseNameStr))
                 _databaseName = databaseNameStr;
 
             _collectionName = "Sessions";
             var collectionNameStr = this.GetConfigVal(config, "collectionName");
             if (!string.IsNullOrEmpty(collectionNameStr))
                 _collectionName = collectionNameStr;
-            
+
 
             // Initialize the abstract base class.
             base.Initialize(name, config);
@@ -161,51 +161,44 @@ namespace MongoSessionStateStore
 
             // Write concern options j (journal) and w (write ack #)
 
-            WriteConcern wc = WriteConcern.W1;
             bool journal = false;
             var journalStr = this.GetConfigVal(config, "Journal");
             if (!string.IsNullOrEmpty(journalStr))
             {
                 if (!bool.TryParse(journalStr, out journal))
                     throw new Exception("Journal must be a valid value (true or false)");
-
-                if (journal)
-                    wc = new WriteConcern(journal: true);
             }
 
-            // If journal (j) is true, write ack # param (w) not applies.
-            // Only the primary node will confirm the journal writing
+            WriteConcern wc = new WriteConcern(journal: journal, w: 1);
 
-            if (!journal)
+            var writeConcernStr = this.GetConfigVal(config, "WriteConcern");
+            if (!string.IsNullOrEmpty(writeConcernStr))
             {
-                var writeConcernStr = this.GetConfigVal(config, "WriteConcern");
-                if (!string.IsNullOrEmpty(writeConcernStr))
+                writeConcernStr = writeConcernStr.ToUpper();
+                switch (writeConcernStr)
                 {
-                    writeConcernStr = writeConcernStr.ToUpper();
-                    switch (writeConcernStr)
-                    {
-                        case "W1":
-                            wc = WriteConcern.W1;
-                            break;
-                        case "W2":
-                            wc = WriteConcern.W2;
-                            break;
-                        case "W3":
-                            wc = WriteConcern.W3;
-                            break;
-                        case "WMAJORITY":
-                            wc = WriteConcern.WMajority;
-                            break;
-                        default:
-                            throw new Exception("WriteConcern must be a valid value W1, W2, W3, or WMAJORITY");
-                    }
+                    case "W1":
+                        wc = new WriteConcern(w: 1, journal: journal);
+                        break;
+                    case "W2":
+                        wc = new WriteConcern(w: 2, journal: journal);
+                        break;
+                    case "W3":
+                        wc = new WriteConcern(w: 3, journal: journal);
+                        break;
+                    case "WMAJORITY":
+                        MongoDB.Driver.WriteConcern.WValue aux = "majority";
+                        wc = new WriteConcern(aux, journal: journal);
+                        break;
+                    default:
+                        throw new Exception("WriteConcern must be a valid value W1, W2, W3, or WMAJORITY");
                 }
             }
 
             _databaseSettings = new MongoDatabaseSettings()
             {
                 WriteConcern = wc
-            };            
+            };
 
             // Initialize maxUpsertAttempts
             _maxUpsertAttempts = 220;
@@ -235,7 +228,7 @@ namespace MongoSessionStateStore
             }
 
             //Create TTL index if AutoCreateTTLIndex config parameter is true.
-            if(_autoCreateTTLIndex)
+            if (_autoCreateTTLIndex)
             {
                 var conn = GetConnection();
                 var sessionCollection = GetSessionCollection(conn);
@@ -245,7 +238,7 @@ namespace MongoSessionStateStore
             //Initializes if BSON is the default format for serialize
             _BSONDefaultSerialize = true;
             var BSONDefaultSerializeStr = this.GetConfigVal(config, "BSONDefaultSerialize");
-            if(!string.IsNullOrEmpty(BSONDefaultSerializeStr))
+            if (!string.IsNullOrEmpty(BSONDefaultSerializeStr))
             {
                 bool.TryParse(BSONDefaultSerializeStr, out _BSONDefaultSerialize);
             }
@@ -502,7 +495,7 @@ namespace MongoSessionStateStore
             var filter = filterBuilder.And(
                 filterBuilder.Eq("_id", MongoSessionStateStoreHelpers.GetDocumentSessionId(id, ApplicationName)),
                 filterBuilder.Eq("LockId", (Int32)lockId));
-            
+
             var update = Builders<BsonDocument>.Update.Set(
                 "Locked", false).Set(
                 "Expires", DateTime.Now.AddMinutes(_config.Timeout.TotalMinutes).ToUniversalTime());
@@ -532,6 +525,6 @@ namespace MongoSessionStateStore
             var update = Builders<BsonDocument>.Update.Set("Expires", DateTime.Now.AddMinutes(_config.Timeout.TotalMinutes).ToUniversalTime());
 
             this.UpdateSessionCollection(sessionCollection, query, update);
-        }        
+        }
     }
 }
