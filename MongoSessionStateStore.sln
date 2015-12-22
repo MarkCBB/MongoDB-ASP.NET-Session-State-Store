@@ -1,13 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Express 2013 for Web
-VisualStudioVersion = 12.0.30723.0
+VisualStudioVersion = 12.0.30501.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MongoSessionStateStore", "MongoSessionStateStore\MongoSessionStateStore.csproj", "{2F0DD54F-6EF0-4DDD-9737-6D174B9E4E9D}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestApplicationv1_0", "TestApplication\TestApplicationv1_0.csproj", "{ADEC304A-40AC-4B27-B63F-ED0F12C68D7D}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestApplicationv1_0.Tests", "TestApplication.Tests\TestApplicationv1_0.Tests.csproj", "{BB3DEC92-3275-4A49-9E7B-69730A81A33E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestApplicationv2_0", "TestApplicationv2_0\TestApplicationv2_0.csproj", "{2498B537-7ECE-4066-B098-26588275B062}"
 EndProject
@@ -23,14 +19,6 @@ Global
 		{2F0DD54F-6EF0-4DDD-9737-6D174B9E4E9D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2F0DD54F-6EF0-4DDD-9737-6D174B9E4E9D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2F0DD54F-6EF0-4DDD-9737-6D174B9E4E9D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{ADEC304A-40AC-4B27-B63F-ED0F12C68D7D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{ADEC304A-40AC-4B27-B63F-ED0F12C68D7D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{ADEC304A-40AC-4B27-B63F-ED0F12C68D7D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{ADEC304A-40AC-4B27-B63F-ED0F12C68D7D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BB3DEC92-3275-4A49-9E7B-69730A81A33E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BB3DEC92-3275-4A49-9E7B-69730A81A33E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BB3DEC92-3275-4A49-9E7B-69730A81A33E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BB3DEC92-3275-4A49-9E7B-69730A81A33E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2498B537-7ECE-4066-B098-26588275B062}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2498B537-7ECE-4066-B098-26588275B062}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2498B537-7ECE-4066-B098-26588275B062}.Release|Any CPU.ActiveCfg = Release|Any CPU
