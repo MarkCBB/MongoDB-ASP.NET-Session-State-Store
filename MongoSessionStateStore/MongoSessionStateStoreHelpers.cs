@@ -42,7 +42,6 @@ namespace MongoSessionStateStore
             int lockId,
             int timeout,
             bool locked,
-            BsonArray jsonSessionItemsArray,
             BsonArray bsonSessioNItemsArray,
             int flags = 1)
         {
@@ -57,7 +56,6 @@ namespace MongoSessionStateStore
                     {"LockId", lockId},
                     {"Timeout", timeout},
                     {"Locked", locked},
-                    {"SessionItemJSON", jsonSessionItemsArray},
                     {"SessionItemBSON", bsonSessioNItemsArray},
                     {"Flags", flags}
                 };
@@ -191,10 +189,8 @@ namespace MongoSessionStateStore
         internal static void Serialize(
             this MongoSessionStateStore obj,
             SessionStateStoreData item,
-            out BsonArray jsonarraySession,
             out BsonArray bsonArraySession)
         {
-            jsonarraySession = new BsonArray();
             bsonArraySession = new BsonArray();
             for (int i = 0; i < item.Items.Count; i++)
             {
@@ -206,37 +202,22 @@ namespace MongoSessionStateStore
                 }
                 else
                 {
-                    if (obj._BSONDefaultSerialize)
-                    {
-                        BsonValue singleValue;
+                    BsonValue singleValue;
 
-                        if (BsonTypeMapper.TryMapToBsonValue(sessionObj, out singleValue))
-                            bsonArraySession.Add(new BsonDocument(key, singleValue));
-                        else
-                            bsonArraySession.Add(new BsonDocument(key, sessionObj.ToBsonDocument()));
-                    }
+                    if (BsonTypeMapper.TryMapToBsonValue(sessionObj, out singleValue))
+                        bsonArraySession.Add(new BsonDocument(key, singleValue));
                     else
-                    {
-                        jsonarraySession.Add(new BsonDocument(key, Newtonsoft.Json.JsonConvert.SerializeObject(sessionObj)));
-                    }
+                        bsonArraySession.Add(new BsonDocument(key, sessionObj.ToBsonDocument()));
                 }
             }            
         }
 
         internal static SessionStateStoreData Deserialize(
             HttpContext context,
-            BsonArray jsonSerializedItems,
             BsonArray bsonSerializedItems,
             int timeout)
         {
             var sessionItems = new SessionStateItemCollection();
-            foreach (var value in jsonSerializedItems.Values)
-            {
-                var document = value as BsonDocument;
-                string name = document.Names.FirstOrDefault();                
-                string JSonValues = document.Values.FirstOrDefault().AsString;
-                sessionItems[name] = Newtonsoft.Json.JsonConvert.DeserializeObject(JSonValues);                
-            }
 
             foreach(var value in bsonSerializedItems.Values)
             {

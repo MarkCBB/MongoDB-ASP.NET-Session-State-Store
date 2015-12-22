@@ -33,7 +33,6 @@ namespace MongoSessionStateStore
         private int _msWaitingForAttempt = 500;
         private bool _autoCreateTTLIndex = true;
         private MongoDatabaseSettings _databaseSettings;
-        public bool _BSONDefaultSerialize = true;
 
         /// <summary>
         /// The ApplicationName property is used to differentiate sessions
@@ -235,13 +234,12 @@ namespace MongoSessionStateStore
                 MongoSessionStateStoreHelpers.CreateTTLIndex(sessionCollection);
             }
 
-            //Initializes if BSON is the default format for serialize
-            _BSONDefaultSerialize = true;
+            //Checks if the parameter BSONDefaultSerialize is trying to be used 
             var BSONDefaultSerializeStr = this.GetConfigVal(config, "BSONDefaultSerialize");
             if (!string.IsNullOrEmpty(BSONDefaultSerializeStr))
-            {
-                bool.TryParse(BSONDefaultSerializeStr, out _BSONDefaultSerialize);
-            }
+                throw new Exception("The Json serialization is no longer supported from version 3.0.0. "
+                    + "BSONDefaultSerialize parameter has been removed and all data are serialized as BSON value.");
+            
         }
 
         public override SessionStateStoreData CreateNewStoreData(HttpContext context, int timeout)
@@ -269,8 +267,8 @@ namespace MongoSessionStateStore
             object lockId,
             bool newItem)
         {
-            BsonArray jsonArraySession, bsonArraySession;
-            this.Serialize(item, out jsonArraySession, out bsonArraySession);
+            BsonArray bsonArraySession;
+            this.Serialize(item, out bsonArraySession);
 
             MongoClient conn = GetConnection();
             IMongoCollection<BsonDocument> sessionCollection = GetSessionCollection(conn);
@@ -285,7 +283,6 @@ namespace MongoSessionStateStore
                     lockId: 0,
                     timeout: item.Timeout,
                     locked: false,
-                    jsonSessionItemsArray: jsonArraySession,
                     bsonSessioNItemsArray: bsonArraySession,
                     flags: 0);
 
@@ -299,7 +296,6 @@ namespace MongoSessionStateStore
                     filterBuilder.Eq("LockId", (Int32)lockId));
                 var update = Builders<BsonDocument>.Update.Set(
                     "Expires", DateTime.Now.AddMinutes(item.Timeout).ToUniversalTime()).Set(
-                    "SessionItemJSON", jsonArraySession).Set(
                     "SessionItemBSON", bsonArraySession).Set("Locked", false);
                 this.UpdateSessionCollection(sessionCollection, filter, update);
             }
@@ -363,7 +359,6 @@ namespace MongoSessionStateStore
 
             // DateTime to check if current session item is expired.
             // String to hold serialized SessionStateItemCollection.
-            BsonArray jsonSerializedItems = new BsonArray();
             BsonArray bsonSerializedItems = new BsonArray();
             // True if a record is found in the database.
             bool foundRecord = false;
@@ -410,7 +405,6 @@ namespace MongoSessionStateStore
                 else
                     foundRecord = true;
 
-                jsonSerializedItems = results["SessionItemJSON"].AsBsonArray;
                 bsonSerializedItems = results["SessionItemBSON"].AsBsonArray;
                 lockId = results["LockId"].AsInt32;
                 lockAge = DateTime.Now.ToUniversalTime().Subtract(results["LockDate"].ToUniversalTime());
@@ -447,7 +441,7 @@ namespace MongoSessionStateStore
                 // deserialize the stored SessionStateItemCollection.
                 item = actionFlags == SessionStateActions.InitializeItem
                     ? CreateNewStoreData(context, (int)_config.Timeout.TotalMinutes)
-                    : MongoSessionStateStoreHelpers.Deserialize(context, jsonSerializedItems, bsonSerializedItems, timeout);
+                    : MongoSessionStateStoreHelpers.Deserialize(context, bsonSerializedItems, timeout);
             }
 
             return item;
@@ -465,7 +459,6 @@ namespace MongoSessionStateStore
                 lockId: 0,
                 timeout: timeout,
                 locked: false,
-                jsonSessionItemsArray: new BsonArray(),
                 bsonSessioNItemsArray: new BsonArray(),
                 flags: 1);
 
