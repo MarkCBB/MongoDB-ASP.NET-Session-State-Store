@@ -71,6 +71,8 @@ For further information read about [parameters config](https://github.com/MarkCB
 
 [Here you'll find all release notes](https://github.com/MarkCBB/MongoDB-ASP.NET-Session-State-Store/wiki/Release-notes-history-and-compatibility-between-versions)
 
-**If you are moving from 1.0.0 to 2.0.0, as a major release, keep in mind [these compatibility notes.](https://github.com/MarkCBB/MongoDB-ASP.NET-Session-State-Store/wiki/Release-notes-history-and-compatibility-between-versions#v200)**
+**If you are moving from 1.X.X to 2.X.X, as a major release, keep in mind [these compatibility notes.](https://github.com/MarkCBB/MongoDB-ASP.NET-Session-State-Store/wiki/Release-notes-history-and-compatibility-between-versions#v200)**
+
+**If you are moving from 2.X.X to 3.X.X, as a major release, keep in mind [these compatibility notes.](https://github.com/MarkCBB/MongoDB-ASP.NET-Session-State-Store/wiki/Release-notes-history-and-compatibility-between-versions#v300)**
 
 To make session data without expiration time **do not use Session.Timeout value to 0** [disable TTL index creation](https://github.com/MarkCBB/MongoDB-ASP.NET-Session-State-Store/wiki/Web.config-parameters#autocreatettlindex)
