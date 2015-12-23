@@ -134,7 +134,7 @@ namespace MongoSessionStateStore
             _applicationName = System.Web.Hosting.HostingEnvironment.ApplicationVirtualPath;
 
             // Get <sessionState> configuration element.
-            Configuration cfg = WebConfigurationManager.OpenWebConfiguration(ApplicationName);
+            Configuration cfg = WebConfigurationManager.OpenWebConfiguration(_applicationName);
             _config = (SessionStateSection)cfg.GetSection("system.web/sessionState");
 
             //Changes the application name if specified and after get the Config reference
