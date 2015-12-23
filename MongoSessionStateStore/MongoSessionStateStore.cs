@@ -137,6 +137,11 @@ namespace MongoSessionStateStore
             Configuration cfg = WebConfigurationManager.OpenWebConfiguration(ApplicationName);
             _config = (SessionStateSection)cfg.GetSection("system.web/sessionState");
 
+            //Changes the application name if specified and after get the Config reference
+            var applicationName = this.GetConfigVal(config, "applicationName");
+            if (!string.IsNullOrEmpty(applicationName))
+                _applicationName = applicationName;
+
             // Initialize connection string.
             _connectionStringSettings = ConfigurationManager.ConnectionStrings[this.GetConfigVal(config, "connectionStringName")];
 
@@ -156,7 +161,6 @@ namespace MongoSessionStateStore
                 if (writeExceptionsToEventLogStr.ToUpper() == "TRUE")
                     _writeExceptionsToEventLog = true;
             }
-
 
             // Write concern options j (journal) and w (write ack #)
 
