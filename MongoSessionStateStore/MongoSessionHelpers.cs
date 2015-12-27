@@ -1,5 +1,6 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
+using System;
 using System.Web;
 using System.Web.SessionState;
 
@@ -18,7 +19,13 @@ namespace MongoSessionStateStore.Helpers
             if (sessionObj is BsonDocument)
                 return (T)BsonSerializer.Deserialize<T>(sessionObj as BsonDocument);
 
-            if (sessionObj is BsonValue)
+            var type = typeof(T);
+            if ((type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
+                && (Nullable.GetUnderlyingType(type).IsEnum))
+                return (T)Enum.Parse(Nullable.GetUnderlyingType(type), (string)BsonTypeMapper.MapToDotNetValue(sessionObj as BsonValue));
+                //return (T)Enum.Parse(typeof(Nullable.GetUnderlyingType(type)), (string)BsonTypeMapper.MapToDotNetValue(sessionObj as BsonValue));
+
+            if (sessionObj is BsonValue)     
                 return (T)BsonTypeMapper.MapToDotNetValue(sessionObj as BsonValue);
 
             return default(T);
@@ -57,7 +64,12 @@ namespace System.Web.Mvc
             string key,
             T newValue)
         {
-            session[key] = newValue;
+            var type = typeof(T);
+            if ((type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
+                && (Nullable.GetUnderlyingType(type).IsEnum))
+                session[key] = newValue.ToString();
+            else
+                session[key] = newValue;
         }
     }
 }
@@ -93,7 +105,12 @@ namespace System.Web
             string key,
             T newValue)
         {
-            session[key] = newValue;
+            var type = typeof(T);
+            if ((type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
+                && (Nullable.GetUnderlyingType(type).IsEnum))
+                session[key] = newValue.ToString();
+            else
+                session[key] = newValue;
         }
     }
 }
