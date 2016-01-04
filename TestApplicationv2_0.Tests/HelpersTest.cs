@@ -163,5 +163,133 @@ namespace TestApplicationv2_0.Tests
             string result = TestHelpers_v2_0.DoRequest(request2, cookieContainer);
             StringAssert.Contains(result, "<sessionVal>False</sessionVal>");
         }
+
+        [TestMethod]
+        public void SetEnumValue()
+        {
+            CookieContainer cookieContainer = new CookieContainer();
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(
+                    TestHelpers_v2_0.DEFAULT_WITH_HELPERS +
+                    TestHelpers_v2_0.SET_SESSION_VAL_ENUM_VALUE_WITH_HELPERS),
+                request2 = (HttpWebRequest)WebRequest.Create(
+                    TestHelpers_v2_0.DEFAULT_WITH_HELPERS +
+                    TestHelpers_v2_0.PRINT_SESSION_VAL_ENUM_VALUE);
+            string resultSet = TestHelpers_v2_0.DoRequest(request, cookieContainer);
+            StringAssert.Contains(resultSet, "<sessionVal>Black</sessionVal>");
+            string resultGet = TestHelpers_v2_0.DoRequest(request2, cookieContainer);
+            StringAssert.Contains(resultGet, "<sessionVal>Black</sessionVal>");
+        }
+
+        [TestMethod]
+        public void SetEnumValueNullable()
+        {
+            CookieContainer cookieContainer = new CookieContainer();
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(
+                    TestHelpers_v2_0.DEFAULT_WITH_HELPERS +
+                    TestHelpers_v2_0.SET_SESSION_VAL_ENUM_NULLABLE_VALUE_WITH_HELPERS),
+                request2 = (HttpWebRequest)WebRequest.Create(
+                    TestHelpers_v2_0.DEFAULT_WITH_HELPERS +
+                    TestHelpers_v2_0.PRINT_SESSION_VAL_ENUM_NULLABLE_VALUE);
+            string resultSet = TestHelpers_v2_0.DoRequest(request, cookieContainer);
+            StringAssert.Contains(resultSet, "<sessionVal>DarkBlue</sessionVal>");
+            string resultGet = TestHelpers_v2_0.DoRequest(request2, cookieContainer);
+            StringAssert.Contains(resultGet, "<sessionVal>DarkBlue</sessionVal>");
+        }
+
+        [TestMethod]
+        public void SetEnumValueNull()
+        {
+            CookieContainer cookieContainer = new CookieContainer();
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(
+                    TestHelpers_v2_0.DEFAULT_WITH_HELPERS +
+                    TestHelpers_v2_0.SET_SESSION_VAL_ENUM_NULL_VALUE_WITH_HELPERS),
+                request2 = (HttpWebRequest)WebRequest.Create(
+                    TestHelpers_v2_0.DEFAULT_WITH_HELPERS +
+                    TestHelpers_v2_0.PRINT_SESSION_VAL_ENUM_NULL_VALUE);
+            string resultSet = TestHelpers_v2_0.DoRequest(request, cookieContainer);
+            StringAssert.Contains(resultSet, "<sessionVal>OK</sessionVal>");
+            string resultGet = TestHelpers_v2_0.DoRequest(request2, cookieContainer);
+            StringAssert.Contains(resultGet, "<sessionVal>OK</sessionVal>");
+        }
+
+        [TestMethod]
+        public void SetNullPerson()
+        {
+            CookieContainer cookieContainer = new CookieContainer();
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(
+                    TestHelpers_v2_0.DEFAULT_WITH_HELPERS +
+                    TestHelpers_v2_0.SET_SESSION_VAL_PERSON_NULL_VALUE_WITH_HELPERS),
+                request2 = (HttpWebRequest)WebRequest.Create(
+                    TestHelpers_v2_0.DEFAULT_WITH_HELPERS +
+                    TestHelpers_v2_0.PRINT_SESSION_VAL_PERSON_NULL_VALUE);
+            string resultSet = TestHelpers_v2_0.DoRequest(request, cookieContainer);
+            StringAssert.Contains(resultSet, "<sessionVal>OK</sessionVal>");
+            string resultGet = TestHelpers_v2_0.DoRequest(request2, cookieContainer);
+            StringAssert.Contains(resultGet, "<sessionVal>OK</sessionVal>");
+        }
+
+        [TestMethod]
+        public void SetNullableInt()
+        {
+            CookieContainer cookieContainer = new CookieContainer();
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(
+                    TestHelpers_v2_0.DEFAULT_WITH_HELPERS +
+                    TestHelpers_v2_0.SET_SESSION_VAL_NULLABLE_INT_VALUE_WITH_HELPERS),
+                request2 = (HttpWebRequest)WebRequest.Create(
+                    TestHelpers_v2_0.DEFAULT_WITH_HELPERS +
+                    TestHelpers_v2_0.PRINT_SESSION_VAL_NULLABLE_INT_VALUE);
+            string resultSet = TestHelpers_v2_0.DoRequest(request, cookieContainer);
+            StringAssert.Contains(resultSet, "<sessionVal>3</sessionVal>");
+            string resultGet = TestHelpers_v2_0.DoRequest(request2, cookieContainer);
+            StringAssert.Contains(resultGet, "<sessionVal>3</sessionVal>");
+        }
+
+        [TestMethod]
+        public void SetNullableIntToNull()
+        {
+            CookieContainer cookieContainer = new CookieContainer();
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(
+                    TestHelpers_v2_0.DEFAULT_WITH_HELPERS +
+                    TestHelpers_v2_0.SET_SESSION_VAL_NULLABLE_INT_NULL_VALUE_WITH_HELPERS),
+                request2 = (HttpWebRequest)WebRequest.Create(
+                    TestHelpers_v2_0.DEFAULT_WITH_HELPERS +
+                    TestHelpers_v2_0.PRINT_SESSION_VAL_NULLABLE_INT_NULL_VALUE);
+            string resultSet = TestHelpers_v2_0.DoRequest(request, cookieContainer);
+            StringAssert.Contains(resultSet, "<sessionVal>OK</sessionVal>");
+            string resultGet = TestHelpers_v2_0.DoRequest(request2, cookieContainer);
+            StringAssert.Contains(resultGet, "<sessionVal>OK</sessionVal>");
+        }
+
+        [TestMethod]
+        public void SetNullableDecimalToNull()
+        {
+            CookieContainer cookieContainer = new CookieContainer();
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(
+                    TestHelpers_v2_0.DEFAULT_WITH_HELPERS +
+                    TestHelpers_v2_0.SET_SESSION_VAL_NULLABLE_DECINAL_NULL_VALUE_WITH_HELPERS),
+                request2 = (HttpWebRequest)WebRequest.Create(
+                    TestHelpers_v2_0.DEFAULT_WITH_HELPERS +
+                    TestHelpers_v2_0.PRINT_SESSION_VAL_NULLABLE_DECIMAL_NULL_VALUE);
+            string resultSet = TestHelpers_v2_0.DoRequest(request, cookieContainer);
+            StringAssert.Contains(resultSet, "<sessionVal>OK</sessionVal>");
+            string resultGet = TestHelpers_v2_0.DoRequest(request2, cookieContainer);
+            StringAssert.Contains(resultGet, "<sessionVal>OK</sessionVal>");
+        }
+
+        [TestMethod]
+        public void SetNullableDecimal()
+        {
+            CookieContainer cookieContainer = new CookieContainer();
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(
+                    TestHelpers_v2_0.DEFAULT_WITH_HELPERS +
+                    TestHelpers_v2_0.SET_SESSION_VAL_NULLABLE_DECINAL_VALUE_WITH_HELPERS),
+                request2 = (HttpWebRequest)WebRequest.Create(
+                    TestHelpers_v2_0.DEFAULT_WITH_HELPERS +
+                    TestHelpers_v2_0.PRINT_SESSION_VAL_NULLABLE_DECIMAL_VALUE);
+            string resultSet = TestHelpers_v2_0.DoRequest(request, cookieContainer);
+            StringAssert.Contains(resultSet, "<sessionVal>3,1416</sessionVal>");
+            string resultGet = TestHelpers_v2_0.DoRequest(request2, cookieContainer);
+            StringAssert.Contains(resultGet, "<sessionVal>3,1416</sessionVal>");
+        }
     }
 }

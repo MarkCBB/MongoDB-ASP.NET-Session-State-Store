@@ -15,15 +15,32 @@ namespace MongoSessionStateStore.Helpers
 
             if (sessionObj is T)
                 return (T)sessionObj;
+            
+            var type = typeof(T);
+            if (type == typeof(decimal?))
+            {
+                return (T)BsonTypeMapper.MapToDotNetValue(sessionObj as BsonDocument);
+            }
 
             if (sessionObj is BsonDocument)
                 return (T)BsonSerializer.Deserialize<T>(sessionObj as BsonDocument);
 
-            var type = typeof(T);
             if ((type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
                 && (Nullable.GetUnderlyingType(type).IsEnum))
-                return (T)Enum.Parse(Nullable.GetUnderlyingType(type), (string)BsonTypeMapper.MapToDotNetValue(sessionObj as BsonValue));
-                //return (T)Enum.Parse(typeof(Nullable.GetUnderlyingType(type)), (string)BsonTypeMapper.MapToDotNetValue(sessionObj as BsonValue));
+            {
+                if ((sessionObj == null) || (string.IsNullOrEmpty(sessionObj.ToString())))
+                    return default(T);
+
+                BsonValue bsonObject = sessionObj as BsonValue;
+                if (bsonObject != null)
+                    return (T)Enum.Parse(
+                        Nullable.GetUnderlyingType(type),
+                        (string)BsonTypeMapper.MapToDotNetValue(bsonObject));
+                else
+                    return (T)Enum.Parse(
+                        Nullable.GetUnderlyingType(type),
+                        (string)sessionObj);
+            }
 
             if (sessionObj is BsonValue)     
                 return (T)BsonTypeMapper.MapToDotNetValue(sessionObj as BsonValue);

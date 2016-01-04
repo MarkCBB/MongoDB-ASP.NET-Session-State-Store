@@ -38,7 +38,23 @@ namespace TestApplication2_0.Tests
         public static string SET_SESSION_VAL_INT_WITH_HELPERS = "SetSessionValInt/";
         public static string PRINT_SESSION_VAL_INT = "PrintSessionValInt/";
         public static string SET_SESSION_VAL_BOOL_WITH_HELPERS = "SetSessionValBool/";
+        public static string SET_SESSION_VAL_ENUM_VALUE_WITH_HELPERS = "SetEnumValue/";
+        public static string SET_SESSION_VAL_ENUM_NULLABLE_VALUE_WITH_HELPERS = "SetEnumValueNullable/";
+        public static string SET_SESSION_VAL_ENUM_NULL_VALUE_WITH_HELPERS = "SetEnumValueNull/";
+        public static string SET_SESSION_VAL_PERSON_NULL_VALUE_WITH_HELPERS = "SetNullPersonValue/";
+        public static string SET_SESSION_VAL_NULLABLE_INT_VALUE_WITH_HELPERS = "SetNullableInt/";
+        public static string SET_SESSION_VAL_NULLABLE_INT_NULL_VALUE_WITH_HELPERS = "SetNullableIntToNull/";
+        public static string SET_SESSION_VAL_NULLABLE_DECINAL_NULL_VALUE_WITH_HELPERS = "SetNullableDecimalToNull/";
+        public static string SET_SESSION_VAL_NULLABLE_DECINAL_VALUE_WITH_HELPERS = "SetNullableDecimal/";
         public static string PRINT_SESSION_VAL_BOOL = "PrintSessionValBool/";
+        public static string PRINT_SESSION_VAL_ENUM_VALUE = "GetEnumValue/";
+        public static string PRINT_SESSION_VAL_ENUM_NULLABLE_VALUE = "GetEnumValueNullable/";
+        public static string PRINT_SESSION_VAL_ENUM_NULL_VALUE = "GetEnumValueNull/";
+        public static string PRINT_SESSION_VAL_PERSON_NULL_VALUE = "GetNullPersonValue/";
+        public static string PRINT_SESSION_VAL_NULLABLE_INT_VALUE = "GetNullableInt/";
+        public static string PRINT_SESSION_VAL_NULLABLE_INT_NULL_VALUE = "GetNullableIntToNull/";
+        public static string PRINT_SESSION_VAL_NULLABLE_DECIMAL_NULL_VALUE = "GetNullableDecimalToNull/";
+        public static string PRINT_SESSION_VAL_NULLABLE_DECIMAL_VALUE = "GetNullableDecimal/";
 
         public static string DEFAULT_WITH_BSON = "http://localhost/TestApplicationv2_0/BsonDocument/";
         public static string SET_BSON_VAL = "SetPerson/";
