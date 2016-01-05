@@ -26,9 +26,9 @@ namespace MongoSessionStateStore.Serialization
                 _serializer = new RawSerialization();           
         }
 
-        public BsonArray Serialize(SessionStateStoreData item)
+        public BsonArray Serialize(SessionStateStoreData sessionData)
         {
-            return _serializer.Serialize(item);
+            return _serializer.Serialize(sessionData);
         }
 
         public SessionStateStoreData Deserialize(

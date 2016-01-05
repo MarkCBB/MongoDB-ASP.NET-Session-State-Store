@@ -11,13 +11,13 @@ namespace MongoSessionStateStore.Serialization
 {
     internal class BsonSerialization : ISerialization
     {
-        public BsonArray Serialize(SessionStateStoreData item)
+        public BsonArray Serialize(SessionStateStoreData sessionData)
         {
             BsonArray bsonArraySession = new BsonArray();
-            for (int i = 0; i < item.Items.Count; i++)
+            for (int i = 0; i < sessionData.Items.Count; i++)
             {
-                string key = item.Items.Keys[i];
-                var sessionObj = item.Items[key];
+                string key = sessionData.Items.Keys[i];
+                var sessionObj = sessionData.Items[key];
                 if (sessionObj is BsonValue)
                 {
                     bsonArraySession.Add(new BsonDocument(key, sessionObj as BsonValue));

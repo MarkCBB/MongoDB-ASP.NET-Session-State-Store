@@ -11,7 +11,7 @@ namespace MongoSessionStateStore.Serialization
 {
     internal interface ISerialization
     {
-        BsonArray Serialize(SessionStateStoreData item);
+        BsonArray Serialize(SessionStateStoreData sessionData);
         SessionStateStoreData Deserialize(HttpContext context, BsonArray bsonSerializedItems, int timeout);
     }
 }
