@@ -58,6 +58,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Serialization\BsonSerialization.cs" />
+    <Compile Include="Serialization\ISerialization.cs" />
+    <Compile Include="Serialization\SerializationProxy.cs" />
+    <Compile Include="Serialization\RawSerialization.cs" />
     <None Include="MongoSessionHelpers.cs" />
     <Compile Include="MongoSessionStateStore.cs" />
     <Compile Include="MongoSessionStateStoreHelpers.cs" />

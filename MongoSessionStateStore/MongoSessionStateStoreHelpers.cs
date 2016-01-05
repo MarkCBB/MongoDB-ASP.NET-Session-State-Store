@@ -10,11 +10,21 @@ using System.Text;
 using System.Web;
 using System.Web.SessionState;
 using System.Threading.Tasks;
+using MongoSessionStateStore.Serialization;
 
 namespace MongoSessionStateStore
 {
     internal static class MongoSessionStateStoreHelpers
     {
+        internal static SerializationProxy __serializer;
+
+        internal static void InitSerializationProxy(
+            this MongoSessionStateStore obj, 
+            SerializationProxy.SerializerType serializerType)
+        {
+            __serializer = new SerializationProxy(serializerType);
+        }
+
         internal static string GetConfigVal(
             this MongoSessionStateStore obj,
             System.Collections.Specialized.NameValueCollection config,
@@ -191,25 +201,7 @@ namespace MongoSessionStateStore
             SessionStateStoreData item,
             out BsonArray bsonArraySession)
         {
-            bsonArraySession = new BsonArray();
-            for (int i = 0; i < item.Items.Count; i++)
-            {
-                string key = item.Items.Keys[i];
-                var sessionObj = item.Items[key];
-                if (sessionObj is BsonValue)
-                {
-                    bsonArraySession.Add(new BsonDocument(key, sessionObj as BsonValue));
-                }
-                else
-                {
-                    BsonValue singleValue;
-
-                    if (BsonTypeMapper.TryMapToBsonValue(sessionObj, out singleValue))
-                        bsonArraySession.Add(new BsonDocument(key, singleValue));
-                    else
-                        bsonArraySession.Add(new BsonDocument(key, sessionObj.ToBsonDocument()));
-                }
-            }            
+            bsonArraySession = __serializer.Serialize(item);
         }
 
         internal static SessionStateStoreData Deserialize(
@@ -217,18 +209,7 @@ namespace MongoSessionStateStore
             BsonArray bsonSerializedItems,
             int timeout)
         {
-            var sessionItems = new SessionStateItemCollection();
-
-            foreach(var value in bsonSerializedItems.Values)
-            {
-                var document = value as BsonDocument;
-                string name = document.Names.FirstOrDefault();
-                sessionItems[name] = document.Values.FirstOrDefault();
-            }
-
-            return new SessionStateStoreData(sessionItems,
-              SessionStateUtility.GetSessionStaticObjects(context),
-              timeout);
+            return __serializer.Deserialize(context, bsonSerializedItems, timeout);
         }
 
         

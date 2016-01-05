@@ -10,6 +10,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Web;
 using System.Linq;
+using MongoSessionStateStore.Serialization;
 
 namespace MongoSessionStateStore
 {
@@ -243,7 +244,18 @@ namespace MongoSessionStateStore
             if (!string.IsNullOrEmpty(BSONDefaultSerializeStr))
                 throw new Exception("The Json serialization is no longer supported from version 3.0.0. "
                     + "BSONDefaultSerialize parameter has been removed and all data are serialized as BSON value.");
-            
+
+            var serializerTypeStr = this.GetConfigVal(config, "SerializationType");
+            if (string.IsNullOrEmpty(serializerTypeStr))
+                this.InitSerializationProxy(SerializationProxy.SerializerType.BsonSerialization);
+            else
+                if (string.Compare(serializerTypeStr, "RAW", true) == 0)
+                    this.InitSerializationProxy(SerializationProxy.SerializerType.RawSerialization);
+                else
+                    if (string.Compare(serializerTypeStr, "BSON", true) == 0)
+                        this.InitSerializationProxy(SerializationProxy.SerializerType.BsonSerialization);
+                    else
+                        throw new Exception("The parameter SerializationType must be RAW, BSON or omitted");
         }
 
         public override SessionStateStoreData CreateNewStoreData(HttpContext context, int timeout)
