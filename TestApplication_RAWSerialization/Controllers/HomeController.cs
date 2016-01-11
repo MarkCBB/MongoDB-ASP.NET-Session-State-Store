@@ -9,9 +9,9 @@ namespace TestApplication_RAWSerialization.Controllers
 {
     public class HomeController : Controller
     {
-        private const string KEY_NAME = "value";
-        private const string KEY_NAME2 = "value2";
-        private const string KEY_NAME3 = "value3";
+        public const string KEY_NAME = "value";
+        public const string KEY_NAME2 = "value2";
+        public const string KEY_NAME3 = "value3";
         public const string VIEW_DATA_VAL = "sessionVal";
 
         public ActionResult SetIntVal(int val = 3)
@@ -115,6 +115,6 @@ namespace TestApplication_RAWSerialization.Controllers
                 ViewBag.sessionVal = "False";
 
             return View("~/Views/Home/Index.aspx");
-        }
+        }        
     }
 }
