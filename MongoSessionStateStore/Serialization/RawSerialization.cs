@@ -47,11 +47,18 @@ namespace MongoSessionStateStore.Serialization
                 string name = document.Names.FirstOrDefault();
                 string value = document.Values.FirstOrDefault().AsString;
 
-                using (var ms = new MemoryStream(Convert.FromBase64String(value)))
+                try
                 {
-                    IFormatter formatter = new BinaryFormatter();
-                    var item = formatter.Deserialize(ms);
-                    sessionItems[name] = item;
+                    using (var ms = new MemoryStream(Convert.FromBase64String(value)))
+                    {
+                        IFormatter formatter = new BinaryFormatter();
+                        var item = formatter.Deserialize(ms);
+                        sessionItems[name] = item;
+                    }
+                }
+                catch (Exception)
+                {
+                    sessionItems[name] = new { SerializedString = value };
                 }
             }
 
