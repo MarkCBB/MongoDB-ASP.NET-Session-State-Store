@@ -247,15 +247,24 @@ namespace MongoSessionStateStore
 
             var serializerTypeStr = this.GetConfigVal(config, "SerializationType");
             if (string.IsNullOrEmpty(serializerTypeStr))
+            {
                 this.InitSerializationProxy(SerializationProxy.SerializerType.BsonSerialization);
+            }
             else
-                if (string.Compare(serializerTypeStr, "RAW", true) == 0)
-                    this.InitSerializationProxy(SerializationProxy.SerializerType.RawSerialization);
-                else
-                    if (string.Compare(serializerTypeStr, "BSON", true) == 0)
+            {
+                serializerTypeStr = serializerTypeStr.ToUpper();
+                switch (serializerTypeStr)
+                {
+                    case "RAW":
+                        this.InitSerializationProxy(SerializationProxy.SerializerType.RawSerialization);
+                        break;
+                    case "BSON":
                         this.InitSerializationProxy(SerializationProxy.SerializerType.BsonSerialization);
-                    else
+                        break;
+                    default:
                         throw new Exception("The parameter SerializationType must be RAW, BSON or omitted");
+                }
+            }
         }
 
         public override SessionStateStoreData CreateNewStoreData(HttpContext context, int timeout)
