@@ -65,6 +65,7 @@
     <Compile Include="Serialization\ISerialization.cs" />
     <Compile Include="Serialization\SerializationProxy.cs" />
     <Compile Include="Serialization\RawSerialization.cs" />
+    <Compile Include="Serialization\UnSerializedItem.cs" />
     <None Include="MongoSessionHelpers.cs" />
     <Compile Include="MongoSessionStateStore.cs" />
     <Compile Include="MongoSessionStateStoreHelpers.cs" />

@@ -56,9 +56,9 @@ namespace MongoSessionStateStore.Serialization
                         sessionItems[name] = item;
                     }
                 }
-                catch (Exception)
+                catch (SerializationException)
                 {
-                    sessionItems[name] = new { SerializedString = value };
+                    sessionItems[name] = new UnSerializedItem { SerializedString = value };
                 }
             }
 
