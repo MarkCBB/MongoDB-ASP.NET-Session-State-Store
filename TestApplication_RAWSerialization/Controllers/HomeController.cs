@@ -66,18 +66,18 @@ namespace TestApplication_RAWSerialization.Controllers
             int settedValInt = 3;
             Session[KEY_NAME2] = settedValInt;
 
-            Person personGetted = (Person)Session[KEY_NAME];
-            PersonPetsList personPetsListGetted = (PersonPetsList)Session[KEY_NAME3];
-            int gettedValInt = (int)Session[KEY_NAME2];
+            Person personGet = (Person)Session[KEY_NAME];
+            PersonPetsList personPetsListGet = (PersonPetsList)Session[KEY_NAME3];
+            int getValInt = (int)Session[KEY_NAME2];
 
-            if ((settedValInt == gettedValInt) &&
-                (personSetted.Name == personGetted.Name) &&
-                (personSetted.Surname == personGetted.Surname) &&
-                (personSetted.City == personGetted.City) &&
-                (personPetsListGetted.Name == personPetsSetted.Name) &&
-                (personPetsListGetted.Surname == personPetsSetted.Surname) &&
-                (personPetsListGetted.PetsList[0] == personPetsSetted.PetsList[0]) &&
-                (personPetsListGetted.PetsList[1] == personPetsSetted.PetsList[1]))
+            if ((settedValInt == getValInt) &&
+                (personSetted.Name == personGet.Name) &&
+                (personSetted.Surname == personGet.Surname) &&
+                (personSetted.City == personGet.City) &&
+                (personPetsListGet.Name == personPetsSetted.Name) &&
+                (personPetsListGet.Surname == personPetsSetted.Surname) &&
+                (personPetsListGet.PetsList[0] == personPetsSetted.PetsList[0]) &&
+                (personPetsListGet.PetsList[1] == personPetsSetted.PetsList[1]))
                 ViewBag.sessionVal = "True";
             else
                 ViewBag.sessionVal = "False";
@@ -98,18 +98,18 @@ namespace TestApplication_RAWSerialization.Controllers
 
             int settedValInt = 3;
 
-            Person personGetted = (Person)Session[KEY_NAME];
-            PersonPetsList personPetsListGetted = (PersonPetsList)Session[KEY_NAME3];
-            int gettedValInt = (int)Session[KEY_NAME2];
+            Person personGet = (Person)Session[KEY_NAME];
+            PersonPetsList personPetsListGet = (PersonPetsList)Session[KEY_NAME3];
+            int getValInt = (int)Session[KEY_NAME2];
 
-            if ((settedValInt == gettedValInt) &&
-                (personSetted.Name == personGetted.Name) &&
-                (personSetted.Surname == personGetted.Surname) &&
-                (personSetted.City == personGetted.City) &&
-                (personPetsListGetted.Name == personPetsSetted.Name) &&
-                (personPetsListGetted.Surname == personPetsSetted.Surname) &&
-                (personPetsListGetted.PetsList[0] == personPetsSetted.PetsList[0]) &&
-                (personPetsListGetted.PetsList[1] == personPetsSetted.PetsList[1]))
+            if ((settedValInt == getValInt) &&
+                (personSetted.Name == personGet.Name) &&
+                (personSetted.Surname == personGet.Surname) &&
+                (personSetted.City == personGet.City) &&
+                (personPetsListGet.Name == personPetsSetted.Name) &&
+                (personPetsListGet.Surname == personPetsSetted.Surname) &&
+                (personPetsListGet.PetsList[0] == personPetsSetted.PetsList[0]) &&
+                (personPetsListGet.PetsList[1] == personPetsSetted.PetsList[1]))
                 ViewBag.sessionVal = "True";
             else
                 ViewBag.sessionVal = "False";

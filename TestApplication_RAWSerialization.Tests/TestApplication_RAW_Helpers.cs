@@ -11,6 +11,7 @@ namespace TestApplication_RAWSerialization.Tests
     internal static class TestApplication_RAW_Helpers
     {
         public static string BASE_URL = "http://localhost/TestApplication_RAWSerialization/{0}/{1}";
+        public static string BASE_URL_2 = "http://localhost/TestApplication_RAWSerializationWithoutTypeReference/{0}/{1}";
 
         public static string DoRequest(
             string url,

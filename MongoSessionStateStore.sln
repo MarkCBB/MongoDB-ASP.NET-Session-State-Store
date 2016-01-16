@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.21005.1
+# Visual Studio Express 2013 for Web
+VisualStudioVersion = 12.0.30501.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MongoSessionStateStore", "MongoSessionStateStore\MongoSessionStateStore.csproj", "{2F0DD54F-6EF0-4DDD-9737-6D174B9E4E9D}"
 EndProject
@@ -12,6 +12,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestApplication_RAWSerialization", "TestApplication_RAWSerialization\TestApplication_RAWSerialization.csproj", "{13161286-7BFA-4290-A4A9-937156F53AF8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestApplication_RAWSerialization.Tests", "TestApplication_RAWSerialization.Tests\TestApplication_RAWSerialization.Tests.csproj", "{1AC4B4D1-CDAF-4B9B-8BA8-0940CEF2E6FA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestApplication_RAWSerializationWithoutTypeReference", "TestApplication_RAWSerializationWithoutTypeReference\TestApplication_RAWSerializationWithoutTypeReference.csproj", "{D8DD5EB3-1775-4F25-8165-6CFEFD3052A0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{1AC4B4D1-CDAF-4B9B-8BA8-0940CEF2E6FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1AC4B4D1-CDAF-4B9B-8BA8-0940CEF2E6FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1AC4B4D1-CDAF-4B9B-8BA8-0940CEF2E6FA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D8DD5EB3-1775-4F25-8165-6CFEFD3052A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D8DD5EB3-1775-4F25-8165-6CFEFD3052A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D8DD5EB3-1775-4F25-8165-6CFEFD3052A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D8DD5EB3-1775-4F25-8165-6CFEFD3052A0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
