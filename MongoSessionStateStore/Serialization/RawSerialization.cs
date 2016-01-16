@@ -25,8 +25,16 @@ namespace MongoSessionStateStore.Serialization
                 using (var ms = new MemoryStream())
                 {
                     IFormatter formatter = new BinaryFormatter();
-                    formatter.Serialize(ms, sessionObj);
-                    var serializedItem = Convert.ToBase64String(ms.ToArray());
+                    string serializedItem;
+                    if(sessionObj is UnSerializedItem)
+                    {
+                        serializedItem = ((UnSerializedItem)sessionObj).SerializedString;
+                    }
+                    else
+                    {
+                        formatter.Serialize(ms, sessionObj);
+                        serializedItem = Convert.ToBase64String(ms.ToArray());
+                    }
                     bsonArraySession.Add(new BsonDocument(key, serializedItem));
                 }
             }
