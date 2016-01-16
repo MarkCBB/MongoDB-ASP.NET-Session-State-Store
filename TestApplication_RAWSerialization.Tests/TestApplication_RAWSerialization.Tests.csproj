@@ -99,6 +99,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PrimitiveTypes.cs" />
+    <Compile Include="TestApplication_RAW_Helpers.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App.config" />
