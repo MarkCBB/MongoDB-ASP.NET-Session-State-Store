@@ -29,11 +29,12 @@ namespace TestApplication_RAWSerialization.Controllers
             return View("~/Views/Home/Index.aspx");
         }
 
-        public ActionResult SetIntNullableVal(int val = 3)
+        public ActionResult SetIntNullableVal()
         {
-            Session["SetInteger"] = val;
+            int? valForSet = 3;
+            Session["SetNullableInteger"] = valForSet;
             int? valForGet = (int?)Session["SetNullableInteger"];
-            ViewBag.sessionVal = valForGet;
+            ViewBag.sessionVal = valForGet.ToString();
             return View("~/Views/Home/Index.aspx");
         }
 
