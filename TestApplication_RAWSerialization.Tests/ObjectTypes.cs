@@ -59,7 +59,7 @@ namespace TestApplication_RAWSerialization.Tests
             string url1 = string.Format(TestApplication_RAW_Helpers.BASE_URL,
                 TestApplication_RAW_Helpers.CONTROLLER, "GetAndSetSameRequestObjects");
             string url2 = string.Format(TestApplication_RAW_Helpers.BASE_URL_2,
-                "Home", "Index");
+                TestApplication_RAW_Helpers.CONTROLLER, "Index");
             string url3 = string.Format(TestApplication_RAW_Helpers.BASE_URL,
                 TestApplication_RAW_Helpers.CONTROLLER, "GetObjects");
             string url4 = string.Format(TestApplication_RAW_Helpers.BASE_URL,
@@ -74,6 +74,22 @@ namespace TestApplication_RAWSerialization.Tests
             StringAssert.Contains(result2, "<sessionVal>True</sessionVal>");
             StringAssert.Contains(result3, "<sessionVal>True</sessionVal>");
             StringAssert.Contains(result4, "<sessionVal>True</sessionVal>");
+        }
+
+        [TestMethod]
+        public void TestObjectsNullValues()
+        {
+            CookieContainer cookie = new CookieContainer();
+            string url1 = string.Format(TestApplication_RAW_Helpers.BASE_URL,
+                TestApplication_RAW_Helpers.CONTROLLER, "SetNullObject");
+            string url2 = string.Format(TestApplication_RAW_Helpers.BASE_URL,
+                TestApplication_RAW_Helpers.CONTROLLER, "GetNullObject");
+
+            string result1 = TestApplication_RAW_Helpers.DoRequest(url1, cookie);
+            string result2 = TestApplication_RAW_Helpers.DoRequest(url2, cookie);
+
+            StringAssert.Contains(result1, "<sessionVal>OK</sessionVal>");
+            StringAssert.Contains(result2, "<sessionVal>OK</sessionVal>");
         }
     }
 }

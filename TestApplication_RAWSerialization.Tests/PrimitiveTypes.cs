@@ -24,6 +24,36 @@ namespace TestApplication_RAWSerialization.Tests
         }
 
         [TestMethod]
+        public void TestNullableInt()
+        {
+            CookieContainer cookie = new CookieContainer();
+            string url1 = string.Format(TestApplication_RAW_Helpers.BASE_URL,
+                TestApplication_RAW_Helpers.CONTROLLER, "SetIntNullableVal");
+            string url2 = string.Format(TestApplication_RAW_Helpers.BASE_URL,
+                TestApplication_RAW_Helpers.CONTROLLER, "GetIntNullableVal");
+
+            string result = TestApplication_RAW_Helpers.DoRequest(url1, cookie);
+            string result2 = TestApplication_RAW_Helpers.DoRequest(url2, cookie);
+            StringAssert.Contains(result, "<sessionVal>3</sessionVal>");
+            StringAssert.Contains(result2, "<sessionVal>3</sessionVal>");
+        }
+
+        [TestMethod]
+        public void TestNullInt()
+        {
+            CookieContainer cookie = new CookieContainer();
+            string url1 = string.Format(TestApplication_RAW_Helpers.BASE_URL,
+                TestApplication_RAW_Helpers.CONTROLLER, "SetIntNullVal");
+            string url2 = string.Format(TestApplication_RAW_Helpers.BASE_URL,
+                TestApplication_RAW_Helpers.CONTROLLER, "GetIntNullVal");
+
+            string result = TestApplication_RAW_Helpers.DoRequest(url1, cookie);
+            string result2 = TestApplication_RAW_Helpers.DoRequest(url2, cookie);
+            StringAssert.Contains(result, "<sessionVal>OK</sessionVal>");
+            StringAssert.Contains(result2, "<sessionVal>OK</sessionVal>");
+        }
+
+        [TestMethod]
         public void TestString()
         {
             CookieContainer cookie = new CookieContainer();

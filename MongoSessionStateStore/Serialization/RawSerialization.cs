@@ -32,7 +32,11 @@ namespace MongoSessionStateStore.Serialization
                     }
                     else
                     {
-                        formatter.Serialize(ms, sessionObj);
+                        if (sessionObj == null)
+                            formatter.Serialize(ms, "null");
+                        else
+                            formatter.Serialize(ms, sessionObj);
+
                         serializedItem = Convert.ToBase64String(ms.ToArray());
                     }
                     bsonArraySession.Add(new BsonDocument(key, serializedItem));

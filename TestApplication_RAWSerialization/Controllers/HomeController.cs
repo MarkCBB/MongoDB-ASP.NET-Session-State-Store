@@ -29,6 +29,37 @@ namespace TestApplication_RAWSerialization.Controllers
             return View("~/Views/Home/Index.aspx");
         }
 
+        public ActionResult SetIntNullableVal(int val = 3)
+        {
+            Session["SetInteger"] = val;
+            int? valForGet = (int?)Session["SetNullableInteger"];
+            ViewBag.sessionVal = valForGet;
+            return View("~/Views/Home/Index.aspx");
+        }
+
+        public ActionResult GetIntNullableVal()
+        {
+            int? valForGet = (int?)Session["SetNullableInteger"];
+            ViewBag.sessionVal = valForGet;
+            return View("~/Views/Home/Index.aspx");
+        }
+
+        public ActionResult SetIntNullVal()
+        {
+            int? val = null;
+            Session["SetInteger"] = val;
+            int? valForGet = Session["SetIntegerNull"] as int?;
+            ViewBag.sessionVal = (valForGet == null) ? "OK" : "KO";
+            return View("~/Views/Home/Index.aspx");
+        }
+
+        public ActionResult GetIntNullVal()
+        {
+            int? valForGet = (int?)Session["SetIntegerNull"];
+            ViewBag.sessionVal = (valForGet == null) ? "OK" : "KO";
+            return View("~/Views/Home/Index.aspx");
+        }
+
         public ActionResult TestStaticString()
         {
             ViewBag.sessionVal = "OK";
@@ -115,6 +146,22 @@ namespace TestApplication_RAWSerialization.Controllers
                 ViewBag.sessionVal = "False";
 
             return View("~/Views/Home/Index.aspx");
-        }        
+        }
+
+        public ActionResult SetNullObject()
+        {
+            Person personSet = null;
+            Session["PersonNull"] = personSet;
+            Person personGet = Session["PersonNull"] as Person;
+            ViewBag.sessionVal = (personGet == null) ? "OK" : "KO";
+            return View("~/Views/Home/Index.aspx");
+        }
+
+        public ActionResult GetNullObject()
+        {
+            Person personGet = Session["PersonNull"] as Person;
+            ViewBag.sessionVal = (personGet == null) ? "OK" : "KO";
+            return View("~/Views/Home/Index.aspx");
+        }
     }
 }
