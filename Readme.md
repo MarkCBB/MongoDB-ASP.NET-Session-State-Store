@@ -30,7 +30,13 @@ To use the 4.0 version of .NET framework [install the version 2.0.0 of this cont
     </system.web>
 ```
 
-Now you can get started using MongoDB Session State Store. 
+**Now you can get started using MongoDB Session State Store.**
+
+Chose one of these serialization types: [Bson](https://github.com/MarkCBB/MongoDB-ASP.NET-Session-State-Store/tree/Branch_raw_serialization#bson-serialization) (default) or [RAW](https://github.com/MarkCBB/MongoDB-ASP.NET-Session-State-Store/tree/Branch_raw_serialization#raw-serialization). See the [documentation about types of serialization](https://github.com/MarkCBB/MongoDB-ASP.NET-Session-State-Store/wiki/Types-of-serialization) to select the most suitable for you and the advantages and disadvantages.
+
+##Bson serialization (default)
+
+To get started working with Bson serialization you don't need to set any parameter to any value, it's the default serialization.
 
 A helper file is provided with the nuget package and this file will be available in the target project when package has been installed. **It's strongly recommended to use these helpers** as shown in the examples. Also you can extend it.
 
@@ -66,6 +72,12 @@ Session["counter"] = 1;
 //Get value from another request
 int n = Session["counter"];
 ```
+
+##RAW serialization
+
+To get started working with RAW serialization you need to set the parameter SerializationType to RAW value in the web.config file. See [parameters detail](https://github.com/MarkCBB/MongoDB-ASP.NET-Session-State-Store/wiki/Web.config-parameters#parameters-detail) to view documentation and a complete example.
+
+TODO: add examples
 
 For further information read about [parameters config](https://github.com/MarkCBB/MongoDB-ASP.NET-Session-State-Store/wiki/Web.config-parameters#parameters-detail)
 
