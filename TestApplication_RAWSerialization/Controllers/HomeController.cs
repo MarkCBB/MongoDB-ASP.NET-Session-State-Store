@@ -29,6 +29,22 @@ namespace TestApplication_RAWSerialization.Controllers
             return View("~/Views/Home/Index.aspx");
         }
 
+        public ActionResult SetDoubleVal()
+        {
+            double val = 3.1416;
+            Session["SetInteger"] = val;
+            double valForGet = (double)Session["SetInteger"];
+            ViewBag.sessionVal = valForGet;
+            return View("~/Views/Home/Index.aspx");
+        }
+
+        public ActionResult GetDoubleVal()
+        {
+            double valForGet = (double)Session["SetInteger"];
+            ViewBag.sessionVal = valForGet;
+            return View("~/Views/Home/Index.aspx");
+        }
+
         public ActionResult SetIntNullableVal()
         {
             int? valForSet = 3;

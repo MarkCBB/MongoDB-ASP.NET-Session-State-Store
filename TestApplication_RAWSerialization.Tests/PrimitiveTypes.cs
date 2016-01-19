@@ -39,6 +39,21 @@ namespace TestApplication_RAWSerialization.Tests
         }
 
         [TestMethod]
+        public void TestDouble()
+        {
+            CookieContainer cookie = new CookieContainer();
+            string url1 = string.Format(TestApplication_RAW_Helpers.BASE_URL,
+                TestApplication_RAW_Helpers.CONTROLLER, "SetDoubleVal");
+            string url2 = string.Format(TestApplication_RAW_Helpers.BASE_URL,
+                TestApplication_RAW_Helpers.CONTROLLER, "GetDoubleVal");
+
+            string result = TestApplication_RAW_Helpers.DoRequest(url1, cookie);
+            string result2 = TestApplication_RAW_Helpers.DoRequest(url2, cookie);
+            StringAssert.Contains(result, "<sessionVal>3,1416</sessionVal>");
+            StringAssert.Contains(result2, "<sessionVal>3,1416</sessionVal>");
+        }
+
+        [TestMethod]
         public void TestNullInt()
         {
             CookieContainer cookie = new CookieContainer();
