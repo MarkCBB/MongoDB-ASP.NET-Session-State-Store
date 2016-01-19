@@ -111,15 +111,10 @@ namespace TestApplication_RAWSerialization.Controllers
             };
             Session[KEY_NAME3] = personPetsSetted;
 
-            int settedValInt = 3;
-            Session[KEY_NAME2] = settedValInt;
-
             Person personGet = (Person)Session[KEY_NAME];
             PersonPetsList personPetsListGet = (PersonPetsList)Session[KEY_NAME3];
-            int getValInt = (int)Session[KEY_NAME2];
 
-            if ((settedValInt == getValInt) &&
-                (personSetted.Name == personGet.Name) &&
+            if ((personSetted.Name == personGet.Name) &&
                 (personSetted.Surname == personGet.Surname) &&
                 (personSetted.City == personGet.City) &&
                 (personPetsListGet.Name == personPetsSetted.Name) &&
@@ -144,20 +139,16 @@ namespace TestApplication_RAWSerialization.Controllers
                 PetsList = new List<string>() { "cat", "dog" }
             };
 
-            int settedValInt = 3;
-
             Person personGet = (Person)Session[KEY_NAME];
             PersonPetsList personPetsListGet = (PersonPetsList)Session[KEY_NAME3];
-            int getValInt = (int)Session[KEY_NAME2];
 
-            if ((settedValInt == getValInt) &&
-                (personSetted.Name == personGet.Name) &&
-                (personSetted.Surname == personGet.Surname) &&
-                (personSetted.City == personGet.City) &&
-                (personPetsListGet.Name == personPetsSetted.Name) &&
-                (personPetsListGet.Surname == personPetsSetted.Surname) &&
-                (personPetsListGet.PetsList[0] == personPetsSetted.PetsList[0]) &&
-                (personPetsListGet.PetsList[1] == personPetsSetted.PetsList[1]))
+            if ((personSetted.Name == personGet.Name) &&
+                    (personSetted.Surname == personGet.Surname) &&
+                    (personSetted.City == personGet.City) &&
+                    (personPetsListGet.Name == personPetsSetted.Name) &&
+                    (personPetsListGet.Surname == personPetsSetted.Surname) &&
+                    (personPetsListGet.PetsList[0] == personPetsSetted.PetsList[0]) &&
+                    (personPetsListGet.PetsList[1] == personPetsSetted.PetsList[1]))
                 ViewBag.sessionVal = "True";
             else
                 ViewBag.sessionVal = "False";

@@ -15,12 +15,10 @@ namespace TestApplication_RAWSerialization.Controllers
         {
             dynamic personGet = Session[HomeController.KEY_NAME];
             dynamic personPetsListGet = Session[HomeController.KEY_NAME3];
-            dynamic getValInt = Session[HomeController.KEY_NAME2];
 
             // We use literal values because we don't have any reference to the
             // real object type
-            if ((3 == getValInt) &&
-                ("Marc" == personGet.Name) &&
+            if (("Marc" == personGet.Name) &&
                 ("Cortada" == personGet.Surname) &&
                 ("Barcelona" == personGet.City) &&
                 ("Marc2" == personPetsListGet.Name) &&
