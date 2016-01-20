@@ -3,9 +3,7 @@ Usage
 
 1 - Install the [nuGet package](https://www.nuget.org/packages/MongoSessionStateStore/) into your solution.
 
-The current version is built in 4.5 version of .NET framework.
-
-To use the 4.0 version of .NET framework [install the version 2.0.0 of this controller](https://www.nuget.org/packages/MongoSessionStateStore/2.0.0) with the following command in the Package Manager Console: **Install-Package MongoSessionStateStore -Version 2.0.0**
+The current version is built in 4.5 version of .NET framework. To use the 4.0 version of .NET framework [install the version 2.0.0 of this controller](https://www.nuget.org/packages/MongoSessionStateStore/2.0.0) with the following command in the Package Manager Console: ```Install-Package MongoSessionStateStore -Version 2.0.0```
 
 2 - Into web.config file add a <connectionStrings> section as detailed following **set connection parameters properly.**
 ```xml
@@ -75,7 +73,7 @@ int n = Session["counter"];
 
 ##RAW serialization
 
-To get started working with RAW serialization you need to set the parameter SerializationType to RAW value in the web.config file. See [parameters detail](https://github.com/MarkCBB/MongoDB-ASP.NET-Session-State-Store/wiki/Web.config-parameters#parameters-detail) to view documentation and a complete example.
+To get started working with RAW serialization you need to set the parameter SerializationType to RAW value in the web.config file. See [parameters detail](https://github.com/MarkCBB/MongoDB-ASP.NET-Session-State-Store/wiki/Web.config-parameters#parameters-detail) to view the documentation about all parameters and a complete example of the config string.
 
 ```C#
 // Declare the objects with Serializable attribute.
@@ -91,6 +89,9 @@ public class Person
 Person personSet = new Person() { Name = "Marc", Surname = "Cortada", City = "Barcelona" };
 Session["key"] = personSet;
 Person personGet = (Person)Session["key"];
+// Or even better
+personGet = Session["key"] as Person;
+if (personGet != null) {...}
 ```
 
 For further information read about [parameters config](https://github.com/MarkCBB/MongoDB-ASP.NET-Session-State-Store/wiki/Web.config-parameters#parameters-detail)
