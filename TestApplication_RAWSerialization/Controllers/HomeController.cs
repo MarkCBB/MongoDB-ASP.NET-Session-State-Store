@@ -100,27 +100,27 @@ namespace TestApplication_RAWSerialization.Controllers
 
         public ActionResult GetAndSetSameRequestObjects()
         {
-            Person personSetted = new Person() { Name = "Marc", Surname = "Cortada", City = "Barcelona" };
-            Session[KEY_NAME] = personSetted;
+            Person personSet = new Person() { Name = "Marc", Surname = "Cortada", City = "Barcelona" };
+            Session[KEY_NAME] = personSet;
 
-            PersonPetsList personPetsSetted = new PersonPetsList()
+            PersonPetsList personPetsSet = new PersonPetsList()
             {
                 Name = "Marc2",
                 Surname = "Cortada2",
                 PetsList = new List<string>() { "cat", "dog" }
             };
-            Session[KEY_NAME3] = personPetsSetted;
+            Session[KEY_NAME3] = personPetsSet;
 
             Person personGet = (Person)Session[KEY_NAME];
             PersonPetsList personPetsListGet = (PersonPetsList)Session[KEY_NAME3];
 
-            if ((personSetted.Name == personGet.Name) &&
-                (personSetted.Surname == personGet.Surname) &&
-                (personSetted.City == personGet.City) &&
-                (personPetsListGet.Name == personPetsSetted.Name) &&
-                (personPetsListGet.Surname == personPetsSetted.Surname) &&
-                (personPetsListGet.PetsList[0] == personPetsSetted.PetsList[0]) &&
-                (personPetsListGet.PetsList[1] == personPetsSetted.PetsList[1]))
+            if ((personSet.Name == personGet.Name) &&
+                (personSet.Surname == personGet.Surname) &&
+                (personSet.City == personGet.City) &&
+                (personPetsListGet.Name == personPetsSet.Name) &&
+                (personPetsListGet.Surname == personPetsSet.Surname) &&
+                (personPetsListGet.PetsList[0] == personPetsSet.PetsList[0]) &&
+                (personPetsListGet.PetsList[1] == personPetsSet.PetsList[1]))
                 ViewBag.sessionVal = "True";
             else
                 ViewBag.sessionVal = "False";
@@ -130,9 +130,9 @@ namespace TestApplication_RAWSerialization.Controllers
 
         public ActionResult GetObjects()
         {
-            Person personSetted = new Person() { Name = "Marc", Surname = "Cortada", City = "Barcelona" };
+            Person personSet = new Person() { Name = "Marc", Surname = "Cortada", City = "Barcelona" };
 
-            PersonPetsList personPetsSetted = new PersonPetsList()
+            PersonPetsList personPetsSet = new PersonPetsList()
             {
                 Name = "Marc2",
                 Surname = "Cortada2",
@@ -142,13 +142,13 @@ namespace TestApplication_RAWSerialization.Controllers
             Person personGet = (Person)Session[KEY_NAME];
             PersonPetsList personPetsListGet = (PersonPetsList)Session[KEY_NAME3];
 
-            if ((personSetted.Name == personGet.Name) &&
-                    (personSetted.Surname == personGet.Surname) &&
-                    (personSetted.City == personGet.City) &&
-                    (personPetsListGet.Name == personPetsSetted.Name) &&
-                    (personPetsListGet.Surname == personPetsSetted.Surname) &&
-                    (personPetsListGet.PetsList[0] == personPetsSetted.PetsList[0]) &&
-                    (personPetsListGet.PetsList[1] == personPetsSetted.PetsList[1]))
+            if ((personSet.Name == personGet.Name) &&
+                    (personSet.Surname == personGet.Surname) &&
+                    (personSet.City == personGet.City) &&
+                    (personPetsListGet.Name == personPetsSet.Name) &&
+                    (personPetsListGet.Surname == personPetsSet.Surname) &&
+                    (personPetsListGet.PetsList[0] == personPetsSet.PetsList[0]) &&
+                    (personPetsListGet.PetsList[1] == personPetsSet.PetsList[1]))
                 ViewBag.sessionVal = "True";
             else
                 ViewBag.sessionVal = "False";

@@ -25,32 +25,32 @@ namespace TestApplicationv2_0.Controllers
 
         public ActionResult GetAndSetSameRequest()
         {
-            Person personSetted = new Person() { Name = "Marc", Surname = "Cortada", City = "Barcelona" };
-            Session.Mongo<Person>(KEY_NAME, personSetted);
+            Person personSet = new Person() { Name = "Marc", Surname = "Cortada", City = "Barcelona" };
+            Session.Mongo<Person>(KEY_NAME, personSet);
 
-            PersonPetsList personPetsSetted = new PersonPetsList()
+            PersonPetsList personPetsSet = new PersonPetsList()
             {
                 Name = "Marc2",
                 Surname = "Cortada2",
                 PetsList = new List<string>() { "cat", "dog" }
             };
-            Session.Mongo<PersonPetsList>(KEY_NAME3, personPetsSetted);
+            Session.Mongo<PersonPetsList>(KEY_NAME3, personPetsSet);
             
-            int settedValInt = 3;
-            Session.Mongo<int>(KEY_NAME2, settedValInt);
+            int setValInt = 3;
+            Session.Mongo<int>(KEY_NAME2, setValInt);
 
-            Person personGetted = Session.Mongo<Person>(KEY_NAME);
-            PersonPetsList personPetsListGetted = Session.Mongo<PersonPetsList>(KEY_NAME3);
-            int gettedValInt = Session.Mongo<int>(KEY_NAME2);
+            Person personGet = Session.Mongo<Person>(KEY_NAME);
+            PersonPetsList personPetsListGet = Session.Mongo<PersonPetsList>(KEY_NAME3);
+            int getValInt = Session.Mongo<int>(KEY_NAME2);
 
-            if ((settedValInt == gettedValInt) &&
-                (personSetted.Name == personGetted.Name) &&
-                (personSetted.Surname == personGetted.Surname) &&
-                (personSetted.City == personGetted.City) &&
-                (personPetsListGetted.Name == personPetsSetted.Name) &&
-                (personPetsListGetted.Surname == personPetsSetted.Surname) &&
-                (personPetsListGetted.PetsList[0] == personPetsSetted.PetsList[0]) &&
-                (personPetsListGetted.PetsList[1] == personPetsSetted.PetsList[1]))
+            if ((setValInt == getValInt) &&
+                (personSet.Name == personGet.Name) &&
+                (personSet.Surname == personGet.Surname) &&
+                (personSet.City == personGet.City) &&
+                (personPetsListGet.Name == personPetsSet.Name) &&
+                (personPetsListGet.Surname == personPetsSet.Surname) &&
+                (personPetsListGet.PetsList[0] == personPetsSet.PetsList[0]) &&
+                (personPetsListGet.PetsList[1] == personPetsSet.PetsList[1]))
                 ViewBag.allOk = "True";
             else
                 ViewBag.allOk = "False";

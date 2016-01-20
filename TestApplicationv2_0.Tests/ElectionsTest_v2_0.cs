@@ -71,7 +71,7 @@ namespace TestApplication2_0.Tests
         /// you can try to disconnect, switch off and/or kill
         /// the process of the replica set primary server.
         /// During this time requests and responses will be send continuously and
-        /// the getted an setted value will be compared. If the elections process
+        /// the get an set value will be compared. If the elections process
         /// works well the session state will work only with a pause during
         /// the election process but without any interruption.
         /// </summary>

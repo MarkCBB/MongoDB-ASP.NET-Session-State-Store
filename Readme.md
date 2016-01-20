@@ -77,7 +77,21 @@ int n = Session["counter"];
 
 To get started working with RAW serialization you need to set the parameter SerializationType to RAW value in the web.config file. See [parameters detail](https://github.com/MarkCBB/MongoDB-ASP.NET-Session-State-Store/wiki/Web.config-parameters#parameters-detail) to view documentation and a complete example.
 
-TODO: add examples
+```C#
+// Declare the objects with Serializable attribute.
+[Serializable]
+public class Person
+{
+	public string Name { get; set; }
+	public string Surname { get; set; }
+	public string City { get; set; }
+}
+	
+// The usage is the same as usual
+Person personSet = new Person() { Name = "Marc", Surname = "Cortada", City = "Barcelona" };
+Session["key"] = personSet;
+Person personGet = (Person)Session["key"];
+```
 
 For further information read about [parameters config](https://github.com/MarkCBB/MongoDB-ASP.NET-Session-State-Store/wiki/Web.config-parameters#parameters-detail)
 
