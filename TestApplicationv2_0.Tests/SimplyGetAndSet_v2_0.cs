@@ -24,9 +24,9 @@ namespace TestApplication2_0.Tests
         public void InitBlankValue()
         {
             CookieContainer cookieContainer = new CookieContainer();
-            HttpWebRequest request =
-                (HttpWebRequest)WebRequest.Create(TestHelpers_v2_0.BASE_URL + TestHelpers_v2_0.PRINT_SESION_ACTION);
-            string result = TestHelpers_v2_0.DoRequest(request, cookieContainer);
+            string url =
+                TestHelpers_v2_0.BASE_URL + TestHelpers_v2_0.PRINT_SESION_ACTION;
+            string result = TestHelpers_v2_0.DoRequest(url, cookieContainer);
             // Blank value is expected
             StringAssert.Contains(result, string.Format("<sessionVal>{0}</sessionVal>", ""));            
         }
@@ -39,10 +39,10 @@ namespace TestApplication2_0.Tests
         {
             CookieContainer cookieContainer = new CookieContainer();
             string textToSet = "valueSettedInSession";
-            HttpWebRequest request1 = (HttpWebRequest)WebRequest.Create(TestHelpers_v2_0.BASE_URL + TestHelpers_v2_0.SET_SESSION_ACTION + textToSet),
-                request2 = (HttpWebRequest)WebRequest.Create(TestHelpers_v2_0.BASE_URL + TestHelpers_v2_0.PRINT_SESION_ACTION);
-            TestHelpers_v2_0.DoRequest(request1, cookieContainer);
-            string result = TestHelpers_v2_0.DoRequest(request2, cookieContainer);
+            string url = TestHelpers_v2_0.BASE_URL + TestHelpers_v2_0.SET_SESSION_ACTION + textToSet,
+                url2 = TestHelpers_v2_0.BASE_URL + TestHelpers_v2_0.PRINT_SESION_ACTION;
+            TestHelpers_v2_0.DoRequest(url, cookieContainer);
+            string result = TestHelpers_v2_0.DoRequest(url2, cookieContainer);
             StringAssert.Contains(result, string.Format("<sessionVal>{0}</sessionVal>", textToSet));
         }
 
@@ -54,12 +54,12 @@ namespace TestApplication2_0.Tests
         {
             CookieContainer cookieContainer = new CookieContainer();
             string textToSet1 = "valueSettedInSession", textToSet2 = "valueSettedInSession2";
-            HttpWebRequest request1 = (HttpWebRequest)WebRequest.Create(TestHelpers_v2_0.BASE_URL + TestHelpers_v2_0.SET_SESSION_ACTION + textToSet1),
-                request2 = (HttpWebRequest)WebRequest.Create(TestHelpers_v2_0.BASE_URL + TestHelpers_v2_0.SET_SESSION_ACTION + textToSet2),
-                request3 = (HttpWebRequest)WebRequest.Create(TestHelpers_v2_0.BASE_URL + TestHelpers_v2_0.PRINT_SESION_ACTION);
-            TestHelpers_v2_0.DoRequest(request1, cookieContainer);
-            TestHelpers_v2_0.DoRequest(request2, cookieContainer);
-            string result = TestHelpers_v2_0.DoRequest(request3, cookieContainer);
+            string url = TestHelpers_v2_0.BASE_URL + TestHelpers_v2_0.SET_SESSION_ACTION + textToSet1,
+                url2 = TestHelpers_v2_0.BASE_URL + TestHelpers_v2_0.SET_SESSION_ACTION + textToSet2,
+                url3 = TestHelpers_v2_0.BASE_URL + TestHelpers_v2_0.PRINT_SESION_ACTION;
+            TestHelpers_v2_0.DoRequest(url, cookieContainer);
+            TestHelpers_v2_0.DoRequest(url2, cookieContainer);
+            string result = TestHelpers_v2_0.DoRequest(url3, cookieContainer);
             StringAssert.Contains(result, string.Format("<sessionVal>{0}</sessionVal>", textToSet2));
         }
 
@@ -71,10 +71,10 @@ namespace TestApplication2_0.Tests
         {
             CookieContainer cookieContainer = new CookieContainer();
             int intToSet = 1;
-            HttpWebRequest request1 = (HttpWebRequest)WebRequest.Create(TestHelpers_v2_0.BASE_URL + TestHelpers_v2_0.SET_SESSION_VAL_INT + intToSet),
-                request2 = (HttpWebRequest)WebRequest.Create(TestHelpers_v2_0.BASE_URL + TestHelpers_v2_0.PRINT_SESION_ACTION);
-            TestHelpers_v2_0.DoRequest(request1, cookieContainer);
-            string result = TestHelpers_v2_0.DoRequest(request2, cookieContainer);
+            string url = TestHelpers_v2_0.BASE_URL + TestHelpers_v2_0.SET_SESSION_VAL_INT + intToSet,
+                url2 = TestHelpers_v2_0.BASE_URL + TestHelpers_v2_0.PRINT_SESION_ACTION;
+            TestHelpers_v2_0.DoRequest(url, cookieContainer);
+            string result = TestHelpers_v2_0.DoRequest(url2, cookieContainer);
             StringAssert.Contains(result, string.Format("<sessionVal>{0}</sessionVal>", intToSet));
         }
 
@@ -86,10 +86,10 @@ namespace TestApplication2_0.Tests
         {
             double sesVal = 3.1416F;
             CookieContainer cookieContainer = new CookieContainer();
-            HttpWebRequest request1 = (HttpWebRequest)WebRequest.Create(TestHelpers_v2_0.BASE_URL + TestHelpers_v2_0.SET_SESSION_VAL_DOUBLE),
-                request2 = (HttpWebRequest)WebRequest.Create(TestHelpers_v2_0.BASE_URL + TestHelpers_v2_0.PRINT_SESION_DOUBLE);
-            TestHelpers_v2_0.DoRequest(request1, cookieContainer);
-            string result = TestHelpers_v2_0.DoRequest(request2, cookieContainer);
+            string url = TestHelpers_v2_0.BASE_URL + TestHelpers_v2_0.SET_SESSION_VAL_DOUBLE,
+                url2 = TestHelpers_v2_0.BASE_URL + TestHelpers_v2_0.PRINT_SESION_DOUBLE;
+            TestHelpers_v2_0.DoRequest(url, cookieContainer);
+            string result = TestHelpers_v2_0.DoRequest(url2, cookieContainer);
             StringAssert.Contains(result, string.Format("<sessionVal>{0}</sessionVal>", sesVal.ToString("G")));
         }
 
@@ -100,19 +100,19 @@ namespace TestApplication2_0.Tests
         public void SingleSetValueBool()
         {
             CookieContainer cookieContainer = new CookieContainer();
-            HttpWebRequest request1 = (HttpWebRequest)WebRequest.Create(TestHelpers_v2_0.BASE_URL + TestHelpers_v2_0.SET_SESSION_VAL_BOOL + true),
-                request2 = (HttpWebRequest)WebRequest.Create(TestHelpers_v2_0.BASE_URL + TestHelpers_v2_0.PRINT_SESION_ACTION),
-                request3 = (HttpWebRequest)WebRequest.Create(TestHelpers_v2_0.BASE_URL + TestHelpers_v2_0.SET_SESSION_VAL_BOOL + false),
-                request4 = (HttpWebRequest)WebRequest.Create(TestHelpers_v2_0.BASE_URL + TestHelpers_v2_0.PRINT_SESION_ACTION);           
+            string url1 = TestHelpers_v2_0.BASE_URL + TestHelpers_v2_0.SET_SESSION_VAL_BOOL + true,
+                url2 = TestHelpers_v2_0.BASE_URL + TestHelpers_v2_0.PRINT_SESION_ACTION,
+                url3 = TestHelpers_v2_0.BASE_URL + TestHelpers_v2_0.SET_SESSION_VAL_BOOL + false,
+                url4 = TestHelpers_v2_0.BASE_URL + TestHelpers_v2_0.PRINT_SESION_ACTION;
             
             //Trying setting with true
-            TestHelpers_v2_0.DoRequest(request1, cookieContainer);
-            string result = TestHelpers_v2_0.DoRequest(request2, cookieContainer);
+            TestHelpers_v2_0.DoRequest(url1, cookieContainer);
+            string result = TestHelpers_v2_0.DoRequest(url2, cookieContainer);
             StringAssert.Contains(result.ToUpper(), string.Format("<sessionVal>{0}</sessionVal>", "True").ToUpper());
 
             //Trying setting with false
-            TestHelpers_v2_0.DoRequest(request3, cookieContainer);
-            result = TestHelpers_v2_0.DoRequest(request4, cookieContainer);
+            TestHelpers_v2_0.DoRequest(url3, cookieContainer);
+            result = TestHelpers_v2_0.DoRequest(url4, cookieContainer);
             StringAssert.Contains(result.ToUpper(), string.Format("<sessionVal>{0}</sessionVal>", "False").ToUpper());
         }
 
@@ -124,15 +124,15 @@ namespace TestApplication2_0.Tests
         {
             CookieContainer cookieContainer = new CookieContainer();
             string textToSet1 = "valueSettedInSession", textToSet2 = "Second valueSetted In Session state";
-            HttpWebRequest request1 = (HttpWebRequest)WebRequest.Create(TestHelpers_v2_0.BASE_URL + TestHelpers_v2_0.SET_SESSION_ACTION + textToSet1),
-                request2 = (HttpWebRequest)WebRequest.Create(TestHelpers_v2_0.BASE_URL + TestHelpers_v2_0.PRINT_SESION_ACTION),
-                request3 = (HttpWebRequest)WebRequest.Create(TestHelpers_v2_0.BASE_URL + TestHelpers_v2_0.SET_SESSION_ACTION + textToSet2),
-                request4 = (HttpWebRequest)WebRequest.Create(TestHelpers_v2_0.BASE_URL + TestHelpers_v2_0.PRINT_SESION_ACTION);
-            TestHelpers_v2_0.DoRequest(request1, cookieContainer);
-            string result = TestHelpers_v2_0.DoRequest(request2, cookieContainer);
+            string url1 = TestHelpers_v2_0.BASE_URL + TestHelpers_v2_0.SET_SESSION_ACTION + textToSet1,
+                url2 = TestHelpers_v2_0.BASE_URL + TestHelpers_v2_0.PRINT_SESION_ACTION,
+                url3 = TestHelpers_v2_0.BASE_URL + TestHelpers_v2_0.SET_SESSION_ACTION + textToSet2,
+                url4 = TestHelpers_v2_0.BASE_URL + TestHelpers_v2_0.PRINT_SESION_ACTION;
+            TestHelpers_v2_0.DoRequest(url1, cookieContainer);
+            string result = TestHelpers_v2_0.DoRequest(url2, cookieContainer);
             StringAssert.Contains(result, string.Format("<sessionVal>{0}</sessionVal>", textToSet1));
-            TestHelpers_v2_0.DoRequest(request3, cookieContainer);
-            result = TestHelpers_v2_0.DoRequest(request4, cookieContainer);
+            TestHelpers_v2_0.DoRequest(url3, cookieContainer);
+            result = TestHelpers_v2_0.DoRequest(url4, cookieContainer);
             StringAssert.Contains(result, string.Format("<sessionVal>{0}</sessionVal>", textToSet2));
         }
 
@@ -144,15 +144,15 @@ namespace TestApplication2_0.Tests
         {
             CookieContainer cookieContainer = new CookieContainer();
             string textToSet1 = "valueSettedInSession";
-            HttpWebRequest request1 = (HttpWebRequest)WebRequest.Create(TestHelpers_v2_0.BASE_URL + TestHelpers_v2_0.SET_SESSION_ACTION + textToSet1),
-                request2 = (HttpWebRequest)WebRequest.Create(TestHelpers_v2_0.BASE_URL + TestHelpers_v2_0.PRINT_SESION_ACTION),
-                request3 = (HttpWebRequest)WebRequest.Create(TestHelpers_v2_0.BASE_URL + TestHelpers_v2_0.SESSION_ABANDON_ACTION),
-                request4 = (HttpWebRequest)WebRequest.Create(TestHelpers_v2_0.BASE_URL + TestHelpers_v2_0.PRINT_SESION_ACTION);
-            TestHelpers_v2_0.DoRequest(request1, cookieContainer);
-            string result = TestHelpers_v2_0.DoRequest(request2, cookieContainer);
+            string url1 = TestHelpers_v2_0.BASE_URL + TestHelpers_v2_0.SET_SESSION_ACTION + textToSet1,
+                url2 = TestHelpers_v2_0.BASE_URL + TestHelpers_v2_0.PRINT_SESION_ACTION,
+                url3 = TestHelpers_v2_0.BASE_URL + TestHelpers_v2_0.SESSION_ABANDON_ACTION,
+                url4 = TestHelpers_v2_0.BASE_URL + TestHelpers_v2_0.PRINT_SESION_ACTION;
+            TestHelpers_v2_0.DoRequest(url1, cookieContainer);
+            string result = TestHelpers_v2_0.DoRequest(url2, cookieContainer);
             Assert.IsTrue(result.Contains(string.Format("<sessionVal>{0}</sessionVal>", textToSet1)));
-            TestHelpers_v2_0.DoRequest(request3, cookieContainer);
-            result = TestHelpers_v2_0.DoRequest(request4, cookieContainer);
+            TestHelpers_v2_0.DoRequest(url3, cookieContainer);
+            result = TestHelpers_v2_0.DoRequest(url4, cookieContainer);
             // The expected text after abandon is an empty string
             StringAssert.Contains(result, string.Format("<sessionVal>{0}</sessionVal>", ""));
         }     

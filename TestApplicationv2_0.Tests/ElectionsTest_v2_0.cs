@@ -20,15 +20,15 @@ namespace TestApplication2_0.Tests
             {
                 CookieContainer cookieContainer = new CookieContainer();
                 string textToSet = "valueSettedInSession" + (nBlock.ToString() + "-" + nCall.ToString());
-                HttpWebRequest request1 = (HttpWebRequest)WebRequest.Create(
+                string url =
                     TestHelpers_v2_0.DEFAULT_WITH_HELPERS +
                     TestHelpers_v2_0.SET_SESSION_VAL_STRING +
-                    textToSet),
-                    request2 = (HttpWebRequest)WebRequest.Create(
+                    textToSet,
+                    url2 =
                     TestHelpers_v2_0.DEFAULT_WITH_HELPERS +
-                    TestHelpers_v2_0.PRINT_SESSION_VAL_STRING);
-                TestHelpers_v2_0.DoRequest(request1, cookieContainer);
-                string result = TestHelpers_v2_0.DoRequest(request2, cookieContainer);
+                    TestHelpers_v2_0.PRINT_SESSION_VAL_STRING;
+                TestHelpers_v2_0.DoRequest(url, cookieContainer);
+                string result = TestHelpers_v2_0.DoRequest(url2, cookieContainer);
                 lock (_lockObj)
                 {
                     if ((_testOk) &&

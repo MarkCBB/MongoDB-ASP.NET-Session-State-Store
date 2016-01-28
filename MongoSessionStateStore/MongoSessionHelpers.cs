@@ -8,6 +8,8 @@ namespace MongoSessionStateStore.Helpers
 {
     public static class MongoSessionUserHelpers
     {
+        public static string DECIMAL_EXCEPTION_MESSAGE = "Decimal types are not supported for serialization in Mongo.Session";
+
         public static T getObjValue<T>(object sessionObj)
         {
             if (sessionObj == null)
@@ -16,14 +18,10 @@ namespace MongoSessionStateStore.Helpers
             if (sessionObj is T)
                 return (T)sessionObj;
             
-            var type = typeof(T);
-            if (type == typeof(decimal?))
-            {
-                return (T)BsonTypeMapper.MapToDotNetValue(sessionObj as BsonDocument);
-            }
-
             if (sessionObj is BsonDocument)
                 return (T)BsonSerializer.Deserialize<T>(sessionObj as BsonDocument);
+
+            var type = typeof(T);
 
             if ((type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
                 && (Nullable.GetUnderlyingType(type).IsEnum))
@@ -82,6 +80,9 @@ namespace System.Web.Mvc
             T newValue)
         {
             var type = typeof(T);
+            if ((type == typeof(decimal?)) || (type == typeof(decimal)))
+                throw new Exception(MongoSessionStateStore.Helpers.MongoSessionUserHelpers.DECIMAL_EXCEPTION_MESSAGE);
+
             if ((type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
                 && (Nullable.GetUnderlyingType(type).IsEnum))
                 session[key] = newValue.ToString();
@@ -123,6 +124,9 @@ namespace System.Web
             T newValue)
         {
             var type = typeof(T);
+            if ((type == typeof(decimal?)) || (type == typeof(decimal)))
+                throw new Exception(MongoSessionStateStore.Helpers.MongoSessionUserHelpers.DECIMAL_EXCEPTION_MESSAGE);
+
             if ((type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
                 && (Nullable.GetUnderlyingType(type).IsEnum))
                 session[key] = newValue.ToString();

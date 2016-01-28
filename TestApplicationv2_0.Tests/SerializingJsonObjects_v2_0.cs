@@ -11,16 +11,15 @@ namespace TestApplication2_0.Tests
         public void JSonObectWithList()
         {
             CookieContainer cookieContainer = new CookieContainer();
-            HttpWebRequest request1 =
-                (HttpWebRequest)WebRequest.Create(
+            string url =
                 TestHelpers_v2_0.BASE_URL +
-                TestHelpers_v2_0.SET_SESSION_VAL_JSON_SERIALIZELIST),
-                request2 = (HttpWebRequest)WebRequest.Create(
+                TestHelpers_v2_0.SET_SESSION_VAL_JSON_SERIALIZELIST,
+                url2 =
                 TestHelpers_v2_0.BASE_URL +
-                TestHelpers_v2_0.PRINT_SESSION_VAL_JSON_SERIALIZELIST);
+                TestHelpers_v2_0.PRINT_SESSION_VAL_JSON_SERIALIZELIST;
 
-            TestHelpers_v2_0.DoRequest(request1, cookieContainer);
-            string result = TestHelpers_v2_0.DoRequest(request2, cookieContainer);
+            TestHelpers_v2_0.DoRequest(url, cookieContainer);
+            string result = TestHelpers_v2_0.DoRequest(url2, cookieContainer);
             string expectedResultPart = @"<fieldset>
         <legend>PersonPetsList</legend>
 
@@ -69,16 +68,15 @@ namespace TestApplication2_0.Tests
         public void JSonObject()
         {
             CookieContainer cookieContainer = new CookieContainer();
-            HttpWebRequest request1 =
-                (HttpWebRequest)WebRequest.Create(
+            string url =                
                 TestHelpers_v2_0.BASE_URL +
-                TestHelpers_v2_0.SET_SESSION_VAL_JSON_SERIALIZEPERSON),
-                request2 = (HttpWebRequest)WebRequest.Create(
+                TestHelpers_v2_0.SET_SESSION_VAL_JSON_SERIALIZEPERSON,
+                url2 = 
                 TestHelpers_v2_0.BASE_URL +
-                TestHelpers_v2_0.PRINT_SESSION_VAL_JSON_SERIALIZEPERSON);
+                TestHelpers_v2_0.PRINT_SESSION_VAL_JSON_SERIALIZEPERSON;
 
-            TestHelpers_v2_0.DoRequest(request1, cookieContainer);
-            string result = TestHelpers_v2_0.DoRequest(request2, cookieContainer);
+            TestHelpers_v2_0.DoRequest(url, cookieContainer);
+            string result = TestHelpers_v2_0.DoRequest(url2, cookieContainer);
             string expectedResultPart = @"<legend>Person</legend>
     
         <div class=""display-label"">

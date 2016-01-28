@@ -70,6 +70,22 @@ namespace TestApplicationv2_0.Controllers
             return View("~/Views/Default/GetSerializedPersonWithPets.aspx", p);
         }
 
+        public ActionResult SetNullPersonValue()
+        {
+            Person setVal = null;
+            Session.Mongo<Person>("NullPerson", setVal);
+            Person getVal = Session.Mongo<Person>("NullPerson");
+            ViewBag.sessionVal = (getVal == null) ? "OK" : "KO";
+            return View("~/Views/Default/PrintSessionVal.aspx");
+        }
+
+        public ActionResult GetNullPersonValue()
+        {
+            Person getVal = Session.Mongo<Person>("NullPerson");
+            ViewBag.sessionVal = (getVal == null) ? "OK" : "KO";
+            return View("~/Views/Default/PrintSessionVal.aspx");
+        }
+
         public ActionResult SetSessionValString(string newSesVal = "")
         {
             Session.Mongo<string>(KEY_NAME, newSesVal);
@@ -128,6 +144,134 @@ namespace TestApplicationv2_0.Controllers
             bool boolVal = Session.Mongo<bool>(KEY_NAME);
 
             ViewBag.sessionVal = boolVal;
+            return View("~/Views/Default/PrintSessionVal.aspx");
+        }
+
+        public ActionResult SetSessionValNullableInt()
+        {
+            int? setVal = 3;
+            Session.Mongo<int?>("nullableInt", setVal);
+            int? getVal = Session.Mongo<int?>("nullableInt");
+            ViewBag.sessionVal = getVal;
+            return View("~/Views/Default/PrintSessionVal.aspx");
+        }
+
+        public ActionResult GetSessionValNullableInt()
+        {
+            int? getVal = Session.Mongo<int?>("nullableInt");
+            ViewBag.sessionVal = getVal;
+            return View("~/Views/Default/PrintSessionVal.aspx");
+        }
+
+        public ActionResult SetSessionValNullInt()
+        {
+            int? setVal = null;
+            Session.Mongo<int?>("nullInt", setVal);
+            int? getVal = Session.Mongo<int?>("nullInt");
+            ViewBag.sessionVal = (getVal == null) ? "OK" : "KO";
+            return View("~/Views/Default/PrintSessionVal.aspx");
+        }
+
+        public ActionResult GetSessionValNullInt()
+        {
+            int? getVal = Session.Mongo<int?>("nullInt");
+            ViewBag.sessionVal = (getVal == null) ? "OK" : "KO";
+            return View("~/Views/Default/PrintSessionVal.aspx");
+        }
+
+        public ActionResult SetSessionValNullableDouble()
+        {
+            double? setVal = 3.14d;
+            Session.Mongo<double?>("NullableDouble", setVal);
+            double? getVal = Session.Mongo<double?>("NullableDouble");
+            ViewBag.sessionVal = getVal;
+            return View("~/Views/Default/PrintSessionVal.aspx");
+        }
+
+        public ActionResult GetSessionValNullableDouble()
+        {
+            double? getVal = Session.Mongo<double?>("NullableDouble");
+            ViewBag.sessionVal = getVal;
+            return View("~/Views/Default/PrintSessionVal.aspx");
+        }
+
+        public ActionResult SetSessionValEnum()
+        {
+            ConsoleColor setVal = ConsoleColor.Black;
+            Session.Mongo<ConsoleColor>("Enum", setVal);
+            ConsoleColor getVal = Session.Mongo<ConsoleColor>("Enum");
+            ViewBag.sessionVal = getVal;
+            return View("~/Views/Default/PrintSessionVal.aspx");
+        }
+
+        public ActionResult GetSessionValEnum()
+        {
+            ConsoleColor getVal = Session.Mongo<ConsoleColor>("Enum");
+            ViewBag.sessionVal = getVal.ToString();
+            return View("~/Views/Default/PrintSessionVal.aspx");
+        }
+
+        public ActionResult SetSessionValNullableEnum()
+        {
+            ConsoleColor? setVal = ConsoleColor.DarkBlue;
+            Session.Mongo<ConsoleColor?>("NullableEnum", setVal);
+            ConsoleColor? getVal = Session.Mongo<ConsoleColor?>("NullableEnum");
+            ViewBag.sessionVal = getVal;
+            return View("~/Views/Default/PrintSessionVal.aspx");
+        }
+
+        public ActionResult GetSessionValNullableEnum()
+        {
+            ConsoleColor? getVal = Session.Mongo<ConsoleColor?>("NullableEnum");
+            ViewBag.sessionVal = getVal.ToString();
+            return View("~/Views/Default/PrintSessionVal.aspx");
+        }
+
+        public ActionResult SetSessionValNullableEnumToNull()
+        {
+            ConsoleColor? setVal = null;
+            Session.Mongo<ConsoleColor?>("NullableEnumToNull", setVal);
+            ConsoleColor? getVal = Session.Mongo<ConsoleColor?>("NullableEnumToNull");
+            ViewBag.sessionVal = (getVal == null) ? "OK" : "KO";
+            return View("~/Views/Default/PrintSessionVal.aspx");
+        }
+
+        public ActionResult GetSessionValNullableEnumToNull()
+        {
+            ConsoleColor? getVal = Session.Mongo<ConsoleColor?>("NullableEnumToNull");
+            ViewBag.sessionVal = (getVal == null) ? "OK" : "KO";
+            return View("~/Views/Default/PrintSessionVal.aspx");
+        }
+
+        public ActionResult SetSessionValNullableDecimal()
+        {
+            decimal? setVal = 3.14M;
+            Session.Mongo<decimal?>("ValNullableDecimal", setVal);
+            decimal? getVal = Session.Mongo<decimal?>("ValNullableDecimal");
+            ViewBag.sessionVal = getVal.ToString();
+            return View("~/Views/Default/PrintSessionVal.aspx");
+        }
+
+        public ActionResult GetSessionValNullableDecimal()
+        {
+            decimal? getVal = Session.Mongo<decimal?>("ValNullableDecimal");
+            ViewBag.sessionVal = getVal.ToString();
+            return View("~/Views/Default/PrintSessionVal.aspx");
+        }
+
+        public ActionResult SetSessionValDecimal()
+        {
+            decimal setVal = 3.14M;
+            Session.Mongo<decimal>("ValNullableDecimal", setVal);
+            decimal getVal = Session.Mongo<decimal>("ValNullableDecimal");
+            ViewBag.sessionVal = getVal.ToString();
+            return View("~/Views/Default/PrintSessionVal.aspx");
+        }
+
+        public ActionResult GetSessionValDecimal()
+        {
+            decimal? getVal = Session.Mongo<decimal>("ValNullableDecimal");
+            ViewBag.sessionVal = getVal.ToString();
             return View("~/Views/Default/PrintSessionVal.aspx");
         }
     }
