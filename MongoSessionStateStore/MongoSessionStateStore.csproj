@@ -66,10 +66,12 @@
     <Compile Include="Serialization\SerializationProxy.cs" />
     <Compile Include="Serialization\RawSerialization.cs" />
     <Compile Include="Serialization\UnSerializedItem.cs" />
-    <None Include="MongoSessionHelpers.cs" />
+    <Compile Include="SessionHelpers\ISessionHelper.cs" />
+    <Compile Include="SessionHelpers\MongoSessionHelpers.cs" />
     <Compile Include="MongoSessionStateStore.cs" />
     <Compile Include="MongoSessionStateStoreHelpers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SessionHelpers\SessionHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config">

@@ -122,9 +122,6 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\MongoSessionStateStore\MongoSessionHelpers.cs">
-      <Link>src\MongoSessionHelpers.cs</Link>
-    </Compile>
     <Compile Include="Controllers\BsonDocumentController.cs" />
     <Compile Include="Controllers\DefaultController.cs" />
     <Compile Include="Controllers\DefaultWithHelpersController.cs" />
