@@ -108,11 +108,26 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="App_Start\SessionHelperStart.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="WebFormGetData.aspx.cs">
+      <DependentUpon>WebFormGetData.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="WebFormGetData.aspx.designer.cs">
+      <DependentUpon>WebFormGetData.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="WebFormSetData.aspx.cs">
+      <DependentUpon>WebFormSetData.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="WebFormSetData.aspx.designer.cs">
+      <DependentUpon>WebFormSetData.aspx</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\FilterConfig.cs" />
@@ -128,6 +143,8 @@
       <DependentUpon>Web.config</DependentUpon>
     </Content>
     <Content Include="Views\Web.config" />
+    <Content Include="WebFormGetData.aspx" />
+    <Content Include="WebFormSetData.aspx" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

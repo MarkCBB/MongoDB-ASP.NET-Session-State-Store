@@ -19,6 +19,7 @@ namespace TestApplication_RAWSerializationWithoutTypeReference
             WebApiConfig.Register(GlobalConfiguration.Configuration);
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
+            SessionHelperStart.InitSessionHelper();
         }
     }
 }

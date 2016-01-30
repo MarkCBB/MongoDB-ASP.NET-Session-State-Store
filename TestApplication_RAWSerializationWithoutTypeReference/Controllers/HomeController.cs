@@ -28,5 +28,18 @@ namespace TestApplication_RAWSerializationWithoutTypeReference.Controllers
 
             return View();
         }
+
+        public ActionResult SetTestPersonalizedHelper()
+        {
+            Session.Mongo<string>("PersonalizedHelper", "Test string");
+            ViewBag.sessionVal = Session.Mongo<string>("PersonalizedHelper");
+            return View("~/Views/Home/Index.aspx");
+        }
+
+        public ActionResult GetTestPersonalizedHelper()
+        {
+            ViewBag.sessionVal = Session.Mongo<string>("PersonalizedHelper");
+            return View("~/Views/Home/Index.aspx");
+        }
     }
 }
