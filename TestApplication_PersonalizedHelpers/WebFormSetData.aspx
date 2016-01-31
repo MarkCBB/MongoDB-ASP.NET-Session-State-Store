@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="WebFormGetData.aspx.cs" Inherits="TestApplication_RAWSerializationWithoutTypeReference.WebFormGetData" %>
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="WebFormSetData.aspx.cs" Inherits="TestApplication_PersonalizedHelpers.WebFormSetData" %>
 
 <!DOCTYPE html>
 
@@ -10,7 +10,9 @@
 <body>
     <form id="form1" runat="server">
     <div>
-    <asp:Literal ID="sessionVal" runat="server"></asp:Literal>
+    
+        <asp:Literal ID="sessionVal" runat="server"></asp:Literal>
+    
     </div>
     </form>
 </body>

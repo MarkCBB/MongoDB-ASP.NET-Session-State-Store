@@ -7,12 +7,12 @@
     <ProductVersion>
     </ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{D8DD5EB3-1775-4F25-8165-6CFEFD3052A0}</ProjectGuid>
+    <ProjectGuid>{807CA175-FDD1-4DD0-9A65-87AEAA634D8E}</ProjectGuid>
     <ProjectTypeGuids>{E3E379DF-F4C6-4180-9B81-6769533ABE47};{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>TestApplication_PersonalizedHelpers</RootNamespace>
-    <AssemblyName>TestApplication_RAWSerializationWithoutTypeReference</AssemblyName>
+    <AssemblyName>TestApplication_PersonalizedHelpers</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <MvcBuildViews>false</MvcBuildViews>
     <UseIISExpress>false</UseIISExpress>
@@ -40,6 +40,18 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="MongoDB.Bson, Version=2.2.2.10, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\MongoDB.Bson.2.2.2\lib\net45\MongoDB.Bson.dll</HintPath>
+    </Reference>
+    <Reference Include="MongoDB.Driver, Version=2.2.2.10, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\MongoDB.Driver.2.2.2\lib\net45\MongoDB.Driver.dll</HintPath>
+    </Reference>
+    <Reference Include="MongoDB.Driver.Core, Version=2.2.2.10, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\MongoDB.Driver.Core.2.2.2\lib\net45\MongoDB.Driver.Core.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -108,11 +120,26 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="App_Start\SessionHelperStart.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="WebFormGetData.aspx.cs">
+      <DependentUpon>WebFormGetData.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="WebFormGetData.aspx.designer.cs">
+      <DependentUpon>WebFormGetData.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="WebFormSetData.aspx.cs">
+      <DependentUpon>WebFormSetData.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="WebFormSetData.aspx.designer.cs">
+      <DependentUpon>WebFormSetData.aspx</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\FilterConfig.cs" />
@@ -128,6 +155,8 @@
       <DependentUpon>Web.config</DependentUpon>
     </Content>
     <Content Include="Views\Web.config" />
+    <Content Include="WebFormGetData.aspx" />
+    <Content Include="WebFormSetData.aspx" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -158,9 +187,9 @@
         <WebProjectProperties>
           <UseIIS>True</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
-          <DevelopmentServerPort>65109</DevelopmentServerPort>
+          <DevelopmentServerPort>55713</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost/TestApplication_RAWSerializationWithoutTypeReference</IISUrl>
+          <IISUrl>http://localhost/TestApplication_PersonalizedHelpers</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>

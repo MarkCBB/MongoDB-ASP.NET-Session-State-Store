@@ -15,6 +15,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestApplication_RAWSerializ
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestApplication_RAWSerializationWithoutTypeReference", "TestApplication_RAWSerializationWithoutTypeReference\TestApplication_RAWSerializationWithoutTypeReference.csproj", "{D8DD5EB3-1775-4F25-8165-6CFEFD3052A0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestApplication_PersonalizedHelpers", "TestApplication_PersonalizedHelpers\TestApplication_PersonalizedHelpers.csproj", "{807CA175-FDD1-4DD0-9A65-87AEAA634D8E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestApplication_PersonalizedHelpers.Tests", "TestApplication_PersonalizedHelpers.Tests\TestApplication_PersonalizedHelpers.Tests.csproj", "{693617CC-FEC3-4ED7-AAB9-B3674221881F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +49,14 @@ Global
 		{D8DD5EB3-1775-4F25-8165-6CFEFD3052A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D8DD5EB3-1775-4F25-8165-6CFEFD3052A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D8DD5EB3-1775-4F25-8165-6CFEFD3052A0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{807CA175-FDD1-4DD0-9A65-87AEAA634D8E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{807CA175-FDD1-4DD0-9A65-87AEAA634D8E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{807CA175-FDD1-4DD0-9A65-87AEAA634D8E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{807CA175-FDD1-4DD0-9A65-87AEAA634D8E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{693617CC-FEC3-4ED7-AAB9-B3674221881F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{693617CC-FEC3-4ED7-AAB9-B3674221881F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{693617CC-FEC3-4ED7-AAB9-B3674221881F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{693617CC-FEC3-4ED7-AAB9-B3674221881F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

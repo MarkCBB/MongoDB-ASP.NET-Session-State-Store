@@ -4,7 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 
-namespace TestApplication_RAWSerializationWithoutTypeReference.Controllers
+namespace TestApplication_PersonalizedHelpers.Controllers
 {
     public class HomeController : Controller
     {
@@ -27,19 +27,6 @@ namespace TestApplication_RAWSerializationWithoutTypeReference.Controllers
                 ViewBag.sessionVal = "False";
 
             return View();
-        }
-
-        public ActionResult SetTestPersonalizedHelper()
-        {
-            Session.Mongo<string>("PersonalizedHelper", "Test string");
-            ViewBag.sessionVal = Session.Mongo<string>("PersonalizedHelper");
-            return View("~/Views/Home/Index.aspx");
-        }
-
-        public ActionResult GetTestPersonalizedHelper()
-        {
-            ViewBag.sessionVal = Session.Mongo<string>("PersonalizedHelper");
-            return View("~/Views/Home/Index.aspx");
-        }
+        }        
     }
 }

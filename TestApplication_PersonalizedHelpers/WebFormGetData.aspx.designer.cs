@@ -7,10 +7,10 @@
 // </generado automáticamente>
 //------------------------------------------------------------------------------
 
-namespace TestApplication_RAWSerializationWithoutTypeReference {
+namespace TestApplication_PersonalizedHelpers {
     
     
-    public partial class WebFormSetData {
+    public partial class WebFormGetData {
         
         /// <summary>
         /// Control form1.
