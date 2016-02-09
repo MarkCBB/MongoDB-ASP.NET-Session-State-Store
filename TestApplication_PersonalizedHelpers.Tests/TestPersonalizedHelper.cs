@@ -9,7 +9,7 @@ namespace TestApplication_PersonalizedHelpers.Tests
     {
         //This test case is quite huge, but the order in the requests is important.
         [TestMethod]
-        public void TestMvcPartialHelper()
+        public void TestMvcPersonalizedHelper()
         {
             CookieContainer cookie = new CookieContainer();
             string url1 = string.Format(TestApplication_PersonalizedHelpers_Helpers.BASE_URL_MVC,
