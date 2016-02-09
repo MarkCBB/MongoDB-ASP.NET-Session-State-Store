@@ -246,32 +246,48 @@ namespace TestApplicationv2_0.Controllers
         public ActionResult SetSessionValNullableDecimal()
         {
             decimal? setVal = 3.14M;
-            Session.Mongo<decimal?>("ValNullableDecimal", setVal);
+            bool exceptionCaught = false;
+            try
+            {
+                Session.Mongo<decimal?>("ValNullableDecimal", setVal);
+            }
+            catch (Exception)
+            {
+                exceptionCaught = true;
+            }
             decimal? getVal = Session.Mongo<decimal?>("ValNullableDecimal");
-            ViewBag.sessionVal = getVal.ToString();
+            ViewBag.sessionVal = ((exceptionCaught == true) && (getVal == null)) ? "OK" : "KO";
             return View("~/Views/Default/PrintSessionVal.aspx");
         }
 
         public ActionResult GetSessionValNullableDecimal()
         {
             decimal? getVal = Session.Mongo<decimal?>("ValNullableDecimal");
-            ViewBag.sessionVal = getVal.ToString();
+            ViewBag.sessionVal = (getVal == null) ? "OK" : "KO";
             return View("~/Views/Default/PrintSessionVal.aspx");
         }
 
         public ActionResult SetSessionValDecimal()
         {
             decimal setVal = 3.14M;
-            Session.Mongo<decimal>("ValNullableDecimal", setVal);
-            decimal getVal = Session.Mongo<decimal>("ValNullableDecimal");
-            ViewBag.sessionVal = getVal.ToString();
+            bool exceptionCaught = false;
+            try
+            {
+                Session.Mongo<decimal>("ValDecimal", setVal);
+            }
+            catch (Exception)
+            {
+                exceptionCaught = true;
+            }
+            decimal getVal = Session.Mongo<decimal>("ValDecimal");
+            ViewBag.sessionVal = ((exceptionCaught == true) && (getVal == 0)) ? "OK" : "KO";
             return View("~/Views/Default/PrintSessionVal.aspx");
         }
 
         public ActionResult GetSessionValDecimal()
         {
-            decimal? getVal = Session.Mongo<decimal>("ValNullableDecimal");
-            ViewBag.sessionVal = getVal.ToString();
+            decimal getVal = Session.Mongo<decimal>("ValDecimal");
+            ViewBag.sessionVal = (getVal == 0) ? "OK" : "KO";
             return View("~/Views/Default/PrintSessionVal.aspx");
         }
     }

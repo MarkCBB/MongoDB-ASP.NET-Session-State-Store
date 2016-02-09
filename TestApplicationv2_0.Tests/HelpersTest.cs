@@ -256,36 +256,36 @@ namespace TestApplicationv2_0.Tests
             StringAssert.Contains(resultGet, "<sessionVal>3</sessionVal>");
         }
 
-        //[TestMethod]
-        //public void SetNullableDecimalToNull()
-        //{
-        //    CookieContainer cookieContainer = new CookieContainer();
-        //    string url = 
-        //            TestHelpers_v2_0.DEFAULT_WITH_HELPERS +
-        //            TestHelpers_v2_0.SET_SESSION_VAL_NULLABLE_DECINAL_NULL_VALUE_WITH_HELPERS,
-        //        url2 = 
-        //            TestHelpers_v2_0.DEFAULT_WITH_HELPERS +
-        //            TestHelpers_v2_0.PRINT_SESSION_VAL_NULLABLE_DECIMAL_NULL_VALUE;
-        //    string resultSet = TestHelpers_v2_0.DoRequest(url, cookieContainer);
-        //    StringAssert.Contains(resultSet, "<sessionVal>OK</sessionVal>");
-        //    string resultGet = TestHelpers_v2_0.DoRequest(url2, cookieContainer);
-        //    StringAssert.Contains(resultGet, "<sessionVal>OK</sessionVal>");
-        //}
+        [TestMethod]
+        public void SetValueDecimal()
+        {
+            CookieContainer cookieContainer = new CookieContainer();
+            string url =
+                    TestHelpers_v2_0.DEFAULT_WITH_HELPERS +
+                    TestHelpers_v2_0.SET_SESSION_VAL_DECIMAL_VALUE_WITH_HELPERS,
+                url2 =
+                    TestHelpers_v2_0.DEFAULT_WITH_HELPERS +
+                    TestHelpers_v2_0.PRINT_SESSION_VAL_DECIMAL_VALUE;
+            string resultSet = TestHelpers_v2_0.DoRequest(url, cookieContainer);
+            StringAssert.Contains(resultSet, "<sessionVal>OK</sessionVal>");
+            string resultGet = TestHelpers_v2_0.DoRequest(url2, cookieContainer);
+            StringAssert.Contains(resultGet, "<sessionVal>OK</sessionVal>");
+        }
 
-        //[TestMethod]
-        //public void SetNullableDecimal()
-        //{
-        //    CookieContainer cookieContainer = new CookieContainer();
-        //    string url = 
-        //            TestHelpers_v2_0.DEFAULT_WITH_HELPERS +
-        //            TestHelpers_v2_0.SET_SESSION_VAL_NULLABLE_DECINAL_VALUE_WITH_HELPERS,
-        //        url2 = 
-        //            TestHelpers_v2_0.DEFAULT_WITH_HELPERS +
-        //            TestHelpers_v2_0.PRINT_SESSION_VAL_NULLABLE_DECIMAL_VALUE;
-        //    string resultSet = TestHelpers_v2_0.DoRequest(url, cookieContainer);
-        //    StringAssert.Contains(resultSet, "<sessionVal>3,1416</sessionVal>");
-        //    string resultGet = TestHelpers_v2_0.DoRequest(url2, cookieContainer);
-        //    StringAssert.Contains(resultGet, "<sessionVal>3,1416</sessionVal>");
-        //}
+        [TestMethod]
+        public void SetNullableValueDecimal()
+        {
+            CookieContainer cookieContainer = new CookieContainer();
+            string url =
+                    TestHelpers_v2_0.DEFAULT_WITH_HELPERS +
+                    TestHelpers_v2_0.SET_SESSION_VAL_NULLABLE_DECIMAL_WITH_HELPERS,
+                url2 =
+                    TestHelpers_v2_0.DEFAULT_WITH_HELPERS +
+                    TestHelpers_v2_0.PRINT_SESSION_VAL_NULLABLE_DECIMAL_VALUE_WITH_HELPERS;
+            string resultSet = TestHelpers_v2_0.DoRequest(url, cookieContainer);
+            StringAssert.Contains(resultSet, "<sessionVal>OK</sessionVal>");
+            string resultGet = TestHelpers_v2_0.DoRequest(url2, cookieContainer);
+            StringAssert.Contains(resultGet, "<sessionVal>OK</sessionVal>");
+        }
     }
 }

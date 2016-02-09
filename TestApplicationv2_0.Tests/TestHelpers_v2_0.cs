@@ -45,7 +45,8 @@ namespace TestApplication2_0.Tests
         public static string SET_SESSION_VAL_NULLABLE_INT_VALUE_WITH_HELPERS = "SetSessionValNullableInt/";
         public static string SET_SESSION_VAL_NULLABLE_INT_NULL_VALUE_WITH_HELPERS = "SetSessionValNullableInt/";
         public static string SET_SESSION_VAL_NULLABLE_DECINAL_NULL_VALUE_WITH_HELPERS = "SetNullableDecimalToNull/";
-        public static string SET_SESSION_VAL_NULLABLE_DECINAL_VALUE_WITH_HELPERS = "SetSessionValNullableDecimal/";
+        public static string SET_SESSION_VAL_DECIMAL_VALUE_WITH_HELPERS = "SetSessionValDecimal/";
+        public static string SET_SESSION_VAL_NULLABLE_DECIMAL_WITH_HELPERS = "SetSessionValNullableDecimal/";
         public static string PRINT_SESSION_VAL_BOOL = "PrintSessionValBool/";
         public static string PRINT_SESSION_VAL_ENUM_VALUE = "GetSessionValEnum/";
         public static string PRINT_SESSION_VAL_ENUM_NULLABLE_VALUE = "GetSessionValNullableEnum/";
@@ -54,7 +55,8 @@ namespace TestApplication2_0.Tests
         public static string PRINT_SESSION_VAL_NULLABLE_INT_VALUE = "GetSessionValNullableInt/";
         public static string PRINT_SESSION_VAL_NULLABLE_INT_NULL_VALUE = "GetSessionValNullableInt/";
         public static string PRINT_SESSION_VAL_NULLABLE_DECIMAL_NULL_VALUE = "GetNullableDecimalToNull/";
-        public static string PRINT_SESSION_VAL_NULLABLE_DECIMAL_VALUE = "GetSessionValNullableDecimal/";
+        public static string PRINT_SESSION_VAL_DECIMAL_VALUE = "GetSessionValDecimal/";
+        public static string PRINT_SESSION_VAL_NULLABLE_DECIMAL_VALUE_WITH_HELPERS = "GetSessionValNullableDecimal/";
 
         public static string DEFAULT_WITH_BSON = "http://localhost/TestApplicationv2_0/BsonDocument/";
         public static string SET_BSON_VAL = "SetPerson/";
