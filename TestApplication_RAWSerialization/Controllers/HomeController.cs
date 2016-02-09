@@ -160,15 +160,17 @@ namespace TestApplication_RAWSerialization.Controllers
         {
             Person personSet = null;
             Session["PersonNull"] = personSet;
-            Person personGet = Session["PersonNull"] as Person;
-            ViewBag.sessionVal = (personGet == null) ? "OK" : "KO";
+            Object objGet = Session["PersonNull"];
+            Person personGet = objGet as Person;
+            ViewBag.sessionVal = ((personGet == null) && (objGet == null)) ? "OK" : "KO";
             return View("~/Views/Home/Index.aspx");
         }
 
         public ActionResult GetNullObject()
         {
+            var objGet = Session["PersonNull"];
             Person personGet = Session["PersonNull"] as Person;
-            ViewBag.sessionVal = (personGet == null) ? "OK" : "KO";
+            ViewBag.sessionVal = ((personGet == null) && (objGet == null)) ? "OK" : "KO";
             return View("~/Views/Home/Index.aspx");
         }
 
