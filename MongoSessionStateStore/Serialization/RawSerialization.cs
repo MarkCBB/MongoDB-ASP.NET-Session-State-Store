@@ -22,24 +22,28 @@ namespace MongoSessionStateStore.Serialization
             {
                 string key = sessionData.Items.Keys[i];
                 var sessionObj = sessionData.Items[key];
-                using (var ms = new MemoryStream())
-                {
-                    IFormatter formatter = new BinaryFormatter();
-                    string serializedItem;
-                    if(sessionObj is UnSerializedItem)
-                    {
-                        serializedItem = ((UnSerializedItem)sessionObj).SerializedString;
-                    }
-                    else
-                    {
-                        if (sessionObj == null)
-                            formatter.Serialize(ms, "null");
-                        else
-                            formatter.Serialize(ms, sessionObj);
 
-                        serializedItem = Convert.ToBase64String(ms.ToArray());
+                if (sessionObj == null)
+                {
+                    bsonArraySession.Add(new BsonDocument(key, BsonNull.Value));
+                }
+                else
+                {
+                    using (var ms = new MemoryStream())
+                    {
+                        IFormatter formatter = new BinaryFormatter();
+                        string serializedItem;
+                        if (sessionObj is UnSerializedItem)
+                        {
+                            serializedItem = ((UnSerializedItem)sessionObj).SerializedString;
+                        }
+                        else
+                        {
+                            formatter.Serialize(ms, sessionObj);
+                            serializedItem = Convert.ToBase64String(ms.ToArray());
+                        }
+                        bsonArraySession.Add(new BsonDocument(key, serializedItem));
                     }
-                    bsonArraySession.Add(new BsonDocument(key, serializedItem));
                 }
             }
 
@@ -57,20 +61,28 @@ namespace MongoSessionStateStore.Serialization
             {
                 var document = serializedValues as BsonDocument;
                 string name = document.Names.FirstOrDefault();
-                string value = document.Values.FirstOrDefault().AsString;
+                var value = document.Values.FirstOrDefault();
 
-                try
+                if (value == BsonNull.Value)
                 {
-                    using (var ms = new MemoryStream(Convert.FromBase64String(value)))
-                    {
-                        IFormatter formatter = new BinaryFormatter();
-                        var item = formatter.Deserialize(ms);
-                        sessionItems[name] = item;
-                    }
+                    sessionItems[name] = null;
                 }
-                catch (SerializationException)
+                else
                 {
-                    sessionItems[name] = new UnSerializedItem { SerializedString = value };
+                    string valueSerialized = document.Values.FirstOrDefault().AsString;
+                    try
+                    {
+                        using (var ms = new MemoryStream(Convert.FromBase64String(valueSerialized)))
+                        {
+                            IFormatter formatter = new BinaryFormatter();
+                            var item = formatter.Deserialize(ms);
+                            sessionItems[name] = item;
+                        }
+                    }
+                    catch (SerializationException)
+                    {
+                        sessionItems[name] = new UnSerializedItem { SerializedString = valueSerialized };
+                    }
                 }
             }
 
