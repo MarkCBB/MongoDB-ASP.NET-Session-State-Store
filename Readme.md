@@ -3,7 +3,7 @@ Usage
 
 1 - Install the [nuGet package](https://www.nuget.org/packages/MongoSessionStateStore/) into your solution.
 
-The current version is built in 4.5 version of .NET framework. To use the 4.0 version of .NET framework [install the version 2.0.0 of this controller](https://www.nuget.org/packages/MongoSessionStateStore/2.0.0) with the following command in the Package Manager Console: ```Install-Package MongoSessionStateStore -Version 2.0.0```
+The current version is built in 4.5 version of .NET framework. To use the 4.0 version of .NET framework [install the version 2.0.0 of this controller](https://www.nuget.org/packages/MongoSessionStateStore/2.0.0)
 
 2 - Into web.config file add a <connectionStrings> section as detailed following **set connection parameters properly.**
 ```xml
@@ -36,7 +36,9 @@ Chose one of these serialization types: [Bson](https://github.com/MarkCBB/MongoD
 
 To get started working with Bson serialization you don't need to set any parameter to any value, it's the default serialization.
 
-A helper file is provided with the nuget package and this file will be available in the target project when package has been installed. **It's strongly recommended to use these helpers** as shown in the examples. Also you can extend it.
+A helper class is included in the assembly with static extensions. **It's strongly recommended to use these helpers** as shown in the examples.
+
+You can personalize all methods of this helper class [following these instructions](https://github.com/MarkCBB/MongoDB-ASP.NET-Session-State-Store/wiki/Customizing-the-helpers).
 
 ```C#
 // Sets 1314 in key named sessionKey
@@ -98,8 +100,10 @@ For further information read about [parameters config](https://github.com/MarkCB
 
 [Here you'll find all release notes](https://github.com/MarkCBB/MongoDB-ASP.NET-Session-State-Store/wiki/Release-notes-history-and-compatibility-between-versions)
 
-**If you are moving from 1.X.X to 2.X.X, as a major release, keep in mind [these compatibility notes.](https://github.com/MarkCBB/MongoDB-ASP.NET-Session-State-Store/wiki/Release-notes-history-and-compatibility-between-versions#v200)**
+**If you are moving from 3.X.X to 4.X.X, as a major release, keep in mind [these compatibility notes.](https://github.com/MarkCBB/MongoDB-ASP.NET-Session-State-Store/wiki/Release-notes-history-and-compatibility-between-versions#v400)**
 
 **If you are moving from 2.X.X to 3.X.X, as a major release, keep in mind [these compatibility notes.](https://github.com/MarkCBB/MongoDB-ASP.NET-Session-State-Store/wiki/Release-notes-history-and-compatibility-between-versions#v300)**
+
+**If you are moving from 1.X.X to 2.X.X, as a major release, keep in mind [these compatibility notes.](https://github.com/MarkCBB/MongoDB-ASP.NET-Session-State-Store/wiki/Release-notes-history-and-compatibility-between-versions#v200)**
 
 To make session data without expiration time **do not use Session.Timeout value to 0** [disable TTL index creation](https://github.com/MarkCBB/MongoDB-ASP.NET-Session-State-Store/wiki/Web.config-parameters#autocreatettlindex)
