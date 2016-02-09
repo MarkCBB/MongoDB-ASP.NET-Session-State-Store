@@ -171,5 +171,12 @@ namespace TestApplication_RAWSerialization.Controllers
             ViewBag.sessionVal = (personGet == null) ? "OK" : "KO";
             return View("~/Views/Home/Index.aspx");
         }
+
+        public ActionResult GetNonExistingKey()
+        {
+            var obj = Session["NonExistingKey"];
+            ViewBag.sessionVal = (obj == null) ? "OK" : "KO";
+            return View("~/Views/Home/Index.aspx");
+        }
     }
 }

@@ -91,5 +91,17 @@ namespace TestApplication_RAWSerialization.Tests
             StringAssert.Contains(result1, "<sessionVal>OK</sessionVal>");
             StringAssert.Contains(result2, "<sessionVal>OK</sessionVal>");
         }
+
+        [TestMethod]
+        public void TestGetNonExistingKey()
+        {
+            CookieContainer cookie = new CookieContainer();
+            string url1 = string.Format(TestApplication_RAW_Helpers.BASE_URL,
+                TestApplication_RAW_Helpers.CONTROLLER, "GetNonExistingKey");
+
+            string result1 = TestApplication_RAW_Helpers.DoRequest(url1, cookie);
+
+            StringAssert.Contains(result1, "<sessionVal>OK</sessionVal>");
+        }
     }
 }
