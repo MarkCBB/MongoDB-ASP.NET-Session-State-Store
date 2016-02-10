@@ -15,6 +15,7 @@ namespace TestApplication_PersonalizedHelpers
         }
     }
 
+    // Example of partial personalization of Session Helper
     public class SessionHelperPersonalizedPartial : SessionHelper
     {
         public override T getObjValue<T>(object sessionObj)
@@ -23,7 +24,8 @@ namespace TestApplication_PersonalizedHelpers
             return (T)obj;
         }
     }
-    
+
+    // Example of full personalization of Session Helper
     public class SessionHelperPersonalized : ISessionHelper
     {
         public T getObjValue<T>(object sessionObj)

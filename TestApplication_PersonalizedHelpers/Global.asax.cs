@@ -19,6 +19,7 @@ namespace TestApplication_PersonalizedHelpers
             WebApiConfig.Register(GlobalConfiguration.Configuration);
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
+            // Set the personalized helper when application gets started.
             SessionHelperStart.InitSessionHelper();
         }
     }
