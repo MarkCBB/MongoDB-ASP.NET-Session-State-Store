@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.SessionState;
 using TestApplicationv2_0.Models;
 
 namespace TestApplicationv2_0.Controllers
@@ -16,6 +17,7 @@ namespace TestApplicationv2_0.Controllers
         private const string KEY_NAME2 = "value2";
         private const string KEY_NAME3 = "value3";
         public const string VIEW_DATA_VAL = "sessionVal";
+        public const string LONG_RUNNING_VALUE = "LongRunningValue";
 
         public ActionResult Index()
         {
@@ -288,6 +290,22 @@ namespace TestApplicationv2_0.Controllers
         {
             decimal getVal = Session.Mongo<decimal>("ValDecimal");
             ViewBag.sessionVal = (getVal == 0) ? "OK" : "KO";
+            return View("~/Views/Default/PrintSessionVal.aspx");
+        }
+
+        public ActionResult LongTimeWriteProcess()
+        {
+            int i = 0;
+            DateTime end = DateTime.Now.AddMinutes(1);
+
+            while (DateTime.Now <= end)
+            {
+                i++;                
+                Session.Mongo<int>(LONG_RUNNING_VALUE, i);
+                System.Threading.Thread.CurrentThread.Join(1000);
+            }
+
+            ViewBag.sessionVal = i;
             return View("~/Views/Default/PrintSessionVal.aspx");
         }
     }

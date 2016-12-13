@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Net;
 using TestApplication2_0.Tests;
+using System.Threading.Tasks;
 
 namespace TestApplicationv2_0.Tests
 {
@@ -286,6 +287,26 @@ namespace TestApplicationv2_0.Tests
             StringAssert.Contains(resultSet, "<sessionVal>OK</sessionVal>");
             string resultGet = TestHelpers_v2_0.DoRequest(url2, cookieContainer);
             StringAssert.Contains(resultGet, "<sessionVal>OK</sessionVal>");
+        }
+
+        [TestMethod]
+        public void ConcurrentProcessesCanWrite()
+        {
+            CookieContainer cookieContainer = new CookieContainer();
+            string longWriteProcessUrl = TestHelpers_v2_0.DEFAULT_WITH_HELPERS + "LongTimeWriteProcess";
+            string shortReadUrl = TestHelpers_v2_0.DEFAULT_WITH_HELPERS_READ_ONLY_SESSION_STATE +
+                "ReadLongRunningValueProcess";
+
+            var longWriteTask = TestHelpers_v2_0.DoRequestAsync(longWriteProcessUrl, cookieContainer);
+            var shortReadTask1 = TestHelpers_v2_0.DoRequestAsync(shortReadUrl, cookieContainer);
+            
+            Task.WaitAll(Task.Delay(5000));
+
+            var shortReadTask2 = TestHelpers_v2_0.DoRequestAsync(shortReadUrl, cookieContainer);
+
+            Task.WaitAll(longWriteTask, shortReadTask1, shortReadTask2);
+
+            StringAssert.Contains(longWriteTask.Result, "<sessionVal>60</sessionVal>");
         }
     }
 }

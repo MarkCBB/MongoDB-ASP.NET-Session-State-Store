@@ -28,6 +28,7 @@ namespace TestApplication2_0.Tests
         public static string GET_VALUE_WEB_FORM = "WebFormTests/GetValues.aspx";
 
         public static string DEFAULT_WITH_HELPERS = "http://localhost/TestApplicationv2_0/DefaultWithHelpers/";
+        public static string DEFAULT_WITH_HELPERS_READ_ONLY_SESSION_STATE = "http://localhost/TestApplicationv2_0/ReadOnlySessionState/";
         public static string GET_AND_SET_SAME_REQUEST = "GetAndSetSameRequest/";
         public static string PRINT_SERIALIZED_PERSON = "PrintSessionSerializedPerson/";
         public static string PRINT_SERIALIZED_PERSON_WITH_LIST = "PrintSessionSerializedPersonWithlist/";
@@ -72,6 +73,19 @@ namespace TestApplication2_0.Tests
             var stream = request.GetResponse().GetResponseStream();
             StreamReader reader = new StreamReader(stream);
             return reader.ReadToEnd();
+        }
+
+        public async static Task<string> DoRequestAsync(
+            string url,
+            CookieContainer cookieContainer)
+        {
+            HttpWebRequest request =
+                (HttpWebRequest)WebRequest.Create(url);
+            request.CookieContainer = cookieContainer;
+            var response = await request.GetResponseAsync();
+            var stream = response.GetResponseStream();
+            StreamReader reader = new StreamReader(stream);
+            return await reader.ReadToEndAsync();
         }
     }
 }
