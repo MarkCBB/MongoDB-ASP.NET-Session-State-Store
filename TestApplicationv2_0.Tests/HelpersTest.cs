@@ -290,7 +290,7 @@ namespace TestApplicationv2_0.Tests
         }
 
         [TestMethod]
-        public void ConcurrentProcessesCanWrite()
+        public void Long_Processes_Can_Write_After_Another_Reads_A_Value()
         {
             CookieContainer cookieContainer = new CookieContainer();
             string longWriteProcessUrl = TestHelpers_v2_0.DEFAULT_WITH_HELPERS + "LongTimeWriteProcess";
