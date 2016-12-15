@@ -292,11 +292,18 @@ namespace TestApplicationv2_0.Controllers
             ViewBag.sessionVal = (getVal == 0) ? "OK" : "KO";
             return View("~/Views/Default/PrintSessionVal.aspx");
         }
+        
+        public ActionResult ShortTimeWriteProcess()
+        {
+            Session.Mongo("abc", 123);
+
+            return new EmptyResult();
+        }
 
         public ActionResult LongTimeWriteProcess()
         {
             int i = 0;
-            DateTime end = DateTime.Now.AddMinutes(1);
+            DateTime end = DateTime.Now.AddSeconds(30);
 
             while (DateTime.Now <= end)
             {
