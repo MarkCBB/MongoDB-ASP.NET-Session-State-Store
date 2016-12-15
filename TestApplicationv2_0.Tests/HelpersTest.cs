@@ -290,23 +290,28 @@ namespace TestApplicationv2_0.Tests
         }
 
         [TestMethod]
-        public void Long_Processes_Can_Write_After_Another_Reads_A_Value()
+        public async Task Long_Processes_Can_Write_After_Another_Reads_A_Value()
         {
             CookieContainer cookieContainer = new CookieContainer();
+            string shortWriteProcessUrl = TestHelpers_v2_0.DEFAULT_WITH_HELPERS + "ShortTimeWriteProcess";
             string longWriteProcessUrl = TestHelpers_v2_0.DEFAULT_WITH_HELPERS + "LongTimeWriteProcess";
-            string shortReadUrl = TestHelpers_v2_0.DEFAULT_WITH_HELPERS_READ_ONLY_SESSION_STATE +
-                "ReadLongRunningValueProcess";
+            string shortReadUrl = TestHelpers_v2_0.DEFAULT_WITH_HELPERS_READ_ONLY_SESSION_STATE + "ReadLongRunningValueProcess";
+
+            // Populate session id in cookieContainer.
+            await TestHelpers_v2_0.DoRequestAsync(shortWriteProcessUrl, cookieContainer);
 
             var longWriteTask = TestHelpers_v2_0.DoRequestAsync(longWriteProcessUrl, cookieContainer);
-            var shortReadTask1 = TestHelpers_v2_0.DoRequestAsync(shortReadUrl, cookieContainer);
-            
-            Task.WaitAll(Task.Delay(5000));
 
-            var shortReadTask2 = TestHelpers_v2_0.DoRequestAsync(shortReadUrl, cookieContainer);
+            await Task.Delay(5000);
 
-            Task.WaitAll(longWriteTask, shortReadTask1, shortReadTask2);
+            // This will increment lockId preventing longWriteTask from writing session object to database.
+            await TestHelpers_v2_0.DoRequestAsync(shortReadUrl, cookieContainer);
 
-            StringAssert.Contains(longWriteTask.Result, "<sessionVal>60</sessionVal>");
+            await longWriteTask;
+
+            var sessionVal = await TestHelpers_v2_0.DoRequestAsync(shortReadUrl, cookieContainer);
+
+            StringAssert.Contains(sessionVal, "<sessionVal>30</sessionVal>");
         }
     }
 }
