@@ -454,7 +454,8 @@ namespace MongoSessionStateStore
             // and create the SessionStateStoreItem to return.
             if (foundRecord && !locked)
             {
-                lockId = (int)lockId + 1;
+                if (lockRecord)
+                    lockId = (int)lockId + 1;
 
                 filter2 = filterBuilder.And(filterBuilder.Eq("_id", MongoSessionStateStoreHelpers.GetDocumentSessionId(id, ApplicationName)));
                 var update = Builders<BsonDocument>.Update.Set(
