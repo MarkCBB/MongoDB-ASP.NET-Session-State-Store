@@ -85,8 +85,8 @@ namespace MongoSessionStateStore
                     CreateIndexOptions c = new CreateIndexOptions();
                     c.ExpireAfter = TimeSpan.Zero;
                     c.Background = true;
-                    string res = sessionCollection.Indexes.CreateOneAsync(
-                        Builders<BsonDocument>.IndexKeys.Ascending("Expires"), c).Result;
+                    string res = sessionCollection.Indexes.CreateOne(
+                        Builders<BsonDocument>.IndexKeys.Ascending("Expires"), c);
                     return true;
                 }
                 catch (Exception)
@@ -108,7 +108,7 @@ namespace MongoSessionStateStore
             {
                 try
                 {
-                    return sessionCollection.Find(q).FirstOrDefaultAsync().Result;
+                    return sessionCollection.Find(q).FirstOrDefault();
                 }
                 catch (Exception e)
                 {
@@ -128,9 +128,9 @@ namespace MongoSessionStateStore
             {
                 try
                 {
-                    var result = sessionCollection.UpdateOneAsync(
+                    var result = sessionCollection.UpdateOne(
                         filter,
-                        update).Result;
+                        update);
                     return (result.ModifiedCount == 1);
                 }
                 catch (Exception e)
@@ -150,7 +150,7 @@ namespace MongoSessionStateStore
             {
                 try
                 {
-                    return (sessionCollection.DeleteOneAsync(query).Result.DeletedCount == 1);
+                    return (sessionCollection.DeleteOne(query).DeletedCount == 1);
                 }
                 catch (Exception e)
                 {
@@ -169,7 +169,7 @@ namespace MongoSessionStateStore
             {
                 try
                 {
-                    Task.WaitAll(sessionCollection.InsertOneAsync(insertDoc));
+                    sessionCollection.InsertOne(insertDoc);
                     return;
                 }
                 catch (Exception e)
