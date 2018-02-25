@@ -32,7 +32,7 @@ The current version is built in 4.5 version of .NET framework. To use the 4.0 ve
 
 Chose one of these serialization types: [Bson](https://github.com/MarkCBB/MongoDB-ASP.NET-Session-State-Store/tree/Branch_raw_serialization#bson-serialization) (default) or [RAW](https://github.com/MarkCBB/MongoDB-ASP.NET-Session-State-Store/tree/Branch_raw_serialization#raw-serialization). See the [documentation about types of serialization](https://github.com/MarkCBB/MongoDB-ASP.NET-Session-State-Store/wiki/Types-of-serialization) to select the most suitable for you and the advantages and disadvantages.
 
-##Bson serialization (default)
+## Bson serialization (default)
 
 To get started working with Bson serialization you don't need to set any parameter to any value, it's the default serialization.
 
@@ -73,7 +73,7 @@ Session["counter"] = 1;
 int n = Session["counter"];
 ```
 
-##RAW serialization
+## RAW serialization
 
 To get started working with RAW serialization you need to set the parameter SerializationType to RAW value in the web.config file. See [parameters detail](https://github.com/MarkCBB/MongoDB-ASP.NET-Session-State-Store/wiki/Web.config-parameters#parameters-detail) to view the documentation about all parameters and a complete example of the config string.
 
