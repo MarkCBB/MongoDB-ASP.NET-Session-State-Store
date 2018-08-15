@@ -1,3 +1,5 @@
+This project is not built for ASP.NET Core, if you need a session provider for ASP.NET Core [check this out](https://github.com/MarkCBB/aspnet-mongodb-session-sample#aspnet-core-mongodb-session-sample).
+
 Usage
 =====
 
