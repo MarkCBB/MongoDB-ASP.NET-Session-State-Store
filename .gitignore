@@ -32,3 +32,11 @@
 TestApplication_PersonalizedHelpers/obj
 UpgradeLog.htm
 UpgradeLog2.htm
+/MongoSessionStateStore/Core/Compression
+/TestApplication_PersonalizedHelpers/Core/Compression
+/TestApplication_PersonalizedHelpers/mongocrypt.dll
+/TestApplication_PersonalizedHelpers/libmongocrypt.so
+/TestApplication_PersonalizedHelpers/libmongocrypt.dylib
+/MongoSessionStateStore/mongocrypt.dll
+/MongoSessionStateStore/libmongocrypt.so
+/MongoSessionStateStore/libmongocrypt.dylib
