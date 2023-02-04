@@ -28,3 +28,7 @@
 /TestApplication_RAWSerialization.Tests/obj/Debug
 /TestApplication_RAWSerializationWithoutTypeReference/bin
 /TestApplication_RAWSerializationWithoutTypeReference/obj/Debug
+.vs
+TestApplication_PersonalizedHelpers/obj
+UpgradeLog.htm
+UpgradeLog2.htm
